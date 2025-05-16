@@ -48,10 +48,11 @@ export const CadastroMoto = ({ navigation }: Props) => {
       modelo,
       placa,
       vaga,
-      status: 'disponível',
+      status: 'disponível' as 'disponível',
+      localizacao: { latitude: 0, longitude: 0 },
     };
 
-    await StorageService.addMoto(novaMoto);
+    await StorageService.saveMoto(novaMoto);
     navigation.goBack();
   };
 
@@ -124,8 +125,11 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   title: {
-    ...typography.header,
-    marginBottom: spacing.md,
+    fontSize: 24,
+    fontWeight: '700',
+    color: colors.primary,
+    textAlign: 'center',
+    marginBottom: spacing.lg,
   },
   form: {
     gap: spacing.md,
@@ -138,10 +142,39 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   previewTitle: {
-    ...typography.subheader,
+    fontSize: 18,
+    fontWeight: '600',
     marginBottom: spacing.xs,
   },
   previewText: {
-    ...typography.body,
+    fontSize: 16,
+    fontWeight: '400',
+    color: colors.text.secondary,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text.primary,
+    marginBottom: spacing.xs,
+  },
+  input: {
+    fontSize: 16,
+    fontWeight: '400',
+    color: colors.text.primary,
+    backgroundColor: colors.card,
+    borderRadius: spacing.sm,
+    padding: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  errorText: {
+    color: colors.error,
+    fontSize: 14,
+    fontWeight: '400',
+    marginBottom: spacing.sm,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text.light,
   },
 }); 

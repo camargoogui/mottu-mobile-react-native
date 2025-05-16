@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typography.header,
+    fontWeight: 'bold',
   },
   buttonContainer: {
     alignItems: 'center',
@@ -92,14 +93,17 @@ const styles = StyleSheet.create({
   placa: {
     ...typography.subheader,
     marginBottom: spacing.xs,
+    fontWeight: '700',
   },
   modelo: {
     ...typography.body,
     color: colors.text.secondary,
     marginBottom: spacing.xs,
+    fontWeight: '400',
   },
   condutor: {
-    ...typography.caption,
+    fontSize: 14,
+    fontWeight: '400',
     color: colors.text.secondary,
   },
   statusBadge: {
@@ -110,5 +114,6 @@ const styles = StyleSheet.create({
   statusText: {
     ...typography.caption,
     color: colors.text.light,
+    fontWeight: '400',
   },
 }); 

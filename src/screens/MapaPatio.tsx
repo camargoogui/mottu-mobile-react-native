@@ -102,17 +102,17 @@ export const MapaPatio = ({ navigation }: Props) => {
                 <Text style={styles.modalLabel}>Condutor: <Text style={styles.modalValue}>{motoSelecionada.condutor}</Text></Text>
                 <Text style={styles.modalLabel}>Status: <Text style={styles.modalValue}>{motoSelecionada.status}</Text></Text>
                 <Text style={styles.modalLabel}>Vaga: <Text style={styles.modalValue}>{vagaSelecionada?.numero}</Text></Text>
-                <Pressable style={styles.modalButton} onPress={() => setModalVisible(false)}>
-                  <Text style={styles.modalButtonText}>Fechar</Text>
-                </Pressable>
                 <Pressable style={styles.modalButtonSecondary} onPress={() => {
                   setModalVisible(false);
-                  navigation.navigate('Motos', {
+                  navigation.getParent()?.navigate('Motos', {
                     screen: 'DetalhesMoto',
                     params: { moto: motoSelecionada }
                   });
                 }}>
                   <Text style={styles.modalButtonText}>Ver detalhes</Text>
+                </Pressable>
+                <Pressable style={styles.modalButton} onPress={() => setModalVisible(false)}>
+                  <Text style={styles.modalButtonText}>Fechar</Text>
                 </Pressable>
               </>
             ) : (
@@ -134,12 +134,14 @@ const styles = StyleSheet.create({
     ...typography.header,
     textAlign: 'center',
     marginBottom: spacing.xs,
+    fontWeight: '700',
   },
   subtitle: {
     ...typography.subheader,
     textAlign: 'center',
     opacity: 0.7,
     marginBottom: spacing.md,
+    fontWeight: '600',
   },
   legendaContainer: {
     flexDirection: 'row',
@@ -153,7 +155,8 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   legendaText: {
-    ...typography.body,
+    fontSize: 16,
+    fontWeight: '400',
   },
   quadrado: {
     width: 16,
@@ -174,6 +177,7 @@ const styles = StyleSheet.create({
     ...typography.subheader,
     color: colors.primary,
     marginBottom: spacing.xs,
+    fontWeight: '600',
   },
   colunaVagas: {
     flexDirection: 'column',
@@ -190,7 +194,7 @@ const styles = StyleSheet.create({
   vagaText: {
     ...typography.caption,
     color: colors.text.light,
-    fontWeight: 'bold',
+    fontWeight: '700',
   },
   modalOverlay: {
     flex: 1,
@@ -208,13 +212,15 @@ const styles = StyleSheet.create({
   modalTitle: {
     ...typography.header,
     marginBottom: spacing.md,
+    fontWeight: '700',
   },
   modalLabel: {
     ...typography.body,
     marginBottom: spacing.xs,
+    fontWeight: '400',
   },
   modalValue: {
-    fontWeight: 'bold',
+    fontWeight: '700',
     color: colors.primary,
   },
   modalButton: {
@@ -233,7 +239,7 @@ const styles = StyleSheet.create({
   },
   modalButtonText: {
     color: colors.text.light,
-    fontWeight: 'bold',
+    fontWeight: '700',
     fontSize: 16,
   },
 }); 

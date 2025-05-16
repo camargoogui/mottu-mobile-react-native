@@ -29,7 +29,7 @@ export const borderRadius = {
 export const typography = {
   header: {
     fontSize: 24,
-    fontWeight: '700',
+    fontWeight: 'bold',
   },
   subheader: {
     fontSize: 18,

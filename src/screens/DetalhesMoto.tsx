@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation';
+import { MotosStackParamList } from '../navigation';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { Text } from 'react-native';
 import { colors, layout, spacing, typography } from '../theme';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'DetalhesMoto'>;
+type Props = NativeStackScreenProps<MotosStackParamList, 'DetalhesMoto'>;
 
 export const DetalhesMoto = ({ route, navigation }: Props) => {
   const { moto } = route.params;
@@ -78,31 +78,38 @@ const styles = StyleSheet.create({
   placa: {
     ...typography.header,
     marginBottom: spacing.xs,
+    fontWeight: '700',
   },
   modelo: {
     ...typography.subheader,
     color: colors.text.secondary,
+    fontWeight: '600',
   },
   statusBadge: {
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
     borderRadius: spacing.xs,
+    marginBottom: spacing.md,
   },
   statusText: {
-    ...typography.caption,
+    fontSize: 14,
+    fontWeight: '400',
     color: colors.text.light,
   },
   infoSection: {
     gap: spacing.xs,
   },
   label: {
-    ...typography.body,
+    fontSize: 16,
     fontWeight: '600',
-    marginTop: spacing.sm,
+    color: colors.text.primary,
+    marginBottom: spacing.xs,
   },
   value: {
-    ...typography.body,
+    fontSize: 16,
+    fontWeight: '400',
     color: colors.text.secondary,
+    marginBottom: spacing.sm,
   },
   buttonContainer: {
     marginTop: spacing.lg,

@@ -149,30 +149,38 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   title: {
-    ...typography.header,
-    marginBottom: spacing.md,
+    fontSize: 24,
+    fontWeight: '700',
+    color: colors.primary,
+    textAlign: 'center',
+    marginBottom: spacing.lg,
   },
   inputContainer: {
     marginBottom: spacing.md,
   },
   label: {
-    ...typography.label,
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text.primary,
     marginBottom: spacing.xs,
   },
   input: {
-    borderWidth: 1,
-    borderColor: colors.border,
+    fontSize: 16,
+    fontWeight: '400',
+    color: colors.text.primary,
+    backgroundColor: colors.card,
     borderRadius: spacing.xs,
     padding: spacing.sm,
-    fontSize: 16,
+    marginBottom: spacing.md,
   },
   inputError: {
     borderColor: colors.error,
   },
   errorText: {
     color: colors.error,
-    fontSize: 12,
-    marginTop: spacing.xs,
+    fontSize: 14,
+    fontWeight: '400',
+    marginBottom: spacing.sm,
   },
   pickerContainer: {
     marginBottom: spacing.md,
@@ -198,7 +206,8 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   botaoSalvarTexto: {
+    fontSize: 16,
+    fontWeight: '700',
     color: colors.text.light,
-    ...typography.button,
   },
 }); 

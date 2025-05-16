@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: '700',
     color: colors.text.primary,
     marginBottom: spacing.xs,
   },
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   },
   cardText: {
     fontSize: 16,
-    fontWeight: 'normal',
+    fontWeight: '400',
     color: colors.text.secondary,
   },
   statsContainer: {
@@ -146,13 +146,13 @@ const styles = StyleSheet.create({
   },
   statNumber: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: '700',
     color: colors.primary,
     marginBottom: spacing.xs,
   },
   statLabel: {
     fontSize: 14,
-    fontWeight: 'normal',
+    fontWeight: '400',
     color: colors.text.secondary,
   },
   buttonContainer: {
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   tipsText: {
     fontSize: 16,
-    fontWeight: 'normal',
+    fontWeight: '400',
     color: colors.text.secondary,
   },
 }); 
