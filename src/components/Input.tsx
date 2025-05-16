@@ -30,7 +30,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   label: {
-    ...typography.body,
+    fontSize: 16,
+    fontWeight: '400',
     marginBottom: spacing.xs,
     color: colors.text.primary,
   },
@@ -39,14 +40,16 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: borderRadius.sm,
     padding: spacing.md,
-    ...typography.body,
+    fontSize: 16,
+    fontWeight: '400',
     color: colors.text.primary,
   },
   inputError: {
     borderColor: colors.error,
   },
   errorText: {
-    ...typography.caption,
+    fontSize: 14,
+    fontWeight: '400',
     color: colors.error,
     marginTop: spacing.xs,
   },
