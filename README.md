@@ -4,8 +4,14 @@ Aplicativo mobile desenvolvido em React Native com Expo para gestão inteligente
 
 ## 👥 Integrantes
 
-- Nome: [Seu Nome]
-- RM: [Seu RM]
+- Nome: Bianca Vitória
+- RM: 5556270
+
+- Nome: Guilherme Paes Camargo
+- RM: 555166
+
+- Nome: Icaro Albuquerque 
+- RM: 555161
 
 ## 🚀 Tecnologias
 
@@ -50,7 +56,7 @@ Aplicativo mobile desenvolvido em React Native com Expo para gestão inteligente
 
 1. Clone o repositório:
 ```bash
-git clone [URL_DO_REPOSITORIO]
+git clone https://github.com/camargoogui/Mobile---Challenge
 ```
 
 2. Instale as dependências:
