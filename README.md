@@ -4,14 +4,9 @@ Aplicativo mobile desenvolvido em React Native com Expo para gestão inteligente
 
 ## 👥 Integrantes
 
-- Nome: Bianca Vitória
-- RM: 5556270
-
-- Nome: Guilherme Paes Camargo
-- RM: 555166
-
-- Nome: Icaro Albuquerque 
-- RM: 555161
+- RM556270 - Bianca Vitoria - 2TDSPZ
+- RM555166 - Guilherme Camargo - 2TDSPM
+- RM555131 - Icaro Americo - 2TDSPM
 
 ## 🚀 Tecnologias
 
