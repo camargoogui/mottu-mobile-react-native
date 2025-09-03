@@ -7,11 +7,12 @@ import { Moto } from '../types';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { Text } from 'react-native';
-import { colors, layout, spacing, typography } from '../theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 type Props = NativeStackScreenProps<MotosStackParamList, 'ListaMotosScreen'>;
 
 export const ListaMotos = ({ navigation }: Props) => {
+  const { theme } = useTheme();
   const [motos, setMotos] = useState<Moto[]>([]);
 
   useEffect(() => {
@@ -28,15 +29,15 @@ export const ListaMotos = ({ navigation }: Props) => {
       <Card>
         <View style={styles.motoInfo}>
           <View>
-            <Text style={styles.placa}>{item.placa}</Text>
-            <Text style={styles.modelo}>{item.modelo}</Text>
-            <Text style={styles.condutor}>Condutor: {item.condutor}</Text>
+            <Text style={[styles.placa, { color: theme.colors.text.primary }]}>{item.placa}</Text>
+            <Text style={[styles.modelo, { color: theme.colors.text.secondary }]}>{item.modelo}</Text>
+            <Text style={[styles.condutor, { color: theme.colors.text.secondary }]}>Condutor: {item.condutor}</Text>
           </View>
           <View style={[
             styles.statusBadge,
-            { backgroundColor: item.status === 'disponível' ? colors.success : colors.error }
+            { backgroundColor: item.status === 'disponível' ? theme.colors.success : theme.colors.error }
           ]}>
-            <Text style={styles.statusText}>{item.status}</Text>
+            <Text style={[styles.statusText, { color: theme.colors.text.light }]}>{item.status}</Text>
           </View>
         </View>
       </Card>
@@ -44,9 +45,9 @@ export const ListaMotos = ({ navigation }: Props) => {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.header}>
-        <Text style={styles.title}>Lista de Motos</Text>
+        <Text style={[styles.title, { color: theme.colors.text.primary }]}>Lista de Motos</Text>
       </View>
       <View style={styles.buttonContainer}>
         <Button
@@ -60,6 +61,7 @@ export const ListaMotos = ({ navigation }: Props) => {
         renderItem={renderMotoItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
+        style={{ backgroundColor: theme.colors.background }}
       />
     </View>
   );
@@ -67,23 +69,23 @@ export const ListaMotos = ({ navigation }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    ...layout.container,
-    padding: spacing.md,
+    flex: 1,
+    padding: 16,
   },
   header: {
     alignItems: 'center',
-    marginBottom: spacing.sm,
+    marginBottom: 8,
   },
   title: {
-    ...typography.header,
+    fontSize: 24,
     fontWeight: 'bold',
   },
   buttonContainer: {
     alignItems: 'center',
-    marginBottom: spacing.md,
+    marginBottom: 16,
   },
   list: {
-    paddingBottom: spacing.md,
+    paddingBottom: 16,
   },
   motoInfo: {
     flexDirection: 'row',
@@ -91,29 +93,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   placa: {
-    ...typography.subheader,
-    marginBottom: spacing.xs,
+    fontSize: 18,
+    marginBottom: 4,
     fontWeight: '700',
   },
   modelo: {
-    ...typography.body,
-    color: colors.text.secondary,
-    marginBottom: spacing.xs,
+    fontSize: 16,
+    marginBottom: 4,
     fontWeight: '400',
   },
   condutor: {
     fontSize: 14,
     fontWeight: '400',
-    color: colors.text.secondary,
   },
   statusBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: spacing.xs,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
   },
   statusText: {
-    ...typography.caption,
-    color: colors.text.light,
+    fontSize: 14,
     fontWeight: '400',
   },
 }); 

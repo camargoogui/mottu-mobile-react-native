@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialIcons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
+import { useTheme } from '../contexts/ThemeContext';
 import { Home } from '../screens/Home';
 import { MapaPatio } from '../screens/MapaPatio';
 import { ListaMotos } from '../screens/ListaMotos';
@@ -36,8 +37,20 @@ const MotosStackNavigator = createNativeStackNavigator<MotosStackParamList>();
 const Tab = createBottomTabNavigator<RootStackParamList>();
 
 const HomeStack = () => {
+  const { theme } = useTheme();
+  
   return (
-    <HomeStackNavigator.Navigator>
+    <HomeStackNavigator.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: theme.colors.background,
+        },
+        headerTintColor: theme.colors.text.primary,
+        headerTitleStyle: {
+          color: theme.colors.text.primary,
+        },
+      }}
+    >
       <HomeStackNavigator.Screen
         name="HomeScreen"
         component={Home}
@@ -53,8 +66,20 @@ const HomeStack = () => {
 };
 
 const MotosStack = () => {
+  const { theme } = useTheme();
+  
   return (
-    <MotosStackNavigator.Navigator>
+    <MotosStackNavigator.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: theme.colors.background,
+        },
+        headerTintColor: theme.colors.text.primary,
+        headerTitleStyle: {
+          color: theme.colors.text.primary,
+        },
+      }}
+    >
       <MotosStackNavigator.Screen
         name="ListaMotosScreen"
         component={ListaMotos}
@@ -65,7 +90,7 @@ const MotosStack = () => {
               onPress={() => navigation.navigate('CadastroMoto')}
               style={{ marginRight: 16 }}
             >
-              <MaterialIcons name="add" size={24} color="#4CAF50" />
+              <MaterialIcons name="add" size={24} color={theme.colors.primary} />
             </TouchableOpacity>
           ),
         })}
@@ -90,12 +115,25 @@ const MotosStack = () => {
 };
 
 export const Navigation = () => {
+  const { theme } = useTheme();
+  
   return (
     <NavigationContainer>
       <Tab.Navigator
         screenOptions={{
-          tabBarActiveTintColor: '#4CAF50',
-          tabBarInactiveTintColor: 'gray',
+          tabBarActiveTintColor: theme.colors.primary,
+          tabBarInactiveTintColor: theme.colors.text.secondary,
+          tabBarStyle: {
+            backgroundColor: theme.colors.background,
+            borderTopColor: theme.colors.border,
+          },
+          headerStyle: {
+            backgroundColor: theme.colors.background,
+          },
+          headerTintColor: theme.colors.text.primary,
+          headerTitleStyle: {
+            color: theme.colors.text.primary,
+          },
         }}
       >
         <Tab.Screen

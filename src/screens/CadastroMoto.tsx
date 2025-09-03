@@ -6,11 +6,12 @@ import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { Input } from '../components/Input';
 import { StorageService } from '../services/storage';
-import { colors, layout, spacing, typography } from '../theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 type Props = NativeStackScreenProps<MotosStackParamList, 'CadastroMoto'>;
 
 export const CadastroMoto = ({ navigation }: Props) => {
+  const { theme } = useTheme();
   const [condutor, setCondutor] = useState('');
   const [modelo, setModelo] = useState('');
   const [placa, setPlaca] = useState('');
@@ -57,9 +58,9 @@ export const CadastroMoto = ({ navigation }: Props) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Card>
-        <Text style={styles.title}>Cadastrar Nova Moto</Text>
+        <Text style={[styles.title, { color: theme.colors.primary }]}>Cadastrar Nova Moto</Text>
 
         <View style={styles.form}>
           <Input
@@ -98,9 +99,9 @@ export const CadastroMoto = ({ navigation }: Props) => {
         </View>
 
         {(condutor || modelo || placa || vaga) && (
-          <View style={styles.preview}>
-            <Text style={styles.previewTitle}>Preview do Cadastro:</Text>
-            <Text style={styles.previewText}>
+          <View style={[styles.preview, { backgroundColor: theme.colors.background }]}>
+            <Text style={[styles.previewTitle, { color: theme.colors.text.primary }]}>Preview do Cadastro:</Text>
+            <Text style={[styles.previewText, { color: theme.colors.text.secondary }]}>
               {condutor && `Condutor: ${condutor}\n`}
               {modelo && `Modelo: ${modelo}\n`}
               {placa && `Placa: ${placa}\n`}
@@ -121,60 +122,52 @@ export const CadastroMoto = ({ navigation }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    ...layout.container,
-    padding: spacing.md,
+    flex: 1,
+    padding: 16,
   },
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: colors.primary,
     textAlign: 'center',
-    marginBottom: spacing.lg,
+    marginBottom: 24,
   },
   form: {
-    gap: spacing.md,
-    marginBottom: spacing.lg,
+    gap: 16,
+    marginBottom: 24,
   },
   preview: {
-    backgroundColor: colors.background,
-    padding: spacing.md,
-    borderRadius: spacing.xs,
-    marginBottom: spacing.md,
+    padding: 16,
+    borderRadius: 4,
+    marginBottom: 16,
   },
   previewTitle: {
     fontSize: 18,
     fontWeight: '600',
-    marginBottom: spacing.xs,
+    marginBottom: 4,
   },
   previewText: {
     fontSize: 16,
     fontWeight: '400',
-    color: colors.text.secondary,
   },
   label: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
+    marginBottom: 4,
   },
   input: {
     fontSize: 16,
     fontWeight: '400',
-    color: colors.text.primary,
-    backgroundColor: colors.card,
-    borderRadius: spacing.sm,
-    padding: spacing.sm,
-    marginBottom: spacing.md,
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 16,
   },
   errorText: {
-    color: colors.error,
     fontSize: 14,
     fontWeight: '400',
-    marginBottom: spacing.sm,
+    marginBottom: 8,
   },
   buttonText: {
     fontSize: 16,
     fontWeight: '700',
-    color: colors.text.light,
   },
 }); 

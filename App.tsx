@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Navigation } from './src/navigation';
 import * as SplashScreen from 'expo-splash-screen';
 import { StorageService } from './src/services/storage';
-import { colors } from './src/theme';
+import { ThemeProvider } from './src/contexts/ThemeContext';
 
 // Mantém o splash screen visível enquanto inicializamos
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -61,22 +61,24 @@ export default function App() {
   }
 
   return (
-    <View style={styles.appContainer} onLayout={onLayoutRootView}>
-      <Navigation />
-    </View>
+    <ThemeProvider>
+      <View style={styles.appContainer} onLayout={onLayoutRootView}>
+        <Navigation />
+      </View>
+    </ThemeProvider>
   );
 }
 
 const styles = StyleSheet.create({
   appContainer: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#FFFFFF',
   },
   centeredContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.background,
+    backgroundColor: '#FFFFFF',
   },
   loadingText: {
     fontSize: 18,

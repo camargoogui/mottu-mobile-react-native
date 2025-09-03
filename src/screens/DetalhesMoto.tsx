@@ -5,45 +5,46 @@ import { MotosStackParamList } from '../navigation';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { Text } from 'react-native';
-import { colors, layout, spacing, typography } from '../theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 type Props = NativeStackScreenProps<MotosStackParamList, 'DetalhesMoto'>;
 
 export const DetalhesMoto = ({ route, navigation }: Props) => {
+  const { theme } = useTheme();
   const { moto } = route.params;
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Card>
         <View style={styles.header}>
           <View>
-            <Text style={styles.placa}>{moto.placa}</Text>
-            <Text style={styles.modelo}>{moto.modelo}</Text>
+            <Text style={[styles.placa, { color: theme.colors.text.primary }]}>{moto.placa}</Text>
+            <Text style={[styles.modelo, { color: theme.colors.text.secondary }]}>{moto.modelo}</Text>
           </View>
           <View style={[
             styles.statusBadge,
-            { backgroundColor: moto.status === 'disponível' ? colors.success : colors.error }
+            { backgroundColor: moto.status === 'disponível' ? theme.colors.success : theme.colors.error }
           ]}>
-            <Text style={styles.statusText}>{moto.status}</Text>
+            <Text style={[styles.statusText, { color: '#FFFFFF' }]}>{moto.status}</Text>
           </View>
         </View>
 
         <View style={styles.infoSection}>
-          <Text style={styles.label}>Condutor</Text>
-          <Text style={styles.value}>{moto.condutor}</Text>
+          <Text style={[styles.label, { color: theme.colors.text.primary }]}>Condutor</Text>
+          <Text style={[styles.value, { color: theme.colors.text.secondary }]}>{moto.condutor}</Text>
 
-          <Text style={styles.label}>Localização</Text>
-          <Text style={styles.value}>
+          <Text style={[styles.label, { color: theme.colors.text.primary }]}>Localização</Text>
+          <Text style={[styles.value, { color: theme.colors.text.secondary }]}>
             Latitude: {moto.localizacao.latitude.toFixed(6)}
           </Text>
-          <Text style={styles.value}>
+          <Text style={[styles.value, { color: theme.colors.text.secondary }]}>
             Longitude: {moto.localizacao.longitude.toFixed(6)}
           </Text>
 
           {moto.vaga && (
             <>
-              <Text style={styles.label}>Vaga</Text>
-              <Text style={styles.value}>{moto.vaga}</Text>
+              <Text style={[styles.label, { color: theme.colors.text.primary }]}>Vaga</Text>
+              <Text style={[styles.value, { color: theme.colors.text.secondary }]}>{moto.vaga}</Text>
             </>
           )}
         </View>
@@ -66,53 +67,49 @@ export const DetalhesMoto = ({ route, navigation }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    ...layout.container,
-    padding: spacing.md,
+    flex: 1,
+    padding: 16,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: spacing.lg,
+    marginBottom: 24,
   },
   placa: {
-    ...typography.header,
-    marginBottom: spacing.xs,
+    fontSize: 24,
+    marginBottom: 4,
     fontWeight: '700',
   },
   modelo: {
-    ...typography.subheader,
-    color: colors.text.secondary,
+    fontSize: 18,
     fontWeight: '600',
   },
   statusBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: spacing.xs,
-    marginBottom: spacing.md,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+    marginBottom: 16,
   },
   statusText: {
     fontSize: 14,
     fontWeight: '400',
-    color: colors.text.light,
   },
   infoSection: {
-    gap: spacing.xs,
+    gap: 4,
   },
   label: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
+    marginBottom: 4,
   },
   value: {
     fontSize: 16,
     fontWeight: '400',
-    color: colors.text.secondary,
-    marginBottom: spacing.sm,
+    marginBottom: 8,
   },
   buttonContainer: {
-    marginTop: spacing.lg,
-    gap: spacing.md,
+    marginTop: 24,
+    gap: 16,
   },
 }); 

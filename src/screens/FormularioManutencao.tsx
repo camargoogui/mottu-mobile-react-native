@@ -7,7 +7,7 @@ import { Card } from '../components/Card';
 import { Input } from '../components/Input';
 import { Picker } from '@react-native-picker/picker';
 import { TipoManutencao } from '../types';
-import { colors, layout, spacing, typography } from '../theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 type Props = NativeStackScreenProps<MotosStackParamList, 'FormularioManutencao'>;
 
@@ -26,6 +26,7 @@ const tiposManutencao: TipoManutencao[] = [
 ];
 
 export const FormularioManutencao = ({ route, navigation }: Props) => {
+  const { theme } = useTheme();
   const { motoId } = route.params;
   const [tipoManutencao, setTipoManutencao] = useState<TipoManutencao>('Troca de óleo');
   const [motivoCustomizado, setMotivoCustomizado] = useState('');
@@ -67,21 +68,27 @@ export const FormularioManutencao = ({ route, navigation }: Props) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Card>
         <View style={styles.form}>
-          <Text style={styles.title}>Registrar Manutenção</Text>
+          <Text style={[styles.title, { color: theme.colors.primary }]}>Registrar Manutenção</Text>
 
           <View style={styles.pickerContainer}>
-            <Text style={styles.label}>Tipo de Manutenção *</Text>
-            <View style={styles.pickerWrapper}>
+            <Text style={[styles.label, { color: theme.colors.text.primary }]}>Tipo de Manutenção *</Text>
+            <View style={[styles.pickerWrapper, { borderColor: theme.colors.border, backgroundColor: theme.colors.card }]}>
               <Picker
                 selectedValue={tipoManutencao}
                 onValueChange={(value) => setTipoManutencao(value as TipoManutencao)}
-                style={styles.picker}
+                style={[styles.picker, { color: theme.colors.text.primary }]}
+                itemStyle={{ color: theme.mode === 'dark' ? '#000000' : theme.colors.text.primary }}
               >
                 {tiposManutencao.map((tipo) => (
-                  <Picker.Item key={tipo} label={tipo} value={tipo} />
+                  <Picker.Item 
+                    key={tipo} 
+                    label={tipo} 
+                    value={tipo} 
+                    color={theme.mode === 'dark' ? '#000000' : theme.colors.text.primary}
+                  />
                 ))}
               </Picker>
             </View>
@@ -89,50 +96,74 @@ export const FormularioManutencao = ({ route, navigation }: Props) => {
 
           {tipoManutencao === 'Outro' && (
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Especifique o Motivo *</Text>
+              <Text style={[styles.label, { color: theme.colors.text.primary }]}>Especifique o Motivo *</Text>
               <TextInput
-                style={[styles.input, errors.motivoCustomizado && styles.inputError]}
+                style={[
+                  styles.input, 
+                  { 
+                    borderColor: errors.motivoCustomizado ? theme.colors.error : theme.colors.border,
+                    color: theme.colors.text.primary,
+                    backgroundColor: theme.colors.card,
+                  }
+                ]}
                 value={motivoCustomizado}
                 onChangeText={setMotivoCustomizado}
                 placeholder="Digite o motivo da manutenção"
+                placeholderTextColor={theme.colors.text.secondary}
                 multiline
               />
               {errors.motivoCustomizado && (
-                <Text style={styles.errorText}>{errors.motivoCustomizado}</Text>
+                <Text style={[styles.errorText, { color: theme.colors.error }]}>{errors.motivoCustomizado}</Text>
               )}
             </View>
           )}
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Data *</Text>
+            <Text style={[styles.label, { color: theme.colors.text.primary }]}>Data *</Text>
             <TextInput
-              style={[styles.input, errors.data && styles.inputError]}
+              style={[
+                styles.input, 
+                { 
+                  borderColor: errors.data ? theme.colors.error : theme.colors.border,
+                  color: theme.colors.text.primary,
+                  backgroundColor: theme.colors.card,
+                }
+              ]}
               value={data}
               onChangeText={setData}
               placeholder="DD/MM/AAAA"
+              placeholderTextColor={theme.colors.text.secondary}
             />
             {errors.data && (
-              <Text style={styles.errorText}>{errors.data}</Text>
+              <Text style={[styles.errorText, { color: theme.colors.error }]}>{errors.data}</Text>
             )}
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Observações</Text>
+            <Text style={[styles.label, { color: theme.colors.text.primary }]}>Observações</Text>
             <TextInput
-              style={[styles.input, styles.textArea]}
+              style={[
+                styles.input, 
+                styles.textArea,
+                { 
+                  color: theme.colors.text.primary,
+                  backgroundColor: theme.colors.card,
+                }
+              ]}
               value={observacoes}
               onChangeText={setObservacoes}
               placeholder="Digite as observações"
+              placeholderTextColor={theme.colors.text.secondary}
               multiline
               numberOfLines={4}
             />
           </View>
 
           <TouchableOpacity 
-            style={styles.botaoSalvar} 
+            style={[styles.botaoSalvar, { backgroundColor: theme.colors.primary }]} 
             onPress={handleSalvar}
           >
-            <Text style={styles.botaoSalvarTexto}>Salvar</Text>
+            <Text style={[styles.botaoSalvarTexto, { color: theme.colors.text.light }]}>Salvar</Text>
           </TouchableOpacity>
         </View>
       </Card>
@@ -143,52 +174,43 @@ export const FormularioManutencao = ({ route, navigation }: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   form: {
-    padding: spacing.md,
+    padding: 16,
   },
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: colors.primary,
     textAlign: 'center',
-    marginBottom: spacing.lg,
+    marginBottom: 24,
   },
   inputContainer: {
-    marginBottom: spacing.md,
+    marginBottom: 16,
   },
   label: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
+    marginBottom: 4,
   },
   input: {
     fontSize: 16,
     fontWeight: '400',
-    color: colors.text.primary,
-    backgroundColor: colors.card,
-    borderRadius: spacing.xs,
-    padding: spacing.sm,
-    marginBottom: spacing.md,
-  },
-  inputError: {
-    borderColor: colors.error,
+    borderRadius: 4,
+    padding: 8,
+    marginBottom: 16,
+    borderWidth: 1,
   },
   errorText: {
-    color: colors.error,
     fontSize: 14,
     fontWeight: '400',
-    marginBottom: spacing.sm,
+    marginBottom: 8,
   },
   pickerContainer: {
-    marginBottom: spacing.md,
+    marginBottom: 16,
   },
   pickerWrapper: {
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: spacing.xs,
+    borderRadius: 4,
     overflow: 'hidden',
   },
   picker: {
@@ -199,15 +221,13 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   botaoSalvar: {
-    backgroundColor: colors.primary,
-    padding: spacing.md,
-    borderRadius: spacing.sm,
+    padding: 16,
+    borderRadius: 8,
     alignItems: 'center',
-    marginTop: spacing.md,
+    marginTop: 16,
   },
   botaoSalvarTexto: {
     fontSize: 16,
     fontWeight: '700',
-    color: colors.text.light,
   },
 }); 

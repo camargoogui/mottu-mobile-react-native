@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { colors, spacing, borderRadius, typography } from '../theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface ButtonProps {
   onPress: () => void;
@@ -10,11 +10,17 @@ interface ButtonProps {
 }
 
 export const Button = ({ onPress, title, variant = 'primary', fullWidth = true }: ButtonProps) => {
+  const { theme } = useTheme();
+  
   return (
     <TouchableOpacity
       style={[
         styles.button,
-        variant === 'primary' ? styles.primaryButton : styles.secondaryButton,
+        {
+          backgroundColor: variant === 'primary' ? theme.colors.primary : 'transparent',
+          borderColor: theme.colors.primary,
+          borderWidth: variant === 'secondary' ? 1 : 0,
+        },
         fullWidth && styles.fullWidth,
       ]}
       onPress={onPress}
@@ -22,7 +28,9 @@ export const Button = ({ onPress, title, variant = 'primary', fullWidth = true }
       <Text
         style={[
           styles.text,
-          variant === 'primary' ? styles.primaryText : styles.secondaryText,
+          {
+            color: variant === 'primary' ? theme.colors.text.light : theme.colors.primary,
+          },
         ]}
       >
         {title}
@@ -33,30 +41,16 @@ export const Button = ({ onPress, title, variant = 'primary', fullWidth = true }
 
 const styles = StyleSheet.create({
   button: {
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
+    padding: 16,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  primaryButton: {
-    backgroundColor: colors.primary,
-  },
-  secondaryButton: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: colors.primary,
   },
   fullWidth: {
     width: '100%',
   },
   text: {
-    ...typography.body,
+    fontSize: 16,
     fontWeight: '600',
-  },
-  primaryText: {
-    color: colors.text.light,
-  },
-  secondaryText: {
-    color: colors.primary,
   },
 }); 

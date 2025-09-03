@@ -1,3 +1,6 @@
+// Este arquivo agora é mantido para compatibilidade com código existente
+// O tema principal está no ThemeContext
+
 export const colors = {
   primary: '#4CAF50',
   background: '#FFFFFF',

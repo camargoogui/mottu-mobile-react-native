@@ -3,13 +3,14 @@ import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable } from 'reac
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HomeStackParamList } from '../navigation';
 import { Card } from '../components/Card';
-import { colors, layout, spacing, typography, borderRadius } from '../theme';
 import { StorageService } from '../services/storage';
 import { Vaga, Moto } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'MapaPatio'>;
 
 export const MapaPatio = ({ navigation }: Props) => {
+  const { theme } = useTheme();
   const [vagas, setVagas] = useState<Vaga[]>([]);
   const [motos, setMotos] = useState<Moto[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -48,37 +49,37 @@ export const MapaPatio = ({ navigation }: Props) => {
   const totalOcupadas = vagas.filter(v => v.status === 'ocupada').length;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Card>
-        <Text style={styles.title}>Mapa do Pátio</Text>
-        <Text style={styles.subtitle}>Status das Vagas em Tempo Real</Text>
+        <Text style={[styles.title, { color: theme.colors.text.primary }]}>Mapa do Pátio</Text>
+        <Text style={[styles.subtitle, { color: theme.colors.text.secondary }]}>Status das Vagas em Tempo Real</Text>
         
         <View style={styles.legendaContainer}>
           <View style={styles.legendaItem}>
-            <View style={[styles.quadrado, { backgroundColor: colors.success }]} />
-            <Text style={styles.legendaText}>Livre ({totalLivres})</Text>
+            <View style={[styles.quadrado, { backgroundColor: theme.colors.success }]} />
+            <Text style={[styles.legendaText, { color: theme.colors.text.primary }]}>Livre ({totalLivres})</Text>
           </View>
           <View style={styles.legendaItem}>
-            <View style={[styles.quadrado, { backgroundColor: colors.error }]} />
-            <Text style={styles.legendaText}>Ocupada ({totalOcupadas})</Text>
+            <View style={[styles.quadrado, { backgroundColor: theme.colors.error }]} />
+            <Text style={[styles.legendaText, { color: theme.colors.text.primary }]}>Ocupada ({totalOcupadas})</Text>
           </View>
         </View>
 
         <View style={styles.mapaContainer}>
           {Object.keys(colunas).sort().map(coluna => (
             <View key={coluna} style={styles.colunaContainer}>
-              <Text style={styles.colunaLabel}>{coluna}</Text>
+              <Text style={[styles.colunaLabel, { color: theme.colors.primary }]}>{coluna}</Text>
               <View style={styles.colunaVagas}>
                 {colunas[coluna].map(vaga => (
                   <TouchableOpacity
                     key={vaga.id}
                     style={[
                       styles.vaga,
-                      { backgroundColor: vaga.status === 'livre' ? colors.success : colors.error }
+                      { backgroundColor: vaga.status === 'livre' ? theme.colors.success : theme.colors.error }
                     ]}
                     onPress={() => handleVagaPress(vaga)}
                   >
-                    <Text style={styles.vagaText}>{vaga.numero}</Text>
+                    <Text style={[styles.vagaText, { color: theme.colors.text.light }]}>{vaga.numero}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -93,30 +94,30 @@ export const MapaPatio = ({ navigation }: Props) => {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Informações da Moto</Text>
+          <View style={[styles.modalContent, { backgroundColor: theme.colors.background }]}>
+            <Text style={[styles.modalTitle, { color: theme.colors.text.primary }]}>Informações da Moto</Text>
             {motoSelecionada ? (
               <>
-                <Text style={styles.modalLabel}>Placa: <Text style={styles.modalValue}>{motoSelecionada.placa}</Text></Text>
-                <Text style={styles.modalLabel}>Modelo: <Text style={styles.modalValue}>{motoSelecionada.modelo}</Text></Text>
-                <Text style={styles.modalLabel}>Condutor: <Text style={styles.modalValue}>{motoSelecionada.condutor}</Text></Text>
-                <Text style={styles.modalLabel}>Status: <Text style={styles.modalValue}>{motoSelecionada.status}</Text></Text>
-                <Text style={styles.modalLabel}>Vaga: <Text style={styles.modalValue}>{vagaSelecionada?.numero}</Text></Text>
-                <Pressable style={styles.modalButtonSecondary} onPress={() => {
+                <Text style={[styles.modalLabel, { color: theme.colors.text.primary }]}>Placa: <Text style={[styles.modalValue, { color: theme.colors.primary }]}>{motoSelecionada.placa}</Text></Text>
+                <Text style={[styles.modalLabel, { color: theme.colors.text.primary }]}>Modelo: <Text style={[styles.modalValue, { color: theme.colors.primary }]}>{motoSelecionada.modelo}</Text></Text>
+                <Text style={[styles.modalLabel, { color: theme.colors.text.primary }]}>Condutor: <Text style={[styles.modalValue, { color: theme.colors.primary }]}>{motoSelecionada.condutor}</Text></Text>
+                <Text style={[styles.modalLabel, { color: theme.colors.text.primary }]}>Status: <Text style={[styles.modalValue, { color: theme.colors.primary }]}>{motoSelecionada.status}</Text></Text>
+                <Text style={[styles.modalLabel, { color: theme.colors.text.primary }]}>Vaga: <Text style={[styles.modalValue, { color: theme.colors.primary }]}>{vagaSelecionada?.numero}</Text></Text>
+                <Pressable style={[styles.modalButtonSecondary, { backgroundColor: theme.colors.primary }]} onPress={() => {
                   setModalVisible(false);
                   navigation.getParent()?.navigate('Motos', {
                     screen: 'DetalhesMoto',
                     params: { moto: motoSelecionada }
                   });
                 }}>
-                  <Text style={styles.modalButtonText}>Ver detalhes</Text>
+                  <Text style={[styles.modalButtonText, { color: theme.colors.text.light }]}>Ver detalhes</Text>
                 </Pressable>
-                <Pressable style={styles.modalButton} onPress={() => setModalVisible(false)}>
-                  <Text style={styles.modalButtonText}>Fechar</Text>
+                <Pressable style={[styles.modalButton, { backgroundColor: theme.colors.primary }]} onPress={() => setModalVisible(false)}>
+                  <Text style={[styles.modalButtonText, { color: theme.colors.text.light }]}>Fechar</Text>
                 </Pressable>
               </>
             ) : (
-              <Text style={styles.modalLabel}>Moto não encontrada.</Text>
+              <Text style={[styles.modalLabel, { color: theme.colors.text.primary }]}>Moto não encontrada.</Text>
             )}
           </View>
         </View>
@@ -127,32 +128,32 @@ export const MapaPatio = ({ navigation }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    ...layout.container,
-    padding: spacing.md,
+    flex: 1,
+    padding: 16,
   },
   title: {
-    ...typography.header,
+    fontSize: 24,
     textAlign: 'center',
-    marginBottom: spacing.xs,
+    marginBottom: 4,
     fontWeight: '700',
   },
   subtitle: {
-    ...typography.subheader,
+    fontSize: 18,
     textAlign: 'center',
     opacity: 0.7,
-    marginBottom: spacing.md,
+    marginBottom: 16,
     fontWeight: '600',
   },
   legendaContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: spacing.md,
-    gap: spacing.md,
+    marginBottom: 16,
+    gap: 16,
   },
   legendaItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.xs,
+    gap: 4,
   },
   legendaText: {
     fontSize: 16,
@@ -166,34 +167,32 @@ const styles = StyleSheet.create({
   mapaContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.lg,
+    gap: 24,
     justifyContent: 'center',
   },
   colunaContainer: {
     alignItems: 'center',
-    marginHorizontal: spacing.sm,
+    marginHorizontal: 8,
   },
   colunaLabel: {
-    ...typography.subheader,
-    color: colors.primary,
-    marginBottom: spacing.xs,
+    fontSize: 18,
+    marginBottom: 4,
     fontWeight: '600',
   },
   colunaVagas: {
     flexDirection: 'column',
-    gap: spacing.sm,
+    gap: 8,
   },
   vaga: {
     width: 60,
     height: 60,
-    borderRadius: spacing.xs,
+    borderRadius: 4,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: spacing.xs,
+    marginBottom: 4,
   },
   vagaText: {
-    ...typography.caption,
-    color: colors.text.light,
+    fontSize: 14,
     fontWeight: '700',
   },
   modalOverlay: {
@@ -203,42 +202,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: colors.background,
-    borderRadius: borderRadius.md,
-    padding: spacing.lg,
+    borderRadius: 8,
+    padding: 24,
     width: 300,
     alignItems: 'center',
   },
   modalTitle: {
-    ...typography.header,
-    marginBottom: spacing.md,
+    fontSize: 24,
+    marginBottom: 16,
     fontWeight: '700',
   },
   modalLabel: {
-    ...typography.body,
-    marginBottom: spacing.xs,
+    fontSize: 16,
+    marginBottom: 4,
     fontWeight: '400',
   },
   modalValue: {
     fontWeight: '700',
-    color: colors.primary,
   },
   modalButton: {
-    marginTop: spacing.lg,
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.md,
+    marginTop: 24,
+    paddingVertical: 8,
+    paddingHorizontal: 24,
+    borderRadius: 8,
   },
   modalButtonSecondary: {
-    marginTop: spacing.sm,
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.md,
+    marginTop: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 24,
+    borderRadius: 8,
   },
   modalButtonText: {
-    color: colors.text.light,
     fontWeight: '700',
     fontSize: 16,
   },
