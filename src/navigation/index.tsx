@@ -3,8 +3,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialIcons } from '@expo/vector-icons';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, ActivityIndicator, View } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 import { Home } from '../screens/Home';
 import { MapaPatio } from '../screens/MapaPatio';
 import { ListaMotos } from '../screens/ListaMotos';
@@ -12,12 +13,19 @@ import { DetalhesMoto } from '../screens/DetalhesMoto';
 import { FormularioManutencao } from '../screens/FormularioManutencao';
 import { Configuracoes } from '../screens/Configuracoes';
 import { CadastroMoto } from '../screens/CadastroMoto';
+import { LoginScreen } from '../screens/LoginScreen';
+import { RegisterScreen } from '../screens/RegisterScreen';
 import { Moto } from '../types';
 
 export type RootStackParamList = {
   Home: undefined;
   Motos: undefined;
   Configuracoes: undefined;
+};
+
+export type AuthStackParamList = {
+  Login: undefined;
+  Register: undefined;
 };
 
 export type HomeStackParamList = {
@@ -34,6 +42,7 @@ export type MotosStackParamList = {
 
 const HomeStackNavigator = createNativeStackNavigator<HomeStackParamList>();
 const MotosStackNavigator = createNativeStackNavigator<MotosStackParamList>();
+const AuthStackNavigator = createNativeStackNavigator<AuthStackParamList>();
 const Tab = createBottomTabNavigator<RootStackParamList>();
 
 const HomeStack = () => {
@@ -114,8 +123,65 @@ const MotosStack = () => {
   );
 };
 
+const AuthStack = () => {
+  const { theme } = useTheme();
+  
+  return (
+    <AuthStackNavigator.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: theme.colors.background,
+        },
+        headerTintColor: theme.colors.text.primary,
+        headerTitleStyle: {
+          color: theme.colors.text.primary,
+        },
+      }}
+    >
+      <AuthStackNavigator.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{ 
+          title: 'Login',
+          headerShown: false
+        }}
+      />
+      <AuthStackNavigator.Screen
+        name="Register"
+        component={RegisterScreen}
+        options={{ 
+          title: 'Cadastro',
+          headerShown: false
+        }}
+      />
+    </AuthStackNavigator.Navigator>
+  );
+};
+
 export const Navigation = () => {
   const { theme } = useTheme();
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <View style={{ 
+        flex: 1, 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        backgroundColor: theme.colors.background 
+      }}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
+  }
+
+  if (!user) {
+    return (
+      <NavigationContainer>
+        <AuthStack />
+      </NavigationContainer>
+    );
+  }
   
   return (
     <NavigationContainer>

@@ -6,10 +6,13 @@ import {
   TouchableOpacity,
   Alert,
   Switch,
+  ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Button } from '../components/Button';
 
 const filiais = [
   'São Paulo - Centro',
@@ -21,6 +24,7 @@ const filiais = [
 
 export const Configuracoes = () => {
   const { theme, toggleTheme } = useTheme();
+  const { user, logout } = useAuth();
   const [filialSelecionada, setFilialSelecionada] = useState<string>('');
 
   useEffect(() => {
@@ -49,9 +53,44 @@ export const Configuracoes = () => {
     }
   };
 
+  const handleLogout = () => {
+    Alert.alert(
+      'Sair',
+      'Tem certeza que deseja sair da sua conta?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Sair',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await logout();
+            } catch (error) {
+              Alert.alert('Erro', 'Não foi possível fazer logout');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Text style={[styles.titulo, { color: theme.colors.text.primary }]}>Configurações</Text>
+      
+      {/* Informações do usuário */}
+      <View style={[styles.secao, { backgroundColor: theme.colors.card }]}>
+        <Text style={[styles.subtitulo, { color: theme.colors.text.primary }]}>Usuário</Text>
+        <Text style={[styles.userInfo, { color: theme.colors.text.secondary }]}>
+          {user?.displayName || 'Usuário'}
+        </Text>
+        <Text style={[styles.userInfo, { color: theme.colors.text.secondary }]}>
+          {user?.email}
+        </Text>
+      </View>
       
       {/* Seção de Tema */}
       <View style={[styles.secao, { backgroundColor: theme.colors.card }]}>
@@ -106,19 +145,29 @@ export const Configuracoes = () => {
           ))}
         </View>
       </View>
-    </View>
+
+      {/* Botão de Logout */}
+      <View style={styles.logoutSection}>
+        <Button
+          title="Sair da Conta"
+          onPress={handleLogout}
+          variant="secondary"
+        />
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
   },
   titulo: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 24,
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   subtitulo: {
     fontSize: 18,
@@ -129,6 +178,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     marginBottom: 16,
+    marginHorizontal: 16,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -163,5 +213,16 @@ const styles = StyleSheet.create({
   filialTexto: {
     fontSize: 16,
     fontWeight: '500',
+  },
+  userInfo: {
+    fontSize: 16,
+    fontWeight: '400',
+    marginBottom: 4,
+  },
+  logoutSection: {
+    marginTop: 32,
+    marginBottom: 32,
+    alignItems: 'center',
+    paddingHorizontal: 16,
   },
 }); 

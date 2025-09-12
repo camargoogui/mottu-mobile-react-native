@@ -4,6 +4,7 @@ import { Navigation } from './src/navigation';
 import * as SplashScreen from 'expo-splash-screen';
 import { StorageService } from './src/services/storage';
 import { ThemeProvider } from './src/contexts/ThemeContext';
+import { AuthProvider } from './src/contexts/AuthContext';
 
 // Mantém o splash screen visível enquanto inicializamos
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -62,9 +63,11 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <View style={styles.appContainer} onLayout={onLayoutRootView}>
-        <Navigation />
-      </View>
+      <AuthProvider>
+        <View style={styles.appContainer} onLayout={onLayoutRootView}>
+          <Navigation />
+        </View>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
