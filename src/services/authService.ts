@@ -6,6 +6,7 @@ import {
   updateProfile
 } from 'firebase/auth';
 import { auth } from './firebase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface AuthUser {
   uid: string;
@@ -25,6 +26,13 @@ export const AuthService = {
         displayName: displayName
       });
       
+      // Salvar dados do usuário no AsyncStorage para persistência
+      await this.saveUserToStorage({
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName
+      });
+      
       return {
         uid: user.uid,
         email: user.email,
@@ -41,6 +49,13 @@ export const AuthService = {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       
+      // Salvar dados do usuário no AsyncStorage para persistência
+      await this.saveUserToStorage({
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName
+      });
+      
       return {
         uid: user.uid,
         email: user.email,
@@ -55,6 +70,8 @@ export const AuthService = {
   async logout(): Promise<void> {
     try {
       await signOut(auth);
+      // Remover dados do usuário do AsyncStorage
+      await AsyncStorage.removeItem('user');
     } catch (error: any) {
       throw new Error('Erro ao fazer logout');
     }
@@ -72,6 +89,26 @@ export const AuthService = {
       email: user.email,
       displayName: user.displayName
     };
+  },
+
+  // Salvar dados do usuário no AsyncStorage
+  async saveUserToStorage(user: AuthUser): Promise<void> {
+    try {
+      await AsyncStorage.setItem('user', JSON.stringify(user));
+    } catch (error) {
+      console.warn('Erro ao salvar usuário no storage:', error);
+    }
+  },
+
+  // Carregar dados do usuário do AsyncStorage
+  async loadUserFromStorage(): Promise<AuthUser | null> {
+    try {
+      const userData = await AsyncStorage.getItem('user');
+      return userData ? JSON.parse(userData) : null;
+    } catch (error) {
+      console.warn('Erro ao carregar usuário do storage:', error);
+      return null;
+    }
   },
 
   // Mapear códigos de erro do Firebase para mensagens em português

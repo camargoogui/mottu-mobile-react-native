@@ -22,11 +22,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Carregar usuário do storage primeiro
+    const loadInitialUser = async () => {
+      try {
+        const storedUser = await AuthService.loadUserFromStorage();
+        if (storedUser) {
+          setUser(storedUser);
+        }
+      } catch (error) {
+        console.warn('Erro ao carregar usuário do storage:', error);
+      }
+      setLoading(false);
+    };
+
+    loadInitialUser();
+
+    // Escutar mudanças no estado de autenticação
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser: User | null) => {
       if (firebaseUser) {
-        setUser(AuthService.convertToAuthUser(firebaseUser));
+        const authUser = AuthService.convertToAuthUser(firebaseUser);
+        setUser(authUser);
+        // Salvar no storage quando o usuário fizer login
+        AuthService.saveUserToStorage(authUser);
       } else {
         setUser(null);
+        // Limpar storage quando fizer logout
+        AuthService.logout();
       }
       setLoading(false);
     });

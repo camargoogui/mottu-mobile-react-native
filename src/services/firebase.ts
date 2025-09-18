@@ -1,8 +1,9 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+// Firebase Web SDK configuration (compatível com Expo)
+import { initializeApp, getApps } from 'firebase/app';
+import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Your web app's Firebase configuration
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCCoEUVWUPrOFU1fxtkbsG0zBzZekTu_Oc",
   authDomain: "mottu-challenge-mobile.firebaseapp.com",
@@ -13,9 +14,24 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+let app;
+if (getApps().length === 0) {
+  app = initializeApp(firebaseConfig);
+} else {
+  app = getApps()[0];
+}
 
-// Initialize Auth
-export const auth = getAuth(app);
+// Initialize Auth with AsyncStorage persistence
+let auth;
+try {
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage)
+  });
+} catch (error) {
+  // Se já foi inicializado, usa a instância existente
+  auth = getAuth(app);
+}
 
+// Export auth instance
+export { auth };
 export default app;
