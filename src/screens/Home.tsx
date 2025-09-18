@@ -35,13 +35,13 @@ export const Home = ({ navigation }: Props) => {
       >
         <Image source={{ uri: BANNER_URL }} style={bannerStyle} resizeMode="cover" />
         <View style={styles.header}>
-          <Text style={[styles.title, { color: theme.colors.text.primary }]}>Mottu Challenge</Text>
-          <Text style={[styles.subtitle, { color: theme.colors.text.secondary }]}>Gestão Inteligente de Pátio</Text>
+          <Text style={[styles.title, { color: theme.colors.label }]}>Mottu Challenge</Text>
+          <Text style={[styles.subtitle, { color: theme.colors.secondaryLabel }]}>Gestão Inteligente de Pátio</Text>
         </View>
 
         <Card style={styles.card}>
-          <Text style={[styles.cardTitle, { color: theme.colors.text.primary }]}>Bem-vindo!</Text>
-          <Text style={[styles.cardText, { color: theme.colors.text.secondary }]}>
+          <Text style={[styles.cardTitle, { color: theme.colors.label }]}>Bem-vindo!</Text>
+          <Text style={[styles.cardText, { color: theme.colors.secondaryLabel }]}>
             Gerencie suas motos e vagas do pátio de forma inteligente. Acompanhe o status do pátio em tempo real, cadastre novas motos e mantenha tudo sob controle com praticidade e segurança.
           </Text>
         </Card>
@@ -105,26 +105,34 @@ const styles = StyleSheet.create({
     marginVertical: 24,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 28,
+    fontWeight: '400',
+    lineHeight: 34,
+    letterSpacing: 0.36,
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '400',
+    lineHeight: 22,
+    letterSpacing: -0.41,
     opacity: 0.7,
   },
   card: {
     marginBottom: 24,
   },
   cardTitle: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 22,
+    fontWeight: '400',
+    lineHeight: 28,
+    letterSpacing: 0.35,
     marginBottom: 8,
   },
   cardText: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '400',
+    lineHeight: 22,
+    letterSpacing: -0.41,
   },
   statsContainer: {
     flexDirection: 'row',

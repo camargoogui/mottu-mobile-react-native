@@ -51,12 +51,22 @@ const HomeStack = () => {
   return (
     <HomeStackNavigator.Navigator
       screenOptions={{
+        // Apple HIG Navigation Bar
         headerStyle: {
           backgroundColor: theme.colors.background,
+          borderBottomWidth: 0.5,
+          borderBottomColor: theme.colors.separator,
         },
-        headerTintColor: theme.colors.text.primary,
+        headerTintColor: theme.colors.primary,
         headerTitleStyle: {
-          color: theme.colors.text.primary,
+          ...theme.typography.headline,
+          color: theme.colors.label,
+        },
+        headerBackTitleVisible: false, // Apple HIG standard
+        headerLargeTitle: true, // Apple HIG large titles
+        headerLargeTitleStyle: {
+          ...theme.typography.largeTitle,
+          color: theme.colors.label,
         },
       }}
     >
@@ -80,12 +90,22 @@ const MotosStack = () => {
   return (
     <MotosStackNavigator.Navigator
       screenOptions={{
+        // Apple HIG Navigation Bar
         headerStyle: {
           backgroundColor: theme.colors.background,
+          borderBottomWidth: 0.5,
+          borderBottomColor: theme.colors.separator,
         },
-        headerTintColor: theme.colors.text.primary,
+        headerTintColor: theme.colors.primary,
         headerTitleStyle: {
-          color: theme.colors.text.primary,
+          ...theme.typography.headline,
+          color: theme.colors.label,
+        },
+        headerBackTitleVisible: false, // Apple HIG standard
+        headerLargeTitle: true, // Apple HIG large titles
+        headerLargeTitleStyle: {
+          ...theme.typography.largeTitle,
+          color: theme.colors.label,
         },
       }}
     >
@@ -129,12 +149,22 @@ const AuthStack = () => {
   return (
     <AuthStackNavigator.Navigator
       screenOptions={{
+        // Apple HIG Navigation Bar
         headerStyle: {
           backgroundColor: theme.colors.background,
+          borderBottomWidth: 0.5,
+          borderBottomColor: theme.colors.separator,
         },
-        headerTintColor: theme.colors.text.primary,
+        headerTintColor: theme.colors.primary,
         headerTitleStyle: {
-          color: theme.colors.text.primary,
+          ...theme.typography.headline,
+          color: theme.colors.label,
+        },
+        headerBackTitleVisible: false, // Apple HIG standard
+        headerLargeTitle: true, // Apple HIG large titles
+        headerLargeTitleStyle: {
+          ...theme.typography.largeTitle,
+          color: theme.colors.label,
         },
       }}
     >
@@ -187,18 +217,34 @@ export const Navigation = () => {
     <NavigationContainer>
       <Tab.Navigator
         screenOptions={{
+          // Apple HIG Tab Bar
           tabBarActiveTintColor: theme.colors.primary,
-          tabBarInactiveTintColor: theme.colors.text.secondary,
+          tabBarInactiveTintColor: theme.colors.secondaryLabel,
           tabBarStyle: {
             backgroundColor: theme.colors.background,
-            borderTopColor: theme.colors.border,
+            borderTopWidth: 0.5,
+            borderTopColor: theme.colors.separator,
+            paddingBottom: theme.spacing.sm,
+            paddingTop: theme.spacing.sm,
+            height: 83, // Apple HIG standard tab bar height
           },
+          tabBarLabelStyle: {
+            ...theme.typography.caption1,
+            marginTop: theme.spacing.xs,
+          },
+          tabBarIconStyle: {
+            marginTop: theme.spacing.xs,
+          },
+          // Apple HIG Navigation Bar
           headerStyle: {
             backgroundColor: theme.colors.background,
+            borderBottomWidth: 0.5,
+            borderBottomColor: theme.colors.separator,
           },
-          headerTintColor: theme.colors.text.primary,
+          headerTintColor: theme.colors.primary,
           headerTitleStyle: {
-            color: theme.colors.text.primary,
+            ...theme.typography.headline,
+            color: theme.colors.label,
           },
         }}
       >

@@ -71,16 +71,16 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
           color={theme.colors.primary} 
           style={styles.logo}
         />
-        <Text style={[styles.title, { color: theme.colors.text.primary }]}>
+        <Text style={[styles.title, { color: theme.colors.label }]}>
           Mottu Challenge
         </Text>
-        <Text style={[styles.subtitle, { color: theme.colors.text.secondary }]}>
+        <Text style={[styles.subtitle, { color: theme.colors.secondaryLabel }]}>
           Gestão Inteligente de Pátio
         </Text>
       </View>
 
       <Card style={styles.formCard}>
-        <Text style={[styles.formTitle, { color: theme.colors.text.primary }]}>
+        <Text style={[styles.formTitle, { color: theme.colors.label }]}>
           Entrar
         </Text>
 
@@ -157,21 +157,27 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
+    fontSize: 34,
+    fontWeight: '400',
+    lineHeight: 41,
+    letterSpacing: 0.37,
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 18,
-    fontWeight: '500',
+    fontSize: 17,
+    fontWeight: '400',
+    lineHeight: 22,
+    letterSpacing: -0.41,
     textAlign: 'center',
   },
   formCard: {
     marginBottom: 24,
   },
   formTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontWeight: '400',
+    lineHeight: 34,
+    letterSpacing: 0.36,
     textAlign: 'center',
     marginBottom: 24,
   },
