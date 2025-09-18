@@ -43,22 +43,32 @@ export const Card = ({
     switch (variant) {
       case 'elevated':
         baseStyle.backgroundColor = theme.colors.background;
-        // iOS shadow system
+        // iOS shadow system - melhorado apenas para modo escuro
         baseStyle.shadowColor = theme.colors.label;
         baseStyle.shadowOffset = {
           width: 0,
-          height: 1,
+          height: theme.mode === 'dark' ? 2 : 1,
         };
-        baseStyle.shadowOpacity = theme.mode === 'light' ? 0.1 : 0.3;
-        baseStyle.shadowRadius = 3;
-        baseStyle.elevation = 2; // Android equivalent
+        baseStyle.shadowOpacity = theme.mode === 'light' ? 0.1 : 0.4;
+        baseStyle.shadowRadius = theme.mode === 'dark' ? 4 : 3;
+        baseStyle.elevation = theme.mode === 'dark' ? 4 : 2; // Android equivalent
+        // Adicionar borda sutil apenas no modo escuro para melhor visibilidade
+        if (theme.mode === 'dark') {
+          baseStyle.borderWidth = 0.5;
+          baseStyle.borderColor = theme.colors.separator;
+        }
         break;
       case 'filled':
         baseStyle.backgroundColor = theme.colors.secondaryBackground;
+        // Adicionar borda sutil apenas no modo escuro
+        if (theme.mode === 'dark') {
+          baseStyle.borderWidth = 0.5;
+          baseStyle.borderColor = theme.colors.separator;
+        }
         break;
       case 'outlined':
         baseStyle.backgroundColor = theme.colors.background;
-        baseStyle.borderWidth = 1;
+        baseStyle.borderWidth = theme.mode === 'dark' ? 1.5 : 1;
         baseStyle.borderColor = theme.colors.separator;
         break;
     }

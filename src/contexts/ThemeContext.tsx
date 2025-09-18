@@ -371,10 +371,10 @@ const darkTheme: Theme = {
     systemTeal: '#64D2FF',
     systemYellow: '#FFD60A',
     
-    // Background Colors (Dark)
+    // Background Colors (Dark) - Melhorado para visibilidade
     background: '#000000',        // iOS Black
-    secondaryBackground: '#1C1C1E', // iOS Grouped Background (Dark)
-    tertiaryBackground: '#2C2C2E', // iOS Secondary Grouped Background (Dark)
+    secondaryBackground: '#1A1A1C', // iOS Grouped Background (Dark) - mais claro
+    tertiaryBackground: '#2A2A2C', // iOS Secondary Grouped Background (Dark) - mais claro
     
     // Fill Colors (Dark)
     fill: '#78788050',           // iOS Fill (Dark) (31% opacity)
@@ -388,9 +388,9 @@ const darkTheme: Theme = {
     tertiaryLabel: '#EBEBF54D',  // iOS Tertiary Label (Dark) (30% opacity)
     quaternaryLabel: '#EBEBF52E', // iOS Quaternary Label (Dark) (18% opacity)
     
-    // Separator Colors (Dark)
-    separator: '#38383A',        // iOS Separator (Dark)
-    opaqueSeparator: '#38383A',  // iOS Opaque Separator (Dark)
+    // Separator Colors (Dark) - Melhorado para visibilidade
+    separator: '#48484A',        // iOS Separator (Dark) - mais claro
+    opaqueSeparator: '#48484A',  // iOS Opaque Separator (Dark) - mais claro
     
     // Other Colors (Dark)
     link: '#0A84FF',             // iOS Link (Dark)
@@ -402,14 +402,14 @@ const darkTheme: Theme = {
     warning: '#FF9F0A',          // iOS Orange (Dark)
     info: '#0A84FF',             // iOS Blue (Dark)
     
-    // Legacy support
-    card: '#1C1C1E',
+    // Legacy support - Melhorado para visibilidade
+    card: '#1A1A1C',
     text: {
       primary: '#FFFFFF',
       secondary: '#EBEBF599',
       light: '#FFFFFF',
     },
-    border: '#38383A',
+    border: '#48484A',
   },
   // Apple HIG Spacing System (8pt grid) - same as light
   spacing: {
@@ -517,12 +517,12 @@ const darkTheme: Theme = {
   layout: {
     container: {
       flex: 1,
-      backgroundColor: '#000000',
+      backgroundColor: '#FFFFFF',
     },
     card: {
       padding: 16,
       borderRadius: 12,
-      backgroundColor: '#1C1C1E',
+      backgroundColor: '#F2F2F7',
     },
   },
 };
