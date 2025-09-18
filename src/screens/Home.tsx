@@ -65,11 +65,20 @@ export const Home = ({ navigation }: Props) => {
             onPress={() => navigation.navigate('MapaPatio')}
             variant="primary"
           />
-          <Button
-            title="Ver Lista de Motos"
-            onPress={() => navigation.getParent()?.navigate('Motos')}
-            variant="secondary"
-          />
+          <View style={styles.buttonRow}>
+            <Button
+              title="Lista de Motos"
+              onPress={() => navigation.getParent()?.navigate('Motos')}
+              variant="secondary"
+              style={styles.halfButton}
+            />
+            <Button
+              title="Gerenciar Filiais"
+              onPress={() => navigation.getParent()?.navigate('Filiais')}
+              variant="tertiary"
+              style={styles.halfButton}
+            />
+          </View>
         </View>
 
         <Card style={styles.tipsCard}>
@@ -159,6 +168,13 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     gap: 16,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  halfButton: {
+    flex: 1,
   },
   tipsCard: {
     marginTop: 24,

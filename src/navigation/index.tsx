@@ -16,11 +16,14 @@ import { Configuracoes } from '../screens/Configuracoes';
 import { CadastroMoto } from '../screens/CadastroMoto';
 import { LoginScreen } from '../screens/LoginScreen';
 import { RegisterScreen } from '../screens/RegisterScreen';
-import { Moto } from '../types';
+import { FilialListScreen } from '../screens/Filiais/FilialListScreen';
+import { FilialFormScreen } from '../screens/Filiais/FilialFormScreen';
+import { Moto, Filial } from '../types';
 
 export type RootStackParamList = {
   Home: undefined;
   Motos: undefined;
+  Filiais: undefined;
   Configuracoes: undefined;
 };
 
@@ -42,8 +45,14 @@ export type MotosStackParamList = {
   CadastroMoto: undefined;
 };
 
+export type FiliaisStackParamList = {
+  FilialList: undefined;
+  FilialForm: { filial?: Filial };
+};
+
 const HomeStackNavigator = createNativeStackNavigator<HomeStackParamList>();
 const MotosStackNavigator = createNativeStackNavigator<MotosStackParamList>();
+const FiliaisStackNavigator = createNativeStackNavigator<FiliaisStackParamList>();
 const AuthStackNavigator = createNativeStackNavigator<AuthStackParamList>();
 const Tab = createBottomTabNavigator<RootStackParamList>();
 
@@ -147,6 +156,55 @@ const MotosStack = () => {
         options={{ title: 'Manutenções' }}
       />
     </MotosStackNavigator.Navigator>
+  );
+};
+
+const FiliaisStack = () => {
+  const { theme } = useTheme();
+  
+  return (
+    <FiliaisStackNavigator.Navigator
+      screenOptions={{
+        // Apple HIG Navigation Bar
+        headerStyle: {
+          backgroundColor: theme.colors.background,
+          borderBottomWidth: 0.5,
+          borderBottomColor: theme.colors.separator,
+        },
+        headerTintColor: theme.colors.primary,
+        headerTitleStyle: {
+          ...theme.typography.headline,
+          color: theme.colors.label,
+        },
+        headerBackTitleVisible: false, // Apple HIG standard
+        headerLargeTitle: true, // Apple HIG large titles
+        headerLargeTitleStyle: {
+          ...theme.typography.largeTitle,
+          color: theme.colors.label,
+        },
+      }}
+    >
+      <FiliaisStackNavigator.Screen
+        name="FilialList"
+        component={FilialListScreen}
+        options={({ navigation }) => ({
+          title: 'Filiais',
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => navigation.navigate('FilialForm', {})}
+              style={{ marginRight: 16 }}
+            >
+              <MaterialIcons name="add" size={24} color={theme.colors.primary} />
+            </TouchableOpacity>
+          ),
+        })}
+      />
+      <FiliaisStackNavigator.Screen
+        name="FilialForm"
+        component={FilialFormScreen}
+        options={{ title: 'Filial' }}
+      />
+    </FiliaisStackNavigator.Navigator>
   );
 };
 
@@ -274,6 +332,17 @@ export const Navigation = () => {
             title: 'Motos',
             tabBarIcon: ({ color, size }) => (
               <MaterialIcons name="motorcycle" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Filiais"
+          component={FiliaisStack}
+          options={{
+            headerShown: false,
+            title: 'Filiais',
+            tabBarIcon: ({ color, size }) => (
+              <MaterialIcons name="business" size={size} color={color} />
             ),
           }}
         />

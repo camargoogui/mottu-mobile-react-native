@@ -103,4 +103,20 @@ export interface Manutencao {
 
 export interface Configuracoes {
   filial: string;
+}
+
+// Interface para Filiais da API
+export interface Filial {
+  id: string;
+  nome: string;
+  endereco: string;
+  cidade: string;
+  estado: string;
+  cep: string;
+  telefone?: string;
+  email?: string;
+  coordenadas?: Coordenadas;
+  ativa: boolean;
+  dataCriacao: string;
+  dataAtualizacao?: string;
 } 

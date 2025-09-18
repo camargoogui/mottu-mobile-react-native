@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MotosStackParamList } from '../navigation';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { Input } from '../components/Input';
 import { StorageService } from '../services/storage';
+import { MotoService } from '../services/motoService';
 import { useTheme } from '../contexts/ThemeContext';
 
 type Props = NativeStackScreenProps<MotosStackParamList, 'CadastroMoto'>;
@@ -16,6 +17,7 @@ export const CadastroMoto = ({ navigation }: Props) => {
   const [modelo, setModelo] = useState('');
   const [placa, setPlaca] = useState('');
   const [vaga, setVaga] = useState('');
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const validate = () => {
@@ -43,18 +45,49 @@ export const CadastroMoto = ({ navigation }: Props) => {
   const handleSalvar = async () => {
     if (!validate()) return;
 
-    const novaMoto = {
-      id: Date.now().toString(),
-      condutor,
-      modelo,
-      placa,
-      vaga,
-      status: 'disponível' as 'disponível',
-      localizacao: { latitude: 0, longitude: 0 },
-    };
+    setLoading(true);
+    try {
+      const novaMoto = {
+        condutor,
+        modelo,
+        placa,
+        vaga,
+        localizacao: { latitude: 0, longitude: 0 },
+      };
 
-    await StorageService.saveMoto(novaMoto);
-    navigation.goBack();
+      // Tenta salvar na API primeiro
+      try {
+        await MotoService.create(novaMoto);
+        Alert.alert('Sucesso', 'Moto cadastrada com sucesso!', [
+          { text: 'OK', onPress: () => navigation.goBack() }
+        ]);
+      } catch (apiError) {
+        console.warn('Erro ao salvar na API, salvando localmente:', apiError);
+        
+        // Fallback para salvamento local
+        const motoLocal = {
+          id: Date.now().toString(),
+          condutor,
+          modelo,
+          placa,
+          vaga,
+          status: 'disponível' as 'disponível',
+          localizacao: { latitude: 0, longitude: 0 },
+        };
+
+        await StorageService.saveMoto(motoLocal);
+        Alert.alert(
+          'Aviso', 
+          'Não foi possível conectar com o servidor. A moto foi salva localmente.',
+          [{ text: 'OK', onPress: () => navigation.goBack() }]
+        );
+      }
+    } catch (error) {
+      console.error('Erro ao salvar moto:', error);
+      Alert.alert('Erro', 'Não foi possível cadastrar a moto. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -111,10 +144,20 @@ export const CadastroMoto = ({ navigation }: Props) => {
         )}
 
         <Button
-          title="Salvar Moto"
+          title={loading ? "Salvando..." : "Salvar Moto"}
           onPress={handleSalvar}
           variant="primary"
+          disabled={loading}
         />
+        
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="small" color={theme.colors.primary} />
+            <Text style={[styles.loadingText, { color: theme.colors.text.secondary }]}>
+              Cadastrando moto...
+            </Text>
+          </View>
+        )}
       </Card>
     </ScrollView>
   );
@@ -169,5 +212,15 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: '700',
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+  },
+  loadingText: {
+    marginLeft: 8,
+    fontSize: 14,
   },
 }); 
