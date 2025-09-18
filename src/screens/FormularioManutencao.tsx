@@ -8,6 +8,7 @@ import { Input } from '../components/Input';
 import { Picker } from '@react-native-picker/picker';
 import { TipoManutencao } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
+import { StorageService } from '../services/storage';
 
 type Props = NativeStackScreenProps<MotosStackParamList, 'FormularioManutencao'>;
 
@@ -50,7 +51,7 @@ export const FormularioManutencao = ({ route, navigation }: Props) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSalvar = () => {
+  const handleSalvar = async () => {
     if (!validate()) return;
 
     const manutencao = {
@@ -62,9 +63,14 @@ export const FormularioManutencao = ({ route, navigation }: Props) => {
       observacoes,
     };
 
-    console.log('Manutenção registrada:', manutencao);
-    Alert.alert('Sucesso', 'Manutenção registrada com sucesso!');
-    navigation.goBack();
+    try {
+      await StorageService.saveManutencao(manutencao);
+      Alert.alert('Sucesso', 'Manutenção registrada com sucesso!');
+      navigation.goBack();
+    } catch (error) {
+      console.error('Erro ao salvar manutenção:', error);
+      Alert.alert('Erro', 'Erro ao salvar manutenção. Tente novamente.');
+    }
   };
 
   return (

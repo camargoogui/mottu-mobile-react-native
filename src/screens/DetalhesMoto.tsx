@@ -54,11 +54,19 @@ export const DetalhesMoto = ({ route, navigation }: Props) => {
         <Button
           title="Registrar Manutenção"
           onPress={() => navigation.navigate('FormularioManutencao', { motoId: moto.id })}
+          style={styles.button}
+        />
+        <Button
+          title="Ver Manutenções"
+          onPress={() => navigation.navigate('ListaManutencoes')}
+          variant="tertiary"
+          style={styles.button}
         />
         <Button
           title="Voltar"
           onPress={() => navigation.goBack()}
           variant="secondary"
+          style={styles.button}
         />
       </View>
     </ScrollView>
@@ -110,6 +118,9 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 24,
-    gap: 16,
+    gap: 12,
+  },
+  button: {
+    marginBottom: 8,
   },
 }); 

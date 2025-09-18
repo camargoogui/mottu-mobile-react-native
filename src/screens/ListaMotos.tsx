@@ -54,6 +54,13 @@ export const ListaMotos = ({ navigation }: Props) => {
           title="Cadastrar Moto"
           onPress={() => navigation.navigate('CadastroMoto')}
           variant="secondary"
+          style={styles.button}
+        />
+        <Button
+          title="Ver Manutenções"
+          onPress={() => navigation.navigate('ListaManutencoes')}
+          variant="tertiary"
+          style={styles.button}
         />
       </View>
       <FlatList
@@ -81,8 +88,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   buttonContainer: {
-    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 16,
+    gap: 12,
+  },
+  button: {
+    flex: 1,
   },
   list: {
     paddingBottom: 16,

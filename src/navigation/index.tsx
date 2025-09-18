@@ -11,6 +11,7 @@ import { MapaPatio } from '../screens/MapaPatio';
 import { ListaMotos } from '../screens/ListaMotos';
 import { DetalhesMoto } from '../screens/DetalhesMoto';
 import { FormularioManutencao } from '../screens/FormularioManutencao';
+import { ListaManutencoes } from '../screens/ListaManutencoes';
 import { Configuracoes } from '../screens/Configuracoes';
 import { CadastroMoto } from '../screens/CadastroMoto';
 import { LoginScreen } from '../screens/LoginScreen';
@@ -37,6 +38,7 @@ export type MotosStackParamList = {
   ListaMotosScreen: undefined;
   DetalhesMoto: { moto: Moto };
   FormularioManutencao: { motoId: string };
+  ListaManutencoes: undefined;
   CadastroMoto: undefined;
 };
 
@@ -138,6 +140,11 @@ const MotosStack = () => {
         name="CadastroMoto"
         component={CadastroMoto}
         options={{ title: 'Cadastrar Moto' }}
+      />
+      <MotosStackNavigator.Screen
+        name="ListaManutencoes"
+        component={ListaManutencoes}
+        options={{ title: 'Manutenções' }}
       />
     </MotosStackNavigator.Navigator>
   );

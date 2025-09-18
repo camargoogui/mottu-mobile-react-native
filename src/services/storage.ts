@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Moto, Vaga } from '../types';
+import { Moto, Vaga, Manutencao } from '../types';
 
 const MOTOS_KEY = '@motos';
 const VAGAS_KEY = '@vagas';
+const MANUTENCOES_KEY = '@manutencoes';
 
 export const StorageService = {
   // Motos
@@ -54,6 +55,47 @@ export const StorageService = {
       await AsyncStorage.setItem(VAGAS_KEY, JSON.stringify(newVagas));
     } catch (error) {
       console.error('Erro ao atualizar vaga:', error);
+    }
+  },
+
+  // Manutenções
+  async getManutencoes(): Promise<Manutencao[]> {
+    try {
+      const data = await AsyncStorage.getItem(MANUTENCOES_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch (error) {
+      console.error('Erro ao buscar manutenções:', error);
+      return [];
+    }
+  },
+
+  async saveManutencao(manutencao: Manutencao): Promise<void> {
+    try {
+      const manutencoes = await this.getManutencoes();
+      const newManutencoes = [...manutencoes, manutencao];
+      await AsyncStorage.setItem(MANUTENCOES_KEY, JSON.stringify(newManutencoes));
+    } catch (error) {
+      console.error('Erro ao salvar manutenção:', error);
+    }
+  },
+
+  async getManutencoesByMotoId(motoId: string): Promise<Manutencao[]> {
+    try {
+      const manutencoes = await this.getManutencoes();
+      return manutencoes.filter(m => m.motoId === motoId);
+    } catch (error) {
+      console.error('Erro ao buscar manutenções da moto:', error);
+      return [];
+    }
+  },
+
+  async deleteManutencao(manutencaoId: string): Promise<void> {
+    try {
+      const manutencoes = await this.getManutencoes();
+      const newManutencoes = manutencoes.filter(m => m.id !== manutencaoId);
+      await AsyncStorage.setItem(MANUTENCOES_KEY, JSON.stringify(newManutencoes));
+    } catch (error) {
+      console.error('Erro ao deletar manutenção:', error);
     }
   },
 
