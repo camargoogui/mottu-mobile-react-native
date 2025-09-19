@@ -14,10 +14,12 @@ import { FormularioManutencao } from '../screens/FormularioManutencao';
 import { ListaManutencoes } from '../screens/ListaManutencoes';
 import { Configuracoes } from '../screens/Configuracoes';
 import { CadastroMoto } from '../screens/CadastroMoto';
+import { EdicaoMoto } from '../screens/EdicaoMoto';
 import { LoginScreen } from '../screens/LoginScreen';
 import { RegisterScreen } from '../screens/RegisterScreen';
-import { FilialListScreen } from '../screens/Filiais/FilialListScreen';
-import { FilialFormScreen } from '../screens/Filiais/FilialFormScreen';
+import { FilialListScreen } from '../screens/FilialListScreen';
+import { FilialFormScreen } from '../screens/FilialFormScreen';
+import { MotosFilialScreen } from '../screens/MotosFilialScreen';
 import { Moto, Filial } from '../types';
 
 export type RootStackParamList = {
@@ -40,6 +42,7 @@ export type HomeStackParamList = {
 export type MotosStackParamList = {
   ListaMotosScreen: undefined;
   DetalhesMoto: { moto: Moto };
+  EdicaoMoto: { moto: Moto };
   FormularioManutencao: { motoId: string };
   ListaManutencoes: undefined;
   CadastroMoto: undefined;
@@ -48,6 +51,7 @@ export type MotosStackParamList = {
 export type FiliaisStackParamList = {
   FilialList: undefined;
   FilialForm: { filial?: Filial };
+  MotosFilial: { filial: Filial };
 };
 
 const HomeStackNavigator = createNativeStackNavigator<HomeStackParamList>();
@@ -65,18 +69,11 @@ const HomeStack = () => {
         // Apple HIG Navigation Bar
         headerStyle: {
           backgroundColor: theme.colors.background,
-          borderBottomWidth: 0.5,
-          borderBottomColor: theme.colors.separator,
         },
         headerTintColor: theme.colors.primary,
         headerTitleStyle: {
-          ...theme.typography.headline,
-          color: theme.colors.label,
-        },
-        headerBackTitleVisible: false, // Apple HIG standard
-        headerLargeTitle: true, // Apple HIG large titles
-        headerLargeTitleStyle: {
-          ...theme.typography.largeTitle,
+          fontSize: theme.typography.headline.fontSize,
+          fontWeight: theme.typography.headline.fontWeight as any,
           color: theme.colors.label,
         },
       }}
@@ -104,18 +101,11 @@ const MotosStack = () => {
         // Apple HIG Navigation Bar
         headerStyle: {
           backgroundColor: theme.colors.background,
-          borderBottomWidth: 0.5,
-          borderBottomColor: theme.colors.separator,
         },
         headerTintColor: theme.colors.primary,
         headerTitleStyle: {
-          ...theme.typography.headline,
-          color: theme.colors.label,
-        },
-        headerBackTitleVisible: false, // Apple HIG standard
-        headerLargeTitle: true, // Apple HIG large titles
-        headerLargeTitleStyle: {
-          ...theme.typography.largeTitle,
+          fontSize: theme.typography.headline.fontSize,
+          fontWeight: theme.typography.headline.fontWeight as any,
           color: theme.colors.label,
         },
       }}
@@ -139,6 +129,11 @@ const MotosStack = () => {
         name="DetalhesMoto"
         component={DetalhesMoto}
         options={{ title: 'Detalhes da Moto' }}
+      />
+      <MotosStackNavigator.Screen
+        name="EdicaoMoto"
+        component={EdicaoMoto}
+        options={{ title: 'Editar Moto' }}
       />
       <MotosStackNavigator.Screen
         name="FormularioManutencao"
@@ -168,18 +163,11 @@ const FiliaisStack = () => {
         // Apple HIG Navigation Bar
         headerStyle: {
           backgroundColor: theme.colors.background,
-          borderBottomWidth: 0.5,
-          borderBottomColor: theme.colors.separator,
         },
         headerTintColor: theme.colors.primary,
         headerTitleStyle: {
-          ...theme.typography.headline,
-          color: theme.colors.label,
-        },
-        headerBackTitleVisible: false, // Apple HIG standard
-        headerLargeTitle: true, // Apple HIG large titles
-        headerLargeTitleStyle: {
-          ...theme.typography.largeTitle,
+          fontSize: theme.typography.headline.fontSize,
+          fontWeight: theme.typography.headline.fontWeight as any,
           color: theme.colors.label,
         },
       }}
@@ -204,6 +192,11 @@ const FiliaisStack = () => {
         component={FilialFormScreen}
         options={{ title: 'Filial' }}
       />
+      <FiliaisStackNavigator.Screen
+        name="MotosFilial"
+        component={MotosFilialScreen}
+        options={{ title: 'Motos da Filial' }}
+      />
     </FiliaisStackNavigator.Navigator>
   );
 };
@@ -217,18 +210,11 @@ const AuthStack = () => {
         // Apple HIG Navigation Bar
         headerStyle: {
           backgroundColor: theme.colors.background,
-          borderBottomWidth: 0.5,
-          borderBottomColor: theme.colors.separator,
         },
         headerTintColor: theme.colors.primary,
         headerTitleStyle: {
-          ...theme.typography.headline,
-          color: theme.colors.label,
-        },
-        headerBackTitleVisible: false, // Apple HIG standard
-        headerLargeTitle: true, // Apple HIG large titles
-        headerLargeTitleStyle: {
-          ...theme.typography.largeTitle,
+          fontSize: theme.typography.headline.fontSize,
+          fontWeight: theme.typography.headline.fontWeight as any,
           color: theme.colors.label,
         },
       }}
@@ -287,14 +273,13 @@ export const Navigation = () => {
           tabBarInactiveTintColor: theme.colors.secondaryLabel,
           tabBarStyle: {
             backgroundColor: theme.colors.background,
-            borderTopWidth: 0.5,
-            borderTopColor: theme.colors.separator,
             paddingBottom: theme.spacing.sm,
             paddingTop: theme.spacing.sm,
             height: 83, // Apple HIG standard tab bar height
           },
           tabBarLabelStyle: {
-            ...theme.typography.caption1,
+            fontSize: theme.typography.caption1.fontSize,
+            fontWeight: theme.typography.caption1.fontWeight as any,
             marginTop: theme.spacing.xs,
           },
           tabBarIconStyle: {
@@ -303,12 +288,11 @@ export const Navigation = () => {
           // Apple HIG Navigation Bar
           headerStyle: {
             backgroundColor: theme.colors.background,
-            borderBottomWidth: 0.5,
-            borderBottomColor: theme.colors.separator,
           },
           headerTintColor: theme.colors.primary,
           headerTitleStyle: {
-            ...theme.typography.headline,
+            fontSize: theme.typography.headline.fontSize,
+            fontWeight: theme.typography.headline.fontWeight as any,
             color: theme.colors.label,
           },
         }}

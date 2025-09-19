@@ -51,7 +51,11 @@ export const ListaManutencoes = ({ navigation }: Props) => {
             condutor: 'Moto não encontrada',
             modelo: 'N/A',
             placa: 'N/A',
-            status: 'disponível',
+            ano: 0,
+            cor: 'N/A',
+            filialId: 0,
+            filialNome: 'N/A',
+            status: 'disponível' as const,
             localizacao: { latitude: 0, longitude: 0 }
           }
         };

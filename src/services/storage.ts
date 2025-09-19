@@ -99,6 +99,27 @@ export const StorageService = {
     }
   },
 
+  // Limpar todos os dados
+  async clearAllData(): Promise<void> {
+    try {
+      await AsyncStorage.multiRemove([MOTOS_KEY, VAGAS_KEY, MANUTENCOES_KEY]);
+      console.log('✅ Todos os dados locais foram removidos');
+    } catch (error) {
+      console.error('Erro ao limpar dados:', error);
+    }
+  },
+
+  // Resetar dados (limpar + recriar dados mockados)
+  async resetAllData(): Promise<void> {
+    try {
+      await this.clearAllData();
+      await this.initializeMockData();
+      console.log('🔄 Dados resetados com sucesso');
+    } catch (error) {
+      console.error('Erro ao resetar dados:', error);
+    }
+  },
+
   // Inicialização com dados mockados
   async initializeMockData(): Promise<void> {
     // Gerar 80 vagas distribuídas em 10 colunas (A-J), 8 vagas por coluna

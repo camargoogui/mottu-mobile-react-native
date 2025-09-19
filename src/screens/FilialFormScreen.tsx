@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { FiliaisStackParamList } from '../../navigation';
-import { Button } from '../../components/Button';
-import { Card } from '../../components/Card';
-import { Input } from '../../components/Input';
-import { FilialService } from '../../services/filialService';
-import { Filial } from '../../types';
-import { useTheme } from '../../contexts/ThemeContext';
+import { FiliaisStackParamList } from '../navigation';
+import { Button } from '../components/Button';
+import { Card } from '../components/Card';
+import { Input } from '../components/Input';
+import { FilialService } from '../services/filialService';
+import { Filial } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
 
 type Props = NativeStackScreenProps<FiliaisStackParamList, 'FilialForm'>;
 
@@ -17,15 +17,15 @@ export const FilialFormScreen = ({ route, navigation }: Props) => {
   const isEditing = !!filial;
 
   const [nome, setNome] = useState(filial?.nome || '');
-  const [endereco, setEndereco] = useState(filial?.endereco || '');
+  const [endereco, setEndereco] = useState(filial?.logradouro || filial?.endereco?.split(',')[0]?.trim() || '');
+  const [numero, setNumero] = useState(filial?.numero || filial?.endereco?.split(',')[1]?.trim() || '');
+  const [complemento, setComplemento] = useState(filial?.complemento || '');
+  const [bairro, setBairro] = useState(filial?.bairro || 'Centro'); // Campo obrigatório da API
   const [cidade, setCidade] = useState(filial?.cidade || '');
   const [estado, setEstado] = useState(filial?.estado || '');
   const [cep, setCep] = useState(filial?.cep || '');
   const [telefone, setTelefone] = useState(filial?.telefone || '');
   const [email, setEmail] = useState(filial?.email || '');
-  const [latitude, setLatitude] = useState(filial?.coordenadas?.latitude?.toString() || '');
-  const [longitude, setLongitude] = useState(filial?.coordenadas?.longitude?.toString() || '');
-  const [altitude, setAltitude] = useState(filial?.coordenadas?.altitude?.toString() || '');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -38,36 +38,66 @@ export const FilialFormScreen = ({ route, navigation }: Props) => {
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
 
+    // Nome (obrigatório, 3-100 caracteres)
     if (!nome.trim()) {
-      newErrors.nome = 'Nome da filial é obrigatório';
+      newErrors.nome = '❌ Nome da filial é obrigatório';
+    } else if (nome.trim().length < 3) {
+      newErrors.nome = '❌ Nome deve ter pelo menos 3 caracteres';
+    } else if (nome.trim().length > 100) {
+      newErrors.nome = '❌ Nome deve ter no máximo 100 caracteres';
     }
+
+    // Logradouro (obrigatório, 3-100 caracteres)
     if (!endereco.trim()) {
-      newErrors.endereco = 'Endereço é obrigatório';
+      newErrors.endereco = '❌ Logradouro é obrigatório';
+    } else if (endereco.trim().length < 3) {
+      newErrors.endereco = '❌ Logradouro deve ter pelo menos 3 caracteres';
+    } else if (endereco.trim().length > 100) {
+      newErrors.endereco = '❌ Logradouro deve ter no máximo 100 caracteres';
     }
+
+    // Número (obrigatório, máximo 10 caracteres)
+    if (!numero.trim()) {
+      newErrors.numero = '❌ Número é obrigatório';
+    } else if (numero.trim().length > 10) {
+      newErrors.numero = '❌ Número deve ter no máximo 10 caracteres';
+    }
+
+    // Bairro (obrigatório)
+    if (!bairro.trim()) {
+      newErrors.bairro = '❌ Bairro é obrigatório';
+    }
+
+    // Cidade (obrigatória)
     if (!cidade.trim()) {
-      newErrors.cidade = 'Cidade é obrigatória';
+      newErrors.cidade = '❌ Cidade é obrigatória';
     }
+
+    // Estado (obrigatório, exatamente 2 caracteres)
     if (!estado.trim()) {
-      newErrors.estado = 'Estado é obrigatório';
-    } else if (estado.length !== 2) {
-      newErrors.estado = 'Estado deve ter 2 caracteres (ex: SP)';
+      newErrors.estado = '❌ Estado é obrigatório';
+    } else if (estado.trim().length !== 2) {
+      newErrors.estado = '❌ Estado deve ter exatamente 2 caracteres (ex: SP)';
     }
+
+    // CEP (obrigatório, exatamente 8 dígitos)
+    const cepNumeros = cep.replace(/\D/g, '');
     if (!cep.trim()) {
-      newErrors.cep = 'CEP é obrigatório';
-    } else if (!/^\d{5}-?\d{3}$/.test(cep)) {
-      newErrors.cep = 'CEP inválido (formato: 12345-678)';
+      newErrors.cep = '❌ CEP é obrigatório';
+    } else if (cepNumeros.length !== 8) {
+      newErrors.cep = '❌ CEP deve ter exatamente 8 dígitos';
     }
+
+    // Telefone (obrigatório)
+    if (!telefone.trim()) {
+      newErrors.telefone = '❌ Telefone é obrigatório';
+    } else if (telefone.replace(/\D/g, '').length < 10) {
+      newErrors.telefone = '❌ Telefone deve ter pelo menos 10 dígitos';
+    }
+
+    // Validações opcionais
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Email inválido';
-    }
-    if (latitude && isNaN(Number(latitude))) {
-      newErrors.latitude = 'Latitude deve ser um número';
-    }
-    if (longitude && isNaN(Number(longitude))) {
-      newErrors.longitude = 'Longitude deve ser um número';
-    }
-    if (altitude && isNaN(Number(altitude))) {
-      newErrors.altitude = 'Altitude deve ser um número';
+      newErrors.email = '❌ Email inválido';
     }
 
     setErrors(newErrors);
@@ -80,18 +110,16 @@ export const FilialFormScreen = ({ route, navigation }: Props) => {
     setLoading(true);
     try {
       const filialData = {
-        nome,
-        endereco,
-        cidade,
-        estado: estado.toUpperCase(),
-        cep: cep.replace(/\D/g, '').replace(/(\d{5})(\d{3})/, '$1-$2'), // Formatar CEP
-        telefone: telefone || undefined,
-        email: email || undefined,
-        coordenadas: (latitude && longitude) ? {
-          latitude: Number(latitude),
-          longitude: Number(longitude),
-          altitude: altitude ? Number(altitude) : undefined,
-        } : undefined,
+        nome: nome.trim(),
+        logradouro: endereco.trim(),
+        numero: numero.trim(),
+        complemento: complemento.trim() || 'N/A', // Oracle não aceita string vazia
+        bairro: bairro.trim(),
+        cidade: cidade.trim(),
+        estado: estado.trim().toUpperCase(),
+        cep: cep.replace(/\D/g, ''), // Remover formatação para enviar só números
+        telefone: telefone.trim(), // Obrigatório - não pode ser undefined
+        email: email.trim() || undefined, // Opcional
       };
 
       if (isEditing && filial) {
@@ -125,6 +153,21 @@ export const FilialFormScreen = ({ route, navigation }: Props) => {
           {isEditing ? 'Editar Filial' : 'Cadastrar Nova Filial'}
         </Text>
 
+        <View style={[styles.helpSection, { backgroundColor: theme.colors.secondaryBackground }]}>
+          <Text style={[styles.helpTitle, { color: theme.colors.text.primary }]}>
+            📋 Campos Obrigatórios
+          </Text>
+          <Text style={[styles.helpText, { color: theme.colors.text.secondary }]}>
+            • Nome (3-100 caracteres){'\n'}
+            • Logradouro (3-100 caracteres){'\n'}
+            • Número (máximo 10 caracteres){'\n'}
+            • Bairro, Cidade, Estado (2 letras){'\n'}
+            • CEP (8 dígitos){'\n'}
+            • Telefone (mínimo 10 dígitos){'\n'}
+            • Email (opcional)
+          </Text>
+        </View>
+
         <View style={styles.form}>
           <Input
             label="Nome da Filial *"
@@ -135,11 +178,37 @@ export const FilialFormScreen = ({ route, navigation }: Props) => {
           />
 
           <Input
-            label="Endereço *"
+            label="Logradouro *"
             value={endereco}
             onChangeText={setEndereco}
-            placeholder="Digite o endereço completo"
+            placeholder="Rua das Flores"
             error={errors.endereco}
+          />
+
+          <Input
+            label="Número *"
+            value={numero}
+            onChangeText={setNumero}
+            placeholder="123"
+            error={errors.numero}
+            maxLength={10}
+            keyboardType="default"
+          />
+
+          <Input
+            label="Complemento"
+            value={complemento}
+            onChangeText={setComplemento}
+            placeholder="Apto, Sala, Bloco (opcional)"
+            error={errors.complemento}
+          />
+
+          <Input
+            label="Bairro *"
+            value={bairro}
+            onChangeText={setBairro}
+            placeholder="Digite o bairro"
+            error={errors.bairro}
           />
 
           <View style={styles.row}>
@@ -175,7 +244,7 @@ export const FilialFormScreen = ({ route, navigation }: Props) => {
           />
 
           <Input
-            label="Telefone"
+            label="Telefone *"
             value={telefone}
             onChangeText={setTelefone}
             placeholder="(11) 99999-9999"
@@ -184,49 +253,13 @@ export const FilialFormScreen = ({ route, navigation }: Props) => {
           />
 
           <Input
-            label="Email"
+            label="Email (Opcional)"
             value={email}
             onChangeText={setEmail}
             placeholder="filial@empresa.com"
             error={errors.email}
             keyboardType="email-address"
             autoCapitalize="none"
-          />
-
-          <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>
-            Coordenadas (Opcional)
-          </Text>
-
-          <View style={styles.row}>
-            <View style={styles.flex1}>
-              <Input
-                label="Latitude"
-                value={latitude}
-                onChangeText={setLatitude}
-                placeholder="-23.5505"
-                error={errors.latitude}
-                keyboardType="numeric"
-              />
-            </View>
-            <View style={styles.flex1}>
-              <Input
-                label="Longitude"
-                value={longitude}
-                onChangeText={setLongitude}
-                placeholder="-46.6333"
-                error={errors.longitude}
-                keyboardType="numeric"
-              />
-            </View>
-          </View>
-
-          <Input
-            label="Altitude"
-            value={altitude}
-            onChangeText={setAltitude}
-            placeholder="760"
-            error={errors.altitude}
-            keyboardType="numeric"
           />
         </View>
 
@@ -242,6 +275,16 @@ export const FilialFormScreen = ({ route, navigation }: Props) => {
               {email && `Email: ${email}`}
             </Text>
           </View>
+        )}
+
+        {/* Botão para ver motos da filial (só aparece quando está editando uma filial existente) */}
+        {isEditing && filial && (
+          <Button
+            title="📍 Ver Motos desta Filial"
+            onPress={() => navigation.navigate('MotosFilial', { filial })}
+            variant="tertiary"
+            style={styles.motosButton}
+          />
         )}
 
         <Button
@@ -273,7 +316,21 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: 16,
+  },
+  helpSection: {
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  helpTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  helpText: {
+    fontSize: 14,
+    lineHeight: 20,
   },
   form: {
     gap: 16,
@@ -318,5 +375,8 @@ const styles = StyleSheet.create({
   loadingText: {
     marginLeft: 8,
     fontSize: 14,
+  },
+  motosButton: {
+    marginBottom: 12,
   },
 });

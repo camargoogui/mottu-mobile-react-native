@@ -13,6 +13,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Button } from '../components/Button';
+import { StorageService } from '../services/storage';
 
 const filiais = [
   'São Paulo - Centro',
@@ -70,6 +71,56 @@ export const Configuracoes = () => {
               await logout();
             } catch (error) {
               Alert.alert('Erro', 'Não foi possível fazer logout');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleClearAllData = () => {
+    Alert.alert(
+      '🗑️ Limpar Todos os Dados',
+      'Tem certeza? Isso irá remover:\n\n• Todas as motos\n• Todas as manutenções\n• Todas as vagas\n\nEsta ação não pode ser desfeita!',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Limpar Tudo',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await StorageService.clearAllData();
+              Alert.alert('✅ Sucesso', 'Todos os dados foram removidos!');
+            } catch (error) {
+              Alert.alert('❌ Erro', 'Não foi possível limpar os dados');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleResetData = () => {
+    Alert.alert(
+      '🔄 Resetar Dados',
+      'Isso irá:\n\n• Limpar todos os dados atuais\n• Recriar dados de exemplo\n\nDeseja continuar?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Resetar',
+          style: 'default',
+          onPress: async () => {
+            try {
+              await StorageService.resetAllData();
+              Alert.alert('✅ Sucesso', 'Dados resetados com dados de exemplo!');
+            } catch (error) {
+              Alert.alert('❌ Erro', 'Não foi possível resetar os dados');
             }
           },
         },
@@ -146,6 +197,28 @@ export const Configuracoes = () => {
         </View>
       </View>
 
+      {/* Seção de Dados */}
+      <View style={[styles.secao, { backgroundColor: theme.colors.card }]}>
+        <Text style={[styles.subtitulo, { color: theme.colors.text.primary }]}>Gerenciar Dados</Text>
+        <Text style={[styles.dataInfo, { color: theme.colors.text.secondary }]}>
+          Limpe ou resete todos os dados armazenados localmente
+        </Text>
+        <View style={styles.dataButtons}>
+          <Button
+            title="🗑️ Limpar Todos os Dados"
+            onPress={handleClearAllData}
+            variant="secondary"
+            style={styles.dataButton}
+          />
+          <Button
+            title="🔄 Resetar com Dados Exemplo"
+            onPress={handleResetData}
+            variant="tertiary"
+            style={styles.dataButton}
+          />
+        </View>
+      </View>
+
       {/* Botão de Logout */}
       <View style={styles.logoutSection}>
         <Button
@@ -218,6 +291,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '400',
     marginBottom: 4,
+  },
+  dataInfo: {
+    fontSize: 14,
+    fontWeight: '400',
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+  dataButtons: {
+    gap: 8,
+  },
+  dataButton: {
+    width: '100%',
   },
   logoutSection: {
     marginTop: 32,

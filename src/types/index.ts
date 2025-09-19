@@ -80,6 +80,10 @@ export interface Moto {
   modelo: string;
   placa: string;
   status: 'disponível' | 'ocupada' | 'manutenção';
+  ano: number;
+  cor: string;
+  filialId: number;
+  filialNome: string;
   vaga?: string;
   localizacao: Localizacao;
 }
@@ -109,7 +113,11 @@ export interface Configuracoes {
 export interface Filial {
   id: string;
   nome: string;
-  endereco: string;
+  endereco: string; // Campo combinado para exibição
+  logradouro: string; // Campo separado da API
+  numero: string; // Campo separado da API
+  complemento?: string;
+  bairro: string;
   cidade: string;
   estado: string;
   cep: string;

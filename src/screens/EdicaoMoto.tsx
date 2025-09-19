@@ -1,23 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MotosStackParamList } from '../navigation';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { Input } from '../components/Input';
-import { StorageService } from '../services/storage';
 import { MotoService } from '../services/motoService';
 import { useTheme } from '../contexts/ThemeContext';
 
-type Props = NativeStackScreenProps<MotosStackParamList, 'CadastroMoto'>;
+type Props = NativeStackScreenProps<MotosStackParamList, 'EdicaoMoto'>;
 
-export const CadastroMoto = ({ navigation }: Props) => {
+export const EdicaoMoto = ({ route, navigation }: Props) => {
   const { theme } = useTheme();
-  const [modelo, setModelo] = useState('');
-  const [placa, setPlaca] = useState('');
-  const [ano, setAno] = useState('');
-  const [cor, setCor] = useState('');
-  const [filialId, setFilialId] = useState('');
+  const { moto } = route.params;
+  
+  const [modelo, setModelo] = useState(moto.modelo);
+  const [placa, setPlaca] = useState(moto.placa);
+  const [ano, setAno] = useState(moto.ano.toString());
+  const [cor, setCor] = useState(moto.cor);
+  const [filialId, setFilialId] = useState(moto.filialId.toString());
+  const [status, setStatus] = useState(moto.status);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -69,62 +71,67 @@ export const CadastroMoto = ({ navigation }: Props) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSalvar = async () => {
+  const handleAtualizar = async () => {
     if (!validate()) return;
 
     setLoading(true);
     try {
-      const novaMoto = {
+      const motoAtualizada = {
+        id: moto.id,
         placa: placa.trim().toUpperCase(),
         modelo: modelo.trim(),
         ano: parseInt(ano),
         cor: cor.trim(),
         filialId: parseInt(filialId),
+        disponivel: status === 'disponível', // Converter status para boolean
       };
 
-      // Tenta salvar na API primeiro
-      try {
-        await MotoService.create(novaMoto);
-        Alert.alert('Sucesso', 'Moto cadastrada com sucesso!', [
-          { text: 'OK', onPress: () => navigation.goBack() }
-        ]);
-      } catch (apiError) {
-        console.warn('Erro ao salvar na API, salvando localmente:', apiError);
-        
-        // Fallback para salvamento local
-        const motoLocal = {
-          id: Date.now().toString(),
-          condutor: 'N/A', // Valor padrão para compatibilidade local
-          modelo: modelo.trim(),
-          placa: placa.trim().toUpperCase(),
-          ano: parseInt(ano),
-          cor: cor.trim(),
-          filialId: parseInt(filialId),
-          filialNome: `Filial ${filialId}`, // Valor padrão
-          status: 'disponível' as 'disponível',
-          vaga: 'N/A', // Valor padrão para compatibilidade local
-          localizacao: { latitude: 0, longitude: 0 },
-        };
+      console.log('🔍 Placa original:', moto.placa);
+      console.log('🔍 Placa nova:', placa.trim().toUpperCase());
+      console.log('🔍 Placa mudou?', moto.placa !== placa.trim().toUpperCase());
 
-        await StorageService.saveMoto(motoLocal);
-        Alert.alert(
-          'Aviso', 
-          'Não foi possível conectar com o servidor. A moto foi salva localmente.',
-          [{ text: 'OK', onPress: () => navigation.goBack() }]
-        );
-      }
+      await MotoService.update(moto.id, motoAtualizada);
+      Alert.alert('Sucesso', 'Moto atualizada com sucesso!', [
+        { text: 'OK', onPress: () => navigation.goBack() }
+      ]);
     } catch (error) {
-      console.error('Erro ao salvar moto:', error);
-      Alert.alert('Erro', 'Não foi possível cadastrar a moto. Tente novamente.');
+      console.error('Erro ao atualizar moto:', error);
+      Alert.alert('Erro', 'Não foi possível atualizar a moto. Tente novamente.');
     } finally {
       setLoading(false);
     }
   };
 
+  const StatusPicker = () => (
+    <View style={styles.statusContainer}>
+      <Text style={[styles.label, { color: theme.colors.text.primary }]}>Status *</Text>
+      <View style={styles.statusButtons}>
+        {(['disponível', 'ocupada', 'manutenção'] as const).map((statusOption) => (
+          <Button
+            key={statusOption}
+            title={statusOption}
+            onPress={() => setStatus(statusOption)}
+            variant={status === statusOption ? 'primary' : 'secondary'}
+            style={styles.statusButton}
+          />
+        ))}
+      </View>
+    </View>
+  );
+
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Card>
-        <Text style={[styles.title, { color: theme.colors.primary }]}>Cadastrar Nova Moto</Text>
+        <Text style={[styles.title, { color: theme.colors.primary }]}>Editar Moto</Text>
+
+        <View style={[styles.currentMoto, { backgroundColor: theme.colors.secondaryBackground }]}>
+          <Text style={[styles.currentTitle, { color: theme.colors.text.primary }]}>
+            📝 Editando: {moto.placa}
+          </Text>
+          <Text style={[styles.currentText, { color: theme.colors.text.secondary }]}>
+            {moto.modelo} {moto.ano} - {moto.cor}
+          </Text>
+        </View>
 
         <View style={[styles.helpSection, { backgroundColor: theme.colors.secondaryBackground }]}>
           <Text style={[styles.helpTitle, { color: theme.colors.text.primary }]}>
@@ -135,7 +142,8 @@ export const CadastroMoto = ({ navigation }: Props) => {
             • Modelo (2-50 caracteres){'\n'}
             • Ano (1900-2030){'\n'}
             • Cor (3-30 caracteres){'\n'}
-            • Filial (ID válido)
+            • Filial (ID válido){'\n'}
+            • Status (disponível/ocupada/manutenção)
           </Text>
         </View>
 
@@ -191,33 +199,46 @@ export const CadastroMoto = ({ navigation }: Props) => {
             keyboardType="numeric"
             helperText="💡 Veja o ID na lista de filiais"
           />
+
+          <StatusPicker />
         </View>
 
         {(modelo || placa || ano || cor || filialId) && (
           <View style={[styles.preview, { backgroundColor: theme.colors.background }]}>
-            <Text style={[styles.previewTitle, { color: theme.colors.text.primary }]}>Preview do Cadastro:</Text>
+            <Text style={[styles.previewTitle, { color: theme.colors.text.primary }]}>Preview das Alterações:</Text>
             <Text style={[styles.previewText, { color: theme.colors.text.secondary }]}>
-              {placa && `🏍️ Placa: ${placa}\n`}
-              {modelo && `📋 Modelo: ${modelo}\n`}
-              {ano && `📅 Ano: ${ano}\n`}
-              {cor && `🎨 Cor: ${cor}\n`}
-              {filialId && `📍 Filial ID: ${filialId}`}
+              🏍️ Placa: {placa}{'\n'}
+              📋 Modelo: {modelo}{'\n'}
+              📅 Ano: {ano}{'\n'}
+              🎨 Cor: {cor}{'\n'}
+              📍 Filial ID: {filialId}{'\n'}
+              🔄 Status: {status}
             </Text>
           </View>
         )}
 
-        <Button
-          title={loading ? "Salvando..." : "Salvar Moto"}
-          onPress={handleSalvar}
-          variant="primary"
-          disabled={loading}
-        />
+        <View style={styles.buttonContainer}>
+          <Button
+            title={loading ? "Atualizando..." : "Atualizar Moto"}
+            onPress={handleAtualizar}
+            variant="primary"
+            disabled={loading}
+            style={styles.updateButton}
+          />
+          
+          <Button
+            title="Cancelar"
+            onPress={() => navigation.goBack()}
+            variant="secondary"
+            disabled={loading}
+          />
+        </View>
         
         {loading && (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="small" color={theme.colors.primary} />
             <Text style={[styles.loadingText, { color: theme.colors.text.secondary }]}>
-              Cadastrando moto...
+              Atualizando moto...
             </Text>
           </View>
         )}
@@ -236,6 +257,19 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textAlign: 'center',
     marginBottom: 16,
+  },
+  currentMoto: {
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  currentTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  currentText: {
+    fontSize: 14,
   },
   helpSection: {
     padding: 12,
@@ -262,6 +296,21 @@ const styles = StyleSheet.create({
     gap: 16,
     marginBottom: 24,
   },
+  statusContainer: {
+    gap: 8,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  statusButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  statusButton: {
+    flex: 1,
+  },
   preview: {
     padding: 16,
     borderRadius: 4,
@@ -276,26 +325,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '400',
   },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
+  buttonContainer: {
+    gap: 12,
   },
-  input: {
-    fontSize: 16,
-    fontWeight: '400',
-    borderRadius: 8,
-    padding: 8,
-    marginBottom: 16,
-  },
-  errorText: {
-    fontSize: 14,
-    fontWeight: '400',
+  updateButton: {
     marginBottom: 8,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '700',
   },
   loadingContainer: {
     flexDirection: 'row',
@@ -307,4 +341,4 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 14,
   },
-}); 
+});

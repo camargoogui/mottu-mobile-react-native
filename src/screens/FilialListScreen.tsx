@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, RefreshControl, Text } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { FiliaisStackParamList } from '../../navigation';
-import { FilialService } from '../../services/filialService';
-import { Filial } from '../../types';
-import { Card } from '../../components/Card';
-import { Button } from '../../components/Button';
-import { useTheme } from '../../contexts/ThemeContext';
+import { FiliaisStackParamList } from '../navigation';
+import { FilialService } from '../services/filialService';
+import { Filial } from '../types';
+import { Card } from '../components/Card';
+import { Button } from '../components/Button';
+import { useTheme } from '../contexts/ThemeContext';
 import { MaterialIcons } from '@expo/vector-icons';
 
 type Props = NativeStackScreenProps<FiliaisStackParamList, 'FilialList'>;
@@ -94,7 +94,12 @@ export const FilialListScreen = ({ navigation }: Props) => {
       <Card>
         <View style={styles.filialInfo}>
           <View style={styles.filialDetails}>
-            <Text style={[styles.nome, { color: theme.colors.text.primary }]}>{item.nome}</Text>
+            <View style={styles.nomeContainer}>
+              <View style={[styles.idBadge, { backgroundColor: theme.colors.primary }]}>
+                <Text style={[styles.idText, { color: theme.colors.text.light }]}>ID: {item.id}</Text>
+              </View>
+              <Text style={[styles.nome, { color: theme.colors.text.primary }]}>{item.nome}</Text>
+            </View>
             <Text style={[styles.endereco, { color: theme.colors.text.secondary }]}>
               {item.endereco}, {item.cidade} - {item.estado}
             </Text>
@@ -231,10 +236,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
+  nomeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+    gap: 8,
+  },
+  idBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    minWidth: 40,
+  },
+  idText: {
+    fontSize: 11,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
   nome: {
     fontSize: 18,
-    marginBottom: 4,
     fontWeight: '700',
+    flex: 1,
   },
   endereco: {
     fontSize: 14,

@@ -1,44 +1,38 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, RefreshControl } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, RefreshControl, Text } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { MotosStackParamList } from '../navigation';
-import { StorageService } from '../services/storage';
+import { FiliaisStackParamList } from '../navigation';
 import { MotoService } from '../services/motoService';
-import { Moto } from '../types';
+import { Moto, Filial } from '../types';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
-import { Text } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { MaterialIcons } from '@expo/vector-icons';
 
-type Props = NativeStackScreenProps<MotosStackParamList, 'ListaMotosScreen'>;
+type Props = NativeStackScreenProps<FiliaisStackParamList, 'MotosFilial'>;
 
-export const ListaMotos = ({ navigation }: Props) => {
+export const MotosFilialScreen = ({ route, navigation }: Props) => {
   const { theme } = useTheme();
+  const { filial } = route.params;
   const [motos, setMotos] = useState<Moto[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    loadMotos();
-  }, []);
+    navigation.setOptions({
+      title: `Motos - ${filial.nome}`,
+    });
+    loadMotosFilial();
+  }, [navigation, filial]);
 
-  const loadMotos = async () => {
+  const loadMotosFilial = async () => {
     setLoading(true);
     try {
-      // Tenta carregar da API primeiro
-      const apiMotos = await MotoService.getAll();
-      setMotos(apiMotos);
+      const motosFilial = await MotoService.getMotosByFilialId(filial.id);
+      setMotos(motosFilial);
     } catch (error) {
-      console.warn('Erro ao carregar da API, usando dados locais:', error);
-      Alert.alert(
-        'Aviso',
-        'Não foi possível conectar com o servidor. Exibindo dados locais.',
-        [{ text: 'OK' }]
-      );
-      // Fallback para dados locais
-      const localMotos = await StorageService.getMotos();
-      setMotos(localMotos);
+      console.error('Erro ao carregar motos da filial:', error);
+      Alert.alert('Erro', 'Não foi possível carregar as motos desta filial. Verifique sua conexão.');
     } finally {
       setLoading(false);
     }
@@ -47,47 +41,25 @@ export const ListaMotos = ({ navigation }: Props) => {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      const apiMotos = await MotoService.getAll();
-      setMotos(apiMotos);
+      const motosFilial = await MotoService.getMotosByFilialId(filial.id);
+      setMotos(motosFilial);
     } catch (error) {
       Alert.alert('Erro', 'Não foi possível atualizar a lista de motos.');
     } finally {
       setRefreshing(false);
     }
-  }, []);
-
-  const handleDeleteMoto = async (moto: Moto) => {
-    Alert.alert(
-      'Confirmar Exclusão',
-      `Tem certeza que deseja excluir a moto ${moto.placa}?`,
-      [
-        {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
-        {
-          text: 'Excluir',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              setLoading(true);
-              await MotoService.delete(moto.id);
-              Alert.alert('Sucesso', 'Moto excluída com sucesso!');
-              loadMotos(); // Recarrega a lista
-            } catch (error) {
-              Alert.alert('Erro', 'Não foi possível excluir a moto. Tente novamente.');
-            } finally {
-              setLoading(false);
-            }
-          },
-        },
-      ],
-      { cancelable: true }
-    );
-  };
+  }, [filial.id]);
 
   const renderMotoItem = ({ item }: { item: Moto }) => (
-    <TouchableOpacity onPress={() => navigation.navigate('DetalhesMoto', { moto: item })}>
+    <TouchableOpacity onPress={() => {
+      // Navegar para detalhes da moto na stack de motos
+      // Como estamos na stack de filiais, vamos só mostrar um alert por enquanto
+      Alert.alert(
+        'Detalhes da Moto',
+        `Placa: ${item.placa}\nModelo: ${item.modelo}\nAno: ${item.ano}\nCor: ${item.cor}\nStatus: ${item.status}`,
+        [{ text: 'OK' }]
+      );
+    }}>
       <Card>
         <View style={styles.motoInfo}>
           <View style={styles.motoDetails}>
@@ -99,27 +71,21 @@ export const ListaMotos = ({ navigation }: Props) => {
             </View>
             <Text style={[styles.modelo, { color: theme.colors.text.secondary }]}>{item.modelo} {item.ano}</Text>
             <Text style={[styles.cor, { color: theme.colors.text.secondary }]}>Cor: {item.cor}</Text>
-            <Text style={[styles.filial, { color: theme.colors.text.secondary }]}>📍 {item.filialNome}</Text>
+            <View style={styles.statusContainer}>
+              <View style={[
+                styles.statusBadge,
+                { backgroundColor: item.status === 'disponível' ? theme.colors.success : theme.colors.error }
+              ]}>
+                <Text style={[styles.statusText, { color: theme.colors.text.light }]}>{item.status}</Text>
+              </View>
+            </View>
           </View>
           <View style={styles.motoActions}>
-            <View style={[
-              styles.statusBadge,
-              { backgroundColor: item.status === 'disponível' ? theme.colors.success : theme.colors.error }
-            ]}>
-              <Text style={[styles.statusText, { color: theme.colors.text.light }]}>{item.status}</Text>
-            </View>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('EdicaoMoto', { moto: item })}
-              style={[styles.editButton, { backgroundColor: theme.colors.primary }]}
-            >
-              <MaterialIcons name="edit" size={20} color={theme.colors.text.light} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => handleDeleteMoto(item)}
-              style={[styles.deleteButton, { backgroundColor: theme.colors.error }]}
-            >
-              <MaterialIcons name="delete" size={20} color={theme.colors.text.light} />
-            </TouchableOpacity>
+            <MaterialIcons 
+              name="motorcycle" 
+              size={24} 
+              color={theme.colors.primary}
+            />
           </View>
         </View>
       </Card>
@@ -131,7 +97,7 @@ export const ListaMotos = ({ navigation }: Props) => {
       <View style={[styles.container, styles.centered, { backgroundColor: theme.colors.background }]}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
         <Text style={[styles.loadingText, { color: theme.colors.text.secondary }]}>
-          Carregando motos...
+          Carregando motos da filial...
         </Text>
       </View>
     );
@@ -139,23 +105,37 @@ export const ListaMotos = ({ navigation }: Props) => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: theme.colors.text.primary }]}>Lista de Motos</Text>
-      </View>
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Cadastrar Moto"
-          onPress={() => navigation.navigate('CadastroMoto')}
-          variant="secondary"
-          style={styles.button}
-        />
-        <Button
-          title="Ver Manutenções"
-          onPress={() => navigation.navigate('ListaManutencoes')}
-          variant="tertiary"
-          style={styles.button}
-        />
-      </View>
+      {/* Header com informações da filial */}
+      <Card style={styles.headerCard}>
+        <View style={styles.headerInfo}>
+          <MaterialIcons name="business" size={24} color={theme.colors.primary} />
+          <View style={styles.headerText}>
+            <Text style={[styles.filialNome, { color: theme.colors.text.primary }]}>{filial.nome}</Text>
+            <Text style={[styles.filialEndereco, { color: theme.colors.text.secondary }]}>
+              {filial.endereco}, {filial.cidade} - {filial.estado}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.estatisticas}>
+          <View style={styles.estatisticaItem}>
+            <Text style={[styles.estatisticaNumero, { color: theme.colors.primary }]}>{motos.length}</Text>
+            <Text style={[styles.estatisticaLabel, { color: theme.colors.text.secondary }]}>Total</Text>
+          </View>
+          <View style={styles.estatisticaItem}>
+            <Text style={[styles.estatisticaNumero, { color: theme.colors.success }]}>
+              {motos.filter(m => m.status === 'disponível').length}
+            </Text>
+            <Text style={[styles.estatisticaLabel, { color: theme.colors.text.secondary }]}>Disponíveis</Text>
+          </View>
+          <View style={styles.estatisticaItem}>
+            <Text style={[styles.estatisticaNumero, { color: theme.colors.error }]}>
+              {motos.filter(m => m.status === 'manutenção').length}
+            </Text>
+            <Text style={[styles.estatisticaLabel, { color: theme.colors.text.secondary }]}>Manutenção</Text>
+          </View>
+        </View>
+      </Card>
+
       <FlatList
         data={motos}
         renderItem={renderMotoItem}
@@ -178,6 +158,9 @@ export const ListaMotos = ({ navigation }: Props) => {
                 Nenhuma moto encontrada
               </Text>
               <Text style={[styles.emptySubtext, { color: theme.colors.text.secondary }]}>
+                Esta filial não possui motos cadastradas
+              </Text>
+              <Text style={[styles.emptyHint, { color: theme.colors.text.secondary }]}>
                 Puxe para baixo para atualizar
               </Text>
             </View>
@@ -197,22 +180,45 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  header: {
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  headerCard: {
     marginBottom: 16,
-    gap: 12,
   },
-  button: {
+  headerInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  headerText: {
+    marginLeft: 12,
     flex: 1,
+  },
+  filialNome: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  filialEndereco: {
+    fontSize: 14,
+    fontWeight: '400',
+    marginTop: 2,
+  },
+  estatisticas: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E5E5',
+  },
+  estatisticaItem: {
+    alignItems: 'center',
+  },
+  estatisticaNumero: {
+    fontSize: 24,
+    fontWeight: '700',
+  },
+  estatisticaLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginTop: 4,
   },
   list: {
     paddingBottom: 16,
@@ -226,9 +232,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   motoActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    padding: 8,
   },
   placaContainer: {
     flexDirection: 'row',
@@ -259,12 +263,12 @@ const styles = StyleSheet.create({
   },
   cor: {
     fontSize: 14,
-    marginBottom: 2,
+    marginBottom: 8,
     fontWeight: '400',
   },
-  filial: {
-    fontSize: 14,
-    fontWeight: '500',
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   statusBadge: {
     paddingHorizontal: 8,
@@ -274,14 +278,6 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 14,
     fontWeight: '400',
-  },
-  editButton: {
-    padding: 8,
-    borderRadius: 4,
-  },
-  deleteButton: {
-    padding: 8,
-    borderRadius: 4,
   },
   loadingText: {
     marginTop: 16,
@@ -305,4 +301,10 @@ const styles = StyleSheet.create({
     marginTop: 8,
     textAlign: 'center',
   },
-}); 
+  emptyHint: {
+    fontSize: 12,
+    marginTop: 8,
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
+});
