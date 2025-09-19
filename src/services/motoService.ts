@@ -1,6 +1,25 @@
 import api from './api';
 import { Moto } from '../types';
 
+// Funções de conversão entre status da UI e API
+const statusToApiNumber = (status: 'disponível' | 'ocupada' | 'manutenção'): number => {
+  switch (status) {
+    case 'disponível': return 0;
+    case 'ocupada': return 1;
+    case 'manutenção': return 2;
+    default: return 0; // Default para disponível
+  }
+};
+
+const apiNumberToStatus = (statusNumber: number): 'disponível' | 'ocupada' | 'manutenção' => {
+  switch (statusNumber) {
+    case 0: return 'disponível';
+    case 1: return 'ocupada';
+    case 2: return 'manutenção';
+    default: return 'disponível'; // Default para disponível
+  }
+};
+
 // Adapter para converter dados da API para o formato do app
 const adaptMotoFromApi = (apiMoto: any): Moto => {
   return {
@@ -8,7 +27,10 @@ const adaptMotoFromApi = (apiMoto: any): Moto => {
     condutor: 'N/A', // API não tem condutor, usar valor padrão
     modelo: apiMoto.modelo,
     placa: apiMoto.placa,
-    status: apiMoto.disponivel ? 'disponível' : 'manutenção', // Converter boolean para status
+    // Priorizar o status numérico se existir, senão usar o campo disponivel
+    status: apiMoto.status !== undefined 
+      ? apiNumberToStatus(apiMoto.status)
+      : (apiMoto.disponivel ? 'disponível' : 'manutenção'),
     ano: apiMoto.ano,
     cor: apiMoto.cor,
     filialId: apiMoto.filialId,
@@ -31,7 +53,7 @@ export interface CreateMotoRequest {
 
 export interface UpdateMotoRequest extends CreateMotoRequest {
   id: string;
-  disponivel: boolean; // true = disponível, false = ocupada/manutenção
+  status: number; // 0 = Disponível, 1 = Ocupada, 2 = Manutenção
 }
 
 export const MotoService = {

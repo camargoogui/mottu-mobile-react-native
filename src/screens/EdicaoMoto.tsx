@@ -8,6 +8,16 @@ import { Input } from '../components/Input';
 import { MotoService } from '../services/motoService';
 import { useTheme } from '../contexts/ThemeContext';
 
+// Função para converter status da UI para número da API
+const statusToApiNumber = (status: 'disponível' | 'ocupada' | 'manutenção'): number => {
+  switch (status) {
+    case 'disponível': return 0;
+    case 'ocupada': return 1;
+    case 'manutenção': return 2;
+    default: return 0; // Default para disponível
+  }
+};
+
 type Props = NativeStackScreenProps<MotosStackParamList, 'EdicaoMoto'>;
 
 export const EdicaoMoto = ({ route, navigation }: Props) => {
@@ -83,12 +93,13 @@ export const EdicaoMoto = ({ route, navigation }: Props) => {
         ano: parseInt(ano),
         cor: cor.trim(),
         filialId: parseInt(filialId),
-        disponivel: status === 'disponível', // Converter status para boolean
+        status: statusToApiNumber(status), // Converter status para número da API
       };
 
       console.log('🔍 Placa original:', moto.placa);
       console.log('🔍 Placa nova:', placa.trim().toUpperCase());
       console.log('🔍 Placa mudou?', moto.placa !== placa.trim().toUpperCase());
+      console.log('🔄 Status enviado para API:', `${status} -> ${statusToApiNumber(status)}`);
 
       await MotoService.update(moto.id, motoAtualizada);
       Alert.alert('Sucesso', 'Moto atualizada com sucesso!', [
