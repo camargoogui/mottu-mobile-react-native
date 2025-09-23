@@ -21,32 +21,61 @@ Este documento descreve como a integração com a API .NET foi implementada no a
 
 ## 🔧 Configuração da API
 
-### 1. Configurar URL da API
-Edite o arquivo `src/services/api.ts` e altere o `baseURL`:
+### ✅ Configuração Automática (Recomendado)
+
+O app agora detecta automaticamente o IP correto para cada plataforma:
+
+- **📱 Emulador Android**: `10.0.2.2:5001` (automático)
+- **🍎 iOS Simulator**: `localhost:5001` (automático)  
+- **📱 Dispositivo Físico**: IP detectado automaticamente
+
+### 🚀 Comandos para Configuração
+
+#### **Opção 1: Comando Único (Recomendado)**
+```bash
+npm run dev
+```
+Este comando:
+1. ✅ Detecta seu IP automaticamente
+2. ✅ Atualiza a configuração da API
+3. ✅ Inicia o app React Native
+
+#### **Opção 2: Scripts Separados**
+```bash
+# Atualizar IP automaticamente
+npm run update-api
+
+# Ver IP atual
+npm run get-ip
+
+# Iniciar app
+npm start
+```
+
+### 📁 Configuração Manual (Apenas se necessário)
+
+Para dispositivos físicos, edite `src/config/api.ts`:
 
 ```typescript
-// Configure o baseURL com o IP local da sua máquina e porta da API .NET
-const baseURL = 'http://192.168.68.106:5000/api'; // Altere para o seu IP local
+// Linha 25 - substitua pelo seu IP atual
+return '192.168.68.106'; // ← Seu IP aqui
 ```
 
-**Exemplo de IPs comuns:**
-- `http://192.168.1.100:5000/api` (rede doméstica)
-- `http://10.0.0.100:5000/api` (rede corporativa)
-- `http://localhost:5000/api` (apenas para emulador Android)
+### 🔍 Como Descobrir Seu IP
 
-### 2. Encontrar seu IP Local
+#### **Via Script (Recomendado):**
+```bash
+npm run get-ip
+```
 
-**Windows:**
-```cmd
+#### **Manual:**
+```bash
+# macOS/Linux
+ifconfig | grep "inet " | grep -v 127.0.0.1
+
+# Windows
 ipconfig
 ```
-
-**macOS/Linux:**
-```bash
-ifconfig | grep "inet "
-```
-
-**Alternativa:** Use `ipconfig getifaddr en0` no macOS
 
 ## 📱 Funcionalidades por Tela
 
@@ -176,15 +205,18 @@ interface Filial {
 ### Logs da API
 Os logs aparecem no console do React Native:
 ```
-🚀 API Request: GET http://192.168.1.100:5000/api/Moto
+🚀 API Request: GET http://192.168.68.106:5001/api/Moto
 ✅ API Response: 200 GET /Moto
 📥 Response Data: [...]
 ```
 
 ### Problemas Comuns
-1. **"Network Error"**: Verifique se a API está rodando e o IP está correto
+1. **"Network Error"**: 
+   - Execute `npm run update-api` para atualizar o IP
+   - Verifique se a API está rodando: `dotnet run --urls "http://0.0.0.0:5001"`
 2. **Timeout**: API demorou mais de 10 segundos para responder
 3. **CORS**: Configure CORS na API .NET se necessário
+4. **IP Mudou**: Execute `npm run dev` para detectar e atualizar automaticamente
 
 ## 📱 Navegação
 
@@ -202,12 +234,18 @@ Os logs aparecem no console do React Native:
 
 ## 🎯 Próximos Passos
 
-Para completar a integração:
+Para usar a integração:
 
-1. **Configure o IP da API** em `src/services/api.ts`
+1. **Execute `npm run dev`** para configuração automática
 2. **Teste todas as funcionalidades** com a API rodando
 3. **Ajuste validações** conforme necessário
 4. **Implemente autenticação** se a API exigir
 5. **Configure CORS** na API .NET se necessário
+
+## 📚 Documentação Adicional
+
+- **`API_CONFIG_GUIDE.md`**: Guia completo de configuração automática
+- **`scripts/`**: Scripts para detecção e atualização de IP
+- **`src/config/api.ts`**: Configuração centralizada da API
 
 A integração está completa e pronta para uso! 🚀
