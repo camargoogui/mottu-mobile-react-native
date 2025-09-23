@@ -1,118 +1,240 @@
-# 🏍 Mottu Challenge - Gestão de Pátio
+# 🏍 Mottu Challenge - Gestão Inteligente de Pátio
 
-Aplicativo mobile desenvolvido em React Native com Expo para gestão inteligente do pátio de motos da Mottu.
+Aplicativo mobile desenvolvido em React Native com Expo para gestão inteligente do pátio de motos da Mottu, com integração completa à API .NET e sistema de autenticação Firebase.
 
 ## 👥 Integrantes
 
-- RM556270 - Bianca Vitoria - 2TDSPZ
-- RM555166 - Guilherme Camargo - 2TDSPM
-- RM555131 - Icaro Americo - 2TDSPM
+- **RM556270** - Bianca Vitoria - 2TDSPZ
+- **RM555166** - Guilherme Camargo - 2TDSPM  
+- **RM555131** - Icaro Americo - 2TDSPM
 
 ## 🚀 Tecnologias
 
-- React Native
-- Expo
-- TypeScript
-- React Navigation
-- AsyncStorage
-- Componentes customizados
+### Core
+- **React Native** 0.79.5
+- **Expo** 53.0.22
+- **TypeScript** 5.8.3
+- **React Navigation** 7.x
 
-## 📱 Funcionalidades
+### Autenticação & Backend
+- **Firebase Authentication** 12.2.1
+- **Axios** 1.12.2 (Integração API .NET)
+- **AsyncStorage** 2.1.2
 
-1. **Home**
-   - Tela inicial com acesso ao mapa e lista de motos
-   - Interface limpa e intuitiva
+### UI/UX
+- **Material Icons** (@expo/vector-icons)
+- **Apple Human Interface Guidelines**
+- **Sistema de Temas** (Modo Claro/Escuro)
 
-2. **Mapa do Pátio**
-   - Visualização das vagas em tempo real
-   - Status: livre (verde) ou ocupada (vermelho)
-   - Acesso rápido aos detalhes da moto
+## 📱 Funcionalidades Implementadas
 
-3. **Lista de Motos**
-   - Listagem de todas as motos cadastradas
-   - Filtro por status
-   - Acesso aos detalhes
+### 🔐 Sistema de Autenticação
+- **Login/Cadastro** com Firebase Authentication
+- **Validação de formulários** em tempo real
+- **Persistência de sessão** com AsyncStorage
+- **Logout seguro** com limpeza de dados
 
-4. **Cadastro de Moto**
-   - Formulário completo com validações
-   - Preview em tempo real
-   - Campos:
-     - Nome do condutor
-     - Modelo da moto
-     - Placa
-     - Vaga
+### 🏍️ CRUD Completo de Motos
+- **Listar Motos** com integração à API .NET
+- **Cadastrar Moto** com validações robustas
+- **Editar Moto** com atualização de status
+- **Deletar Moto** com confirmação e tratamento de erros
+- **Fallback local** quando API não disponível
 
-5. **Detalhes da Moto**
-   - Informações completas
-   - Histórico de manutenções
-   - Opções de edição
+### 🏢 CRUD Completo de Filiais
+- **Listar Filiais** com status ativo/inativo
+- **Cadastrar Filial** com campos completos
+- **Editar Filial** com validações específicas
+- **Deletar Filial** com verificação de relacionamentos
+- **Toggle Status** para ativar/desativar filiais
+
+### 🎨 Sistema de Temas Avançado
+- **Modo Claro/Escuro** com persistência
+- **Apple HIG Colors** (60+ cores definidas)
+- **Tipografia SF Pro** (12 estilos)
+- **Componentes adaptativos** que respondem ao tema
+- **Toggle na tela de configurações**
+
+### 🔧 Funcionalidades Técnicas
+- **Integração API .NET** com endpoints completos
+- **Tratamento de erros** específico por tipo
+- **Estados de carregamento** em todas as operações
+- **Validações de formulário** robustas
+- **Navegação tipada** com React Navigation
+- **Arquitetura modular** bem estruturada
 
 ## 🔧 Como Rodar o Projeto
 
-1. Clone o repositório:
-```bash
-git clone https://github.com/camargoogui/Mobile---Challenge
-```
+### 1. Pré-requisitos
+- Node.js 18+
+- Expo CLI
+- Dispositivo móvel com Expo Go ou emulador
 
-2. Instale as dependências:
+### 2. Instalação
 ```bash
+# Clone o repositório
+git clone https://github.com/camargoogui/Mobile---Challenge-3
+
+# Navegue para o diretório
+cd Mobile---Challenge-3
+
+# Instale as dependências
 npm install
 ```
 
-3. Inicie o projeto:
+### 3. Configuração da API
 ```bash
-npm start
+# Configure o IP da API em src/services/api.ts
+const baseURL = 'http://SEU_IP_LOCAL:5001/api';
+
+# Para descobrir seu IP:
+# macOS/Linux: ifconfig | grep "inet "
+# Windows: ipconfig
 ```
 
-4. Use o Expo Go no seu celular ou um emulador para rodar o app
+### 4. Execução
+```bash
+# Inicie o projeto
+npm start
+
+# Ou execute diretamente
+npm run android  # Para Android
+npm run ios      # Para iOS
+```
+
+### 5. Configuração da API .NET
+```bash
+# Na pasta da API .NET, execute:
+dotnet run --urls "http://0.0.0.0:5001"
+```
 
 ## 📁 Estrutura do Projeto
 
 ```
 src/
-  ├── components/     # Componentes reutilizáveis
-  ├── navigation/     # Configuração de rotas
-  ├── screens/        # Telas do app
-  ├── services/       # Serviços (Storage, API)
-  ├── theme/          # Estilos globais
-  └── types/          # Tipagens TypeScript
+├── components/           # Componentes reutilizáveis
+│   ├── Button.tsx      # Botão com variantes (primary, secondary, etc.)
+│   ├── Card.tsx        # Card com variantes (elevated, filled, outlined)
+│   └── Input.tsx       # Input com validações e ícones
+├── contexts/            # Contextos globais
+│   ├── AuthContext.tsx  # Gerenciamento de autenticação
+│   └── ThemeContext.tsx # Sistema de temas
+├── navigation/          # Configuração de navegação
+│   └── index.tsx       # Stack e Tab navigators tipados
+├── screens/             # Telas da aplicação
+│   ├── LoginScreen.tsx     # Tela de login
+│   ├── RegisterScreen.tsx  # Tela de cadastro
+│   ├── Home.tsx           # Tela inicial
+│   ├── ListaMotos.tsx     # Lista de motos
+│   ├── CadastroMoto.tsx   # Cadastro de moto
+│   ├── FilialListScreen.tsx    # Lista de filiais
+│   ├── FilialFormScreen.tsx    # Formulário de filial
+│   └── Configuracoes.tsx  # Configurações e logout
+├── services/            # Serviços e integrações
+│   ├── api.ts          # Configuração Axios
+│   ├── authService.ts  # Serviço de autenticação Firebase
+│   ├── motoService.ts  # CRUD de motos
+│   ├── filialService.ts # CRUD de filiais
+│   ├── firebase.ts     # Configuração Firebase
+│   └── storage.ts      # AsyncStorage
+├── theme/              # Sistema de temas
+│   └── index.ts        # Cores, tipografia e espaçamentos
+└── types/              # Definições TypeScript
+    └── index.ts        # Interfaces e tipos
 ```
 
 ## 🎨 Design System
 
-- Cores consistentes
-- Tipografia hierárquica
-- Componentes reutilizáveis
-- Feedback visual
-- Validações em tempo real
+### Sistema de Cores
+- **Apple HIG Colors**: 60+ cores seguindo diretrizes da Apple
+- **Cores Semânticas**: success, error, warning, info
+- **Modo Escuro**: Cores otimizadas para visibilidade
+- **Cores do Sistema**: systemBlue, systemGreen, etc.
 
-## 📝 Solução
+### Tipografia
+- **SF Pro Display/Text**: Seguindo Apple HIG
+- **12 Estilos**: largeTitle, title1-3, headline, body, callout, etc.
+- **Line Height**: Otimizado para legibilidade
+- **Letter Spacing**: Seguindo especificações da Apple
 
-O app foi desenvolvido seguindo as melhores práticas de React Native, com foco em:
+### Componentes
+- **Button**: 4 variantes (primary, secondary, tertiary, destructive)
+- **Card**: 3 variantes (elevated, filled, outlined)
+- **Input**: Validações, ícones, estados de foco
+- **Responsivos**: Adaptam-se ao tema automaticamente
 
-1. **Componentização**
-   - Componentes reutilizáveis
-   - Props tipadas
-   - Estilos consistentes
+## 🔌 Integração com API .NET
 
-2. **Gerenciamento de Estado**
-   - useState para formulários
-   - Context API quando necessário
-   - AsyncStorage para persistência
+### Endpoints Implementados
+- **Motos**: GET, POST, PUT, DELETE `/api/Moto`
+- **Filiais**: GET, POST, PUT, DELETE `/api/Filial`
+- **Toggle Status**: PATCH `/api/Filial/{id}/toggle-active`
 
-3. **Navegação**
-   - Stack Navigator para fluxos
-   - Tab Navigator para navegação principal
-   - Tipagem forte nas rotas
+### Características
+- **Timeout**: 10 segundos por requisição
+- **Interceptors**: Logging de requisições/respostas
+- **Tratamento de Erros**: Mensagens específicas por status
+- **Fallback Local**: Dados salvos localmente quando API falha
 
-4. **UX/UI**
-   - Feedback visual
-   - Validações em tempo real
-   - Interface intuitiva
-   - Cores significativas
+## 📚 Documentação Adicional
 
-5. **Código**
-   - TypeScript
-   - ESLint
-   - Prettier
-   - Comentários relevantes # Mobile---Challenge
+- **[API_INTEGRATION_README.md](./API_INTEGRATION_README.md)** - Guia completo de integração
+
+## 🏗️ Arquitetura
+
+### Padrões Implementados
+- **Separation of Concerns**: Componentes, serviços, contextos separados
+- **TypeScript**: Tipagem forte em todo o projeto
+- **Context API**: Gerenciamento de estado global
+- **Custom Hooks**: Lógica reutilizável
+- **Error Boundaries**: Tratamento robusto de erros
+
+### Boas Práticas
+- **Nomenclatura**: PascalCase para componentes, camelCase para funções
+- **Estrutura**: Arquivos organizados por funcionalidade
+- **Performance**: useCallback, useMemo quando necessário
+- **Acessibilidade**: Labels e feedback visual adequados
+
+## 🚀 Funcionalidades Avançadas
+
+### Sistema de Temas
+- **Persistência**: Tema salvo no AsyncStorage
+- **Toggle Dinâmico**: Mudança instantânea sem reload
+- **Componentes Adaptativos**: Todos respondem ao tema
+- **Cores Contextuais**: Adaptação automática de cores
+
+### Tratamento de Erros
+- **Específico por Tipo**: Diferentes mensagens por erro
+- **Fallback Inteligente**: Dados locais quando API falha
+- **Logging Detalhado**: Console logs para debugging
+- **UX Amigável**: Alertas informativos para o usuário
+
+### Validações
+- **Tempo Real**: Validação durante digitação
+- **Específicas**: Regras por tipo de campo
+- **Mensagens Claras**: Feedback em português
+- **Prevenção**: Bloqueio de envio com dados inválidos
+
+## 📱 Compatibilidade
+
+- **iOS**: 13.0+
+- **Android**: API 21+ (Android 5.0)
+- **Expo**: 53.0.22
+- **React Native**: 0.79.5
+
+## 🔒 Segurança
+
+- **Firebase Auth**: Autenticação segura
+- **Token Management**: Renovação automática
+- **Data Validation**: Validação client-side e server-side
+- **Secure Storage**: AsyncStorage para dados sensíveis
+
+---
+
+## 📞 Suporte
+
+Para dúvidas ou problemas:
+- **Documentação**: Consulte os arquivos README específicos
+- **API**: Verifique se a API .NET está rodando na porta 5001
+
+**Desenvolvido com ❤️ para o desafio Mottu**
