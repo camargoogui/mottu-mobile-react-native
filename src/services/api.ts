@@ -1,21 +1,19 @@
 import axios from 'axios';
+import { API_CONFIG } from '../config/api';
 
-// Configure o baseURL com o IP local da sua máquina e porta da API .NET
+// Configuração automática da API baseada na plataforma
 // IMPORTANTE: 
-// - localhost:5001 funciona apenas no emulador Android
-// - Para dispositivo físico ou iOS, use seu IP local
-// - Para que o IP local funcione, a API deve rodar com: dotnet run --urls "http://0.0.0.0:5001"
+// - Para emulador Android: usa 10.0.2.2 automaticamente
+// - Para iOS Simulator: usa localhost automaticamente  
+// - Para dispositivo físico: usa IP configurado em src/config/api.ts
+// - Para que funcione, a API deve rodar com: dotnet run --urls "http://0.0.0.0:5001"
 
-// Descomente a linha apropriada:
-// const baseURL = 'http://localhost:5001/api'; // Para emulador Android
-const baseURL = 'http://172.16.72.204:5001/api'; // Para dispositivo físico/iOS
+const baseURL = API_CONFIG.BASE_URL;
 
 const api = axios.create({
   baseURL,
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  timeout: API_CONFIG.TIMEOUT,
+  headers: API_CONFIG.DEFAULT_HEADERS,
 });
 
 // Interceptor para logging de requisições (desenvolvimento)

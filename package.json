@@ -6,7 +6,10 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "update-api": "node scripts/update-api-config.js",
+    "get-ip": "node scripts/get-ip.js",
+    "dev": "npm run update-api && npm start"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
