@@ -21,7 +21,14 @@ Este documento descreve como a integração com a API .NET foi implementada no a
 
 ## 🔧 Configuração da API
 
-### ✅ Configuração Automática (Recomendado)
+### 🚨 Problema Comum
+
+O IP da sua máquina muda toda vez que você:
+- Reinicia o roteador
+- Reconecta na rede Wi-Fi  
+- Muda de rede (casa/trabalho)
+
+### ✅ Solução: Configuração Automática
 
 O app agora detecta automaticamente o IP correto para cada plataforma:
 
@@ -29,7 +36,7 @@ O app agora detecta automaticamente o IP correto para cada plataforma:
 - **🍎 iOS Simulator**: `localhost:5001` (automático)  
 - **📱 Dispositivo Físico**: IP detectado automaticamente
 
-### 🚀 Comandos para Configuração
+### 🚀 Como Usar
 
 #### **Opção 1: Comando Único (Recomendado)**
 ```bash
@@ -52,13 +59,14 @@ npm run get-ip
 npm start
 ```
 
-### 📁 Configuração Manual (Apenas se necessário)
+#### **Opção 3: Manual (Apenas se necessário)**
+```bash
+# 1. Descobre seu IP
+npm run get-ip
 
-Para dispositivos físicos, edite `src/config/api.ts`:
-
-```typescript
-// Linha 25 - substitua pelo seu IP atual
-return '192.168.68.106'; // ← Seu IP aqui
+# 2. Edita src/config/api.ts com o IP retornado
+# 3. Inicia o app
+npm start
 ```
 
 ### 🔍 Como Descobrir Seu IP
@@ -76,6 +84,27 @@ ifconfig | grep "inet " | grep -v 127.0.0.1
 # Windows
 ipconfig
 ```
+
+### 📱 Configuração por Plataforma
+
+| Plataforma | IP | Configuração |
+|------------|----|--------------| 
+| **Emulador Android** | `10.0.2.2:5001` | ✅ Automático |
+| **iOS Simulator** | `localhost:5001` | ✅ Automático |
+| **Dispositivo Físico** | IP da máquina | 🔄 Script automático |
+
+### 🛠️ Configuração da API .NET
+
+Para que funcione com dispositivos físicos, rode a API com:
+
+```bash
+dotnet run --urls "http://0.0.0.0:5001"
+```
+
+**Por quê `0.0.0.0`?**
+- `localhost` só aceita conexões da própria máquina
+- `0.0.0.0` aceita conexões de qualquer IP da rede
+- Permite que dispositivos físicos se conectem
 
 ## 📱 Funcionalidades por Tela
 
@@ -211,12 +240,27 @@ Os logs aparecem no console do React Native:
 ```
 
 ### Problemas Comuns
-1. **"Network Error"**: 
-   - Execute `npm run update-api` para atualizar o IP
-   - Verifique se a API está rodando: `dotnet run --urls "http://0.0.0.0:5001"`
-2. **Timeout**: API demorou mais de 10 segundos para responder
-3. **CORS**: Configure CORS na API .NET se necessário
-4. **IP Mudou**: Execute `npm run dev` para detectar e atualizar automaticamente
+
+#### **"Network Error"**
+1. Verifique se a API está rodando: `dotnet run --urls "http://0.0.0.0:5001"`
+2. Atualize o IP: `npm run update-api`
+3. Verifique o IP: `npm run get-ip`
+
+#### **"Connection Refused"**
+1. Confirme que a API está na porta 5001
+2. Teste no navegador: `http://SEU_IP:5001/api/Moto`
+3. Verifique firewall/antivírus
+
+#### **IP Mudou**
+1. Execute: `npm run update-api`
+2. Ou use o comando completo: `npm run dev`
+
+#### **Timeout**
+- API demorou mais de 10 segundos para responder
+- Verifique a conexão de rede
+
+#### **CORS**
+- Configure CORS na API .NET se necessário
 
 ## 📱 Navegação
 
@@ -242,10 +286,16 @@ Para usar a integração:
 4. **Implemente autenticação** se a API exigir
 5. **Configure CORS** na API .NET se necessário
 
-## 📚 Documentação Adicional
+## 📚 Arquivos Relacionados
 
-- **`API_CONFIG_GUIDE.md`**: Guia completo de configuração automática
 - **`scripts/`**: Scripts para detecção e atualização de IP
 - **`src/config/api.ts`**: Configuração centralizada da API
+- **`src/services/api.ts`**: Cliente HTTP configurado
+- **`src/services/motoService.ts`**: Serviços para API de Motos
+- **`src/services/filialService.ts`**: Serviços para API de Filiais
+
+---
+
+**🎉 Agora você não precisa mais alterar o IP manualmente toda vez!**
 
 A integração está completa e pronta para uso! 🚀
