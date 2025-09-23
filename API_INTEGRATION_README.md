@@ -26,7 +26,7 @@ Edite o arquivo `src/services/api.ts` e altere o `baseURL`:
 
 ```typescript
 // Configure o baseURL com o IP local da sua máquina e porta da API .NET
-const baseURL = 'http://192.168.1.100:5000/api'; // Altere para o seu IP local
+const baseURL = 'http://192.168.68.106:5000/api'; // Altere para o seu IP local
 ```
 
 **Exemplo de IPs comuns:**
