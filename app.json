@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Mottu-Challenge-Mobile",
-    "slug": "Mottu-Challenge-Mobile",
+    "name": "Mottu Mobile React Native",
+    "slug": "mottu-mobile-react-native",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,7 +13,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.Mottu-Challenge-Mobile"
+      "bundleIdentifier": "com.anonymous.mottu-mobile-react-native"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +21,7 @@
         "backgroundColor": "#4CAF50"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.MottuChallengeMobile"
+      "package": "com.anonymous.mottu-mobile-react-native"
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -1,4 +1,4 @@
-package com.anonymous.MottuChallengeMobile
+package com.anonymous.mottu_mobile_react_native
 
 import android.app.Application
 import android.content.res.Configuration

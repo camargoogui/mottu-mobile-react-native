@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.anonymous.MottuChallengeMobile'
+    namespace 'com.anonymous.mottu_mobile_react_native'
     defaultConfig {
-        applicationId 'com.anonymous.MottuChallengeMobile'
+        applicationId 'com.anonymous.mottu_mobile_react_native'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

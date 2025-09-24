@@ -1,4 +1,4 @@
-package com.anonymous.MottuChallengeMobile
+package com.anonymous.mottu_mobile_react_native
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

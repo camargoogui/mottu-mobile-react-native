@@ -1,4 +1,4 @@
-# 🏍 Mottu Challenge - Gestão Inteligente de Pátio
+# 🏍 Mottu Mobile React Native - Gestão Inteligente de Pátio
 
 Aplicativo mobile desenvolvido em React Native com Expo para gestão inteligente do pátio de motos da Mottu, com integração completa à API .NET e sistema de autenticação Firebase.
 
@@ -69,14 +69,15 @@ Aplicativo mobile desenvolvido em React Native com Expo para gestão inteligente
 - Node.js 18+
 - Expo CLI
 - Dispositivo móvel com Expo Go ou emulador
+- **API .NET**: [mottu-api-dotnet](https://github.com/camargoogui/mottu-api-dotnet.git) (obrigatória para testar endpoints)
 
 ### 2. Instalação
 ```bash
 # Clone o repositório
-git clone https://github.com/camargoogui/Mobile---Challenge-3
+git clone https://github.com/camargoogui/mottu-mobile-react-native
 
 # Navegue para o diretório
-cd Mobile---Challenge-3
+cd mottu-mobile-react-native
 
 # Instale as dependências
 npm install
@@ -103,9 +104,39 @@ npm run ios      # Para iOS
 ```
 
 ### 5. Configuração da API .NET
+
+**⚠️ IMPORTANTE**: Para testar os endpoints, você precisa rodar a API .NET junto com o app mobile.
+
+#### 5.1. Clone e Configure a API
 ```bash
-# Na pasta da API .NET, execute:
+# Clone o repositório da API
+git clone https://github.com/camargoogui/mottu-api-dotnet.git
+cd mottu-api-dotnet
+
+# Navegue para a pasta da aplicação
+cd MottuApi/MottuApi.Presentation
+
+# Execute a API
 dotnet run --urls "http://0.0.0.0:5001"
+```
+
+#### 5.2. Verificar se a API está funcionando
+```bash
+# Teste se a API está respondendo
+curl -X GET "http://localhost:5001/api/filial"
+
+# Ou acesse o Swagger para ver todos os endpoints
+open http://localhost:5001
+```
+
+#### 5.3. Configurar o IP no App Mobile
+```bash
+# Configure o IP da API em src/services/api.ts
+const baseURL = 'http://SEU_IP_LOCAL:5001/api';
+
+# Para descobrir seu IP:
+# macOS/Linux: ifconfig | grep "inet "
+# Windows: ipconfig
 ```
 
 ## 📁 Estrutura do Projeto
@@ -165,6 +196,9 @@ src/
 
 ## 🔌 Integração com API .NET
 
+### 📡 Repositório da API
+**Link da API**: [https://github.com/camargoogui/mottu-api-dotnet.git](https://github.com/camargoogui/mottu-api-dotnet.git)
+
 ### Endpoints Implementados
 - **Motos**: GET, POST, PUT, DELETE `/api/Moto`
 - **Filiais**: GET, POST, PUT, DELETE `/api/Filial`
@@ -175,6 +209,28 @@ src/
 - **Interceptors**: Logging de requisições/respostas
 - **Tratamento de Erros**: Mensagens específicas por status
 - **Fallback Local**: Dados salvos localmente quando API falha
+
+### 🚀 Como Testar a Integração
+
+1. **Clone e execute a API .NET**:
+   ```bash
+   git clone https://github.com/camargoogui/mottu-api-dotnet.git
+   cd mottu-api-dotnet/MottuApi/MottuApi.Presentation
+   dotnet run --urls "http://0.0.0.0:5001"
+   ```
+
+2. **Configure o IP no app mobile**:
+   ```bash
+   # Em src/services/api.ts
+   const baseURL = 'http://SEU_IP_LOCAL:5001/api';
+   ```
+
+3. **Execute o app mobile**:
+   ```bash
+   npm start
+   ```
+
+4. **Teste os endpoints** através do app ou pelo Swagger em `http://localhost:5001`
 
 ## 📚 Documentação Adicional
 
