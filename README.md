@@ -8,9 +8,9 @@ Aplicativo mobile desenvolvido em React Native com Expo para gestão inteligente
 
 ## 👥 Integrantes
 
-- **RM556270** - Bianca Vitoria - 2TDSPZ
-- **RM555166** - Guilherme Camargo - 2TDSPM  
-- **RM555131** - Icaro Americo - 2TDSPM
+- **RM556270** - Bianca Vitoria - 2TDSPZ | https://github.com/biancavitoria15
+- **RM555166** - Guilherme Camargo - 2TDSPM | https://github.com/camargoogui
+- **RM555131** - Icaro Americo - 2TDSPM | https://github.com/icaroalb1
 
 ## 🚀 Tecnologias
 
