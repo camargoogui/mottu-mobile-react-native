@@ -2,6 +2,10 @@
 
 Aplicativo mobile desenvolvido em React Native com Expo para gestão inteligente do pátio de motos da Mottu, com integração completa à API .NET e sistema de autenticação Firebase.
 
+## 🎥 Vídeo Demonstrativo
+
+[Link para o vídeo no YouTube](https://youtu.be/cWPtQ3FW5p0)
+
 ## 👥 Integrantes
 
 - **RM556270** - Bianca Vitoria - 2TDSPZ
