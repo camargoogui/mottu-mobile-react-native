@@ -12,6 +12,19 @@ Aplicativo mobile desenvolvido em React Native com Expo para gestão inteligente
 - **RM555166** - Guilherme Camargo - 2TDSPM | https://github.com/camargoogui
 - **RM555131** - Icaro Americo - 2TDSPM | https://github.com/icaroalb1
 
+## 📚 Documentação Adicional
+
+### Push Notifications
+Para documentação completa sobre notificações push, veja:
+- [PUSH_NOTIFICATIONS_README.md](./PUSH_NOTIFICATIONS_README.md)
+
+Inclui:
+- Setup e configuração
+- Exemplos de código
+- Integração com backend
+- Scripts de teste
+- Solução de problemas
+
 ## 🚀 Tecnologias
 
 ### Core
@@ -24,6 +37,7 @@ Aplicativo mobile desenvolvido em React Native com Expo para gestão inteligente
 - **Firebase Authentication** 12.2.1
 - **Axios** 1.12.2 (Integração API .NET)
 - **AsyncStorage** 2.1.2
+- **Expo Notifications** 0.x (Push notifications)
 
 ### UI/UX
 - **Material Icons** (@expo/vector-icons)
@@ -37,6 +51,13 @@ Aplicativo mobile desenvolvido em React Native com Expo para gestão inteligente
 - **Validação de formulários** em tempo real
 - **Persistência de sessão** com AsyncStorage
 - **Logout seguro** com limpeza de dados
+
+### 🔔 Push Notifications
+- **Notificações push** com Expo Notifications
+- **Solicitação de permissões** iOS/Android
+- **Deep linking** baseado em dados da notificação
+- **Tela de debug** integrada para testes
+- **Handlers customizáveis** para foreground/background
 
 ### 🏍️ CRUD Completo de Motos
 - **Listar Motos** com integração à API .NET

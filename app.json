@@ -11,6 +11,18 @@
       "resizeMode": "contain",
       "backgroundColor": "#4CAF50"
     },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#4CAF50",
+          "sounds": [
+            "./assets/notification.wav"
+          ]
+        }
+      ]
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.mottu-mobile-react-native"
@@ -21,10 +33,18 @@
         "backgroundColor": "#4CAF50"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.mottu-mobile-react-native"
+      "package": "com.anonymous.mottu-mobile-react-native",
+      "permissions": [
+        "POST_NOTIFICATIONS"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id"
+      }
     }
   }
 }
