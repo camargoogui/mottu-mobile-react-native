@@ -203,23 +203,6 @@ export const Configuracoes = () => {
         </View>
       </View>
 
-      {/* Seção de Push Notifications */}
-      <View style={[styles.secao, { backgroundColor: theme.colors.card }]}>
-        <Text style={[styles.subtitulo, { color: theme.colors.text.primary }]}>Notificações Push</Text>
-        <Text style={[styles.dataInfo, { color: theme.colors.text.secondary }]}>
-          Configure e teste notificações push
-        </Text>
-        <TouchableOpacity
-          style={[styles.pushButton, { backgroundColor: theme.colors.primary }]}
-          onPress={() => navigation.navigate('PushDebug')}
-        >
-          <MaterialIcons name="notifications" size={24} color="#FFFFFF" />
-          <Text style={[styles.pushButtonText, { color: '#FFFFFF' }]}>
-            🔔 Configurar Notificações Push
-          </Text>
-        </TouchableOpacity>
-      </View>
-
       {/* Seção de Dados */}
       <View style={[styles.secao, { backgroundColor: theme.colors.card }]}>
         <Text style={[styles.subtitulo, { color: theme.colors.text.primary }]}>Gerenciar Dados</Text>
@@ -326,18 +309,6 @@ const styles = StyleSheet.create({
   },
   dataButton: {
     width: '100%',
-  },
-  pushButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-    borderRadius: 8,
-    gap: 12,
-  },
-  pushButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
   },
   logoutSection: {
     marginTop: 32,

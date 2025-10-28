@@ -8,6 +8,7 @@ import { Input } from '../components/Input';
 import { StorageService } from '../services/storage';
 import { MotoService } from '../services/motoService';
 import { useTheme } from '../contexts/ThemeContext';
+import { notificationService } from '../services/notifications';
 
 type Props = NativeStackScreenProps<MotosStackParamList, 'CadastroMoto'>;
 
@@ -85,6 +86,15 @@ export const CadastroMoto = ({ navigation }: Props) => {
       // Tenta salvar na API primeiro
       try {
         await MotoService.create(novaMoto);
+        
+        // Envia notificação de sucesso
+        await notificationService.sendTestNotification(
+          '🏍️ Nova Moto Cadastrada',
+          `${modelo} - Placa: ${placa.trim().toUpperCase()} foi cadastrada com sucesso!`,
+          { screen: 'ListaMotos' },
+          2 // 2 segundos de delay
+        );
+        
         Alert.alert('Sucesso', 'Moto cadastrada com sucesso!', [
           { text: 'OK', onPress: () => navigation.goBack() }
         ]);

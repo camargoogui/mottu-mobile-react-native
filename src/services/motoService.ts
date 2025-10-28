@@ -60,7 +60,7 @@ export const MotoService = {
   // Listar todas as motos
   async getAll(): Promise<Moto[]> {
     try {
-      const response = await api.get('/Moto?pageSize=50');
+      const response = await api.get('/v1/moto?pageSize=50');
       console.log('📥 Resposta da API Motos:', response.data);
       
       // A API retorna { data: [], page: 1, ... }
@@ -93,7 +93,7 @@ export const MotoService = {
   // Buscar moto por ID
   async getById(id: string): Promise<Moto> {
     try {
-      const response = await api.get(`/Moto/${id}`);
+      const response = await api.get(`/v1/moto/${id}`);
       return adaptMotoFromApi(response.data);
     } catch (error) {
       console.error('Erro ao buscar moto:', error);
@@ -104,7 +104,7 @@ export const MotoService = {
   // Criar nova moto
   async create(moto: CreateMotoRequest): Promise<Moto> {
     try {
-      const response = await api.post('/Moto', moto);
+      const response = await api.post('/v1/moto', moto);
       return adaptMotoFromApi(response.data);
     } catch (error) {
       console.error('Erro ao criar moto:', error);
@@ -116,9 +116,9 @@ export const MotoService = {
   async update(id: string, moto: UpdateMotoRequest): Promise<Moto> {
     try {
       console.log('🚀 Dados sendo enviados para API:', JSON.stringify(moto, null, 2));
-      console.log(`🌐 URL: PUT ${api.defaults.baseURL}/Moto/${id}`);
+      console.log(`🌐 URL: PUT ${api.defaults.baseURL}/v1/moto/${id}`);
       
-      const response = await api.put(`/Moto/${id}`, moto);
+      const response = await api.put(`/v1/moto/${id}`, moto);
       
       console.log('✅ Resposta da API - Status:', response.status);
       console.log('✅ Dados retornados:', JSON.stringify(response.data, null, 2));
@@ -140,9 +140,9 @@ export const MotoService = {
       }
 
       console.log(`🚀 Tentando deletar moto ID: ${motoId}`);
-      console.log(`🌐 URL: ${api.defaults.baseURL}/Moto/${motoId}`);
+      console.log(`🌐 URL: ${api.defaults.baseURL}/v1/moto/${motoId}`);
       
-      const response = await api.delete(`/Moto/${motoId}`, {
+      const response = await api.delete(`/v1/moto/${motoId}`, {
         headers: {
           'Content-Type': 'application/json',
           'Accept': '*/*'

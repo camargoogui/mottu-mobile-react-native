@@ -52,7 +52,7 @@ export const FilialService = {
   async getAll(): Promise<Filial[]> {
     try {
       // Buscar com pageSize maior para ver todas as filiais
-      const response = await api.get('/Filial?pageSize=50');
+      const response = await api.get('/v1/filial?pageSize=50');
       console.log('📥 Resposta completa da API:', response.data);
       
       // A API retorna { data: [], page: 1, ... }
@@ -69,7 +69,7 @@ export const FilialService = {
   // Buscar filial por ID
   async getById(id: string): Promise<Filial> {
     try {
-      const response = await api.get(`/Filial/${id}`);
+      const response = await api.get(`/v1/filial/${id}`);
       return adaptFilialFromApi(response.data);
     } catch (error) {
       console.error('Erro ao buscar filial:', error);
@@ -81,7 +81,7 @@ export const FilialService = {
   async create(filial: CreateFilialRequest): Promise<Filial> {
     try {
       console.log('📤 Dados enviados para API:', filial);
-      const response = await api.post('/Filial', filial);
+      const response = await api.post('/v1/filial', filial);
       return adaptFilialFromApi(response.data);
     } catch (error: any) {
       console.error('Erro ao criar filial:', error);
@@ -105,7 +105,7 @@ export const FilialService = {
   // Atualizar filial existente
   async update(id: string, filial: UpdateFilialRequest): Promise<Filial> {
     try {
-      const response = await api.put(`/Filial/${id}`, filial);
+      const response = await api.put(`/v1/filial/${id}`, filial);
       return adaptFilialFromApi(response.data);
     } catch (error) {
       console.error('Erro ao atualizar filial:', error);
@@ -116,7 +116,7 @@ export const FilialService = {
   // Deletar filial
   async delete(id: string): Promise<void> {
     try {
-      await api.delete(`/Filial/${id}`);
+      await api.delete(`/v1/filial/${id}`);
     } catch (error: any) {
       console.error('Erro ao deletar filial:', error);
       console.log('📋 Detalhes do erro:', error.response?.data);
@@ -145,7 +145,7 @@ export const FilialService = {
   // Ativar/desativar filial
   async toggleActive(id: string): Promise<Filial> {
     try {
-      const response = await api.patch(`/Filial/${id}/toggle-active`);
+      const response = await api.patch(`/v1/filial/${id}/ativar`);
       return response.data;
     } catch (error) {
       console.error('Erro ao alterar status da filial:', error);

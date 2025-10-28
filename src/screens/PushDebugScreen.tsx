@@ -54,36 +54,11 @@ export const PushDebugScreen = () => {
   };
 
   const handleGetPushToken = async () => {
-    setIsLoading(true);
-    try {
-      const token = await notificationService.getPushToken();
-      
-      if (token) {
-        setPushToken(token.data);
-        
-        // Mostra alerta com opção de copiar
-        Alert.alert(
-          '📱 Token de Push',
-          token.data.substring(0, 50) + '...',
-          [
-            { text: 'OK' },
-            { 
-              text: 'Copiar Token', 
-              onPress: () => {
-                console.log('Token completo:', token.data);
-              }
-            },
-          ]
-        );
-      } else {
-        Alert.alert('Erro', 'Não foi possível obter o token');
-      }
-    } catch (error) {
-      console.error('Erro ao obter token:', error);
-      Alert.alert('Erro', 'Erro ao obter token de push');
-    } finally {
-      setIsLoading(false);
-    }
+    Alert.alert(
+      '📴 Push Tokens Remotos Desabilitados',
+      'Push notifications remotas estão desabilitadas para evitar conflito com Firebase.\n\n✅ Notificações locais estão funcionando perfeitamente!\n\nTeste com o botão "Enviar Notificação de Teste" abaixo.',
+      [{ text: 'OK' }]
+    );
   };
 
   const handleSendTestNotification = async () => {

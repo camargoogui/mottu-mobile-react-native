@@ -42,7 +42,8 @@ class NotificationService {
     // Listener para notificações recebidas em foreground
     const receivedSubscription = expoNotificationsClient.addNotificationReceivedListener(
       (notification) => {
-        console.log('📨 Notificação recebida:', notification);
+        const { title, body, data } = notification.request.content;
+        console.log('📨 Notificação recebida:', { title, body, data });
         
         // Mostra alerta customizado em foreground
         if (this.config.showNotificationsInForeground) {
@@ -59,7 +60,8 @@ class NotificationService {
     // Listener para quando o usuário toca na notificação
     const responseSubscription = expoNotificationsClient.addNotificationResponseReceivedListener(
       (response) => {
-        console.log('👆 Notificação tocada:', response);
+        const { title, body, data } = response.notification.request.content;
+        console.log('👆 Notificação tocada:', { title, body, data });
         
         // Processa deep link/navegação
         this.handleNotificationTapped(response.notification);
@@ -88,8 +90,8 @@ class NotificationService {
         {
           text: 'Ver',
           onPress: () => {
-            if (data?.screen) {
-              this.navigateToScreen(data.screen, data.params);
+            if (data?.screen && typeof data.screen === 'string') {
+              this.navigateToScreen(data.screen, data.params as Record<string, any>);
             }
           },
         },
@@ -105,8 +107,8 @@ class NotificationService {
     const { data } = notification.request.content;
 
     // Navega para a tela especificada nos dados
-    if (data?.screen) {
-      this.navigateToScreen(data.screen, data.params);
+    if (data?.screen && typeof data.screen === 'string') {
+      this.navigateToScreen(data.screen, data.params as Record<string, any>);
     }
   }
 
@@ -114,7 +116,7 @@ class NotificationService {
    * Navega para uma tela específica baseada nos dados da notificação
    * TODO: Integrar com React Navigation quando o sistema estiver pronto
    */
-  private navigateToScreen(screen: string, params?: any) {
+  private navigateToScreen(screen: string, params?: Record<string, any>) {
     console.log('🧭 Navegando para:', screen, params);
     
     // Esta lógica será implementada com o sistema de navegação

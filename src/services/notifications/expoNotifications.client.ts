@@ -1,10 +1,11 @@
 /**
  * Cliente de notificações usando Expo Notifications
  * Responsável pela comunicação com o sistema de notificações nativo
+ * 
+ * NOTA: Desabilitado para evitar conflito com Firebase existente no projeto
  */
 
 import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { 
   NotificationPermissionStatus, 
@@ -17,11 +18,10 @@ import {
  */
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
     shouldShowBanner: true,
     shouldShowList: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
   }),
 });
 
@@ -68,29 +68,12 @@ export class ExpoNotificationsClient {
 
   /**
    * Obtém o token de push do dispositivo
+   * DESABILITADO: Não podemos usar FCM e não temos projectId configurado
    */
   async getPushToken(): Promise<PushToken | null> {
-    try {
-      const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
-
-      if (!projectId) {
-        console.warn('Project ID não encontrado. Verifique app.json ou eas.json');
-        return null;
-      }
-
-      // Em desenvolvimento, usa o token do Expo
-      const token = await Notifications.getExpoPushTokenAsync({
-        projectId,
-      });
-
-      return {
-        data: token.data,
-        type: 'expo',
-      };
-    } catch (error) {
-      console.error('Erro ao obter token de push:', error);
-      return null;
-    }
+    console.log('📴 Push tokens remotos desabilitados para evitar conflito com Firebase');
+    console.log('💡 Apenas notificações locais estão disponíveis');
+    return null;
   }
 
   /**
@@ -139,7 +122,7 @@ export class ExpoNotificationsClient {
           data,
           sound: true,
         },
-        trigger: seconds as any,
+        trigger: { seconds } as any,
       });
 
       return notificationId;
@@ -174,9 +157,8 @@ export class ExpoNotificationsClient {
       return {
         token,
         status,
-        isDevice: !Constants.isDevice,
         platform: Platform.OS,
-        projectId: Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId,
+        info: 'Push notifications locais disponíveis',
       };
     } catch (error) {
       console.error('Erro ao obter informações do dispositivo:', error);
