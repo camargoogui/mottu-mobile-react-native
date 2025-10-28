@@ -8,12 +8,17 @@ import {
   Switch,
   ScrollView,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Button } from '../components/Button';
 import { StorageService } from '../services/storage';
+import type { ConfiguracoesStackParamList } from '../navigation';
+
+type ConfiguracoesScreenNavigationProp = NativeStackNavigationProp<ConfiguracoesStackParamList>;
 
 const filiais = [
   'São Paulo - Centro',
@@ -27,6 +32,7 @@ export const Configuracoes = () => {
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
   const [filialSelecionada, setFilialSelecionada] = useState<string>('');
+  const navigation = useNavigation<ConfiguracoesScreenNavigationProp>();
 
   useEffect(() => {
     carregarFilial();
@@ -197,6 +203,23 @@ export const Configuracoes = () => {
         </View>
       </View>
 
+      {/* Seção de Push Notifications */}
+      <View style={[styles.secao, { backgroundColor: theme.colors.card }]}>
+        <Text style={[styles.subtitulo, { color: theme.colors.text.primary }]}>Notificações Push</Text>
+        <Text style={[styles.dataInfo, { color: theme.colors.text.secondary }]}>
+          Configure e teste notificações push
+        </Text>
+        <TouchableOpacity
+          style={[styles.pushButton, { backgroundColor: theme.colors.primary }]}
+          onPress={() => navigation.navigate('PushDebug')}
+        >
+          <MaterialIcons name="notifications" size={24} color="#FFFFFF" />
+          <Text style={[styles.pushButtonText, { color: '#FFFFFF' }]}>
+            🔔 Configurar Notificações Push
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Seção de Dados */}
       <View style={[styles.secao, { backgroundColor: theme.colors.card }]}>
         <Text style={[styles.subtitulo, { color: theme.colors.text.primary }]}>Gerenciar Dados</Text>
@@ -303,6 +326,18 @@ const styles = StyleSheet.create({
   },
   dataButton: {
     width: '100%',
+  },
+  pushButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    borderRadius: 8,
+    gap: 12,
+  },
+  pushButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
   logoutSection: {
     marginTop: 32,

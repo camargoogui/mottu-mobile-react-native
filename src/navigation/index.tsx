@@ -20,6 +20,7 @@ import { RegisterScreen } from '../screens/RegisterScreen';
 import { FilialListScreen } from '../screens/FilialListScreen';
 import { FilialFormScreen } from '../screens/FilialFormScreen';
 import { MotosFilialScreen } from '../screens/MotosFilialScreen';
+import { PushDebugScreen } from '../screens/PushDebugScreen';
 import { Moto, Filial } from '../types';
 
 export type RootStackParamList = {
@@ -54,10 +55,16 @@ export type FiliaisStackParamList = {
   MotosFilial: { filial: Filial };
 };
 
+export type ConfiguracoesStackParamList = {
+  ConfiguracoesScreen: undefined;
+  PushDebug: undefined;
+};
+
 const HomeStackNavigator = createNativeStackNavigator<HomeStackParamList>();
 const MotosStackNavigator = createNativeStackNavigator<MotosStackParamList>();
 const FiliaisStackNavigator = createNativeStackNavigator<FiliaisStackParamList>();
 const AuthStackNavigator = createNativeStackNavigator<AuthStackParamList>();
+const ConfiguracoesStackNavigator = createNativeStackNavigator<ConfiguracoesStackParamList>();
 const Tab = createBottomTabNavigator<RootStackParamList>();
 
 const HomeStack = () => {
@@ -201,6 +208,38 @@ const FiliaisStack = () => {
   );
 };
 
+const ConfiguracoesStack = () => {
+  const { theme } = useTheme();
+  
+  return (
+    <ConfiguracoesStackNavigator.Navigator
+      screenOptions={{
+        // Apple HIG Navigation Bar
+        headerStyle: {
+          backgroundColor: theme.colors.background,
+        },
+        headerTintColor: theme.colors.primary,
+        headerTitleStyle: {
+          fontSize: theme.typography.headline.fontSize,
+          fontWeight: theme.typography.headline.fontWeight as any,
+          color: theme.colors.label,
+        },
+      }}
+    >
+      <ConfiguracoesStackNavigator.Screen
+        name="ConfiguracoesScreen"
+        component={Configuracoes}
+        options={{ title: 'Configurações' }}
+      />
+      <ConfiguracoesStackNavigator.Screen
+        name="PushDebug"
+        component={PushDebugScreen}
+        options={{ title: 'Push Notifications Debug' }}
+      />
+    </ConfiguracoesStackNavigator.Navigator>
+  );
+};
+
 const AuthStack = () => {
   const { theme } = useTheme();
   
@@ -332,8 +371,9 @@ export const Navigation = () => {
         />
         <Tab.Screen
           name="Configuracoes"
-          component={Configuracoes}
+          component={ConfiguracoesStack}
           options={{
+            headerShown: false,
             title: 'Configurações',
             tabBarIcon: ({ color, size }) => (
               <MaterialIcons name="settings" size={size} color={color} />
