@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, StyleSheet, ViewStyle, Animated } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface CardProps {
@@ -16,6 +16,23 @@ export const Card = ({
   padding = 'medium'
 }: CardProps) => {
   const { theme } = useTheme();
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(20)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
   
   const getCardStyle = (): ViewStyle => {
     const baseStyle: ViewStyle = {
@@ -77,9 +94,18 @@ export const Card = ({
   };
 
   return (
-    <View style={[getCardStyle(), style]}>
+    <Animated.View
+      style={[
+        getCardStyle(),
+        style,
+        {
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+        },
+      ]}
+    >
       {children}
-    </View>
+    </Animated.View>
   );
 };
 
