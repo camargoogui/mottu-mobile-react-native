@@ -126,6 +126,7 @@ export const EdicaoMoto = ({ route, navigation }: Props) => {
             onPress={() => setStatus(statusOption)}
             variant={status === statusOption ? 'primary' : 'secondary'}
             style={styles.statusButton}
+            fullWidth={false}
           />
         ))}
       </View>
@@ -237,6 +238,7 @@ export const EdicaoMoto = ({ route, navigation }: Props) => {
             variant="primary"
             disabled={loading}
             style={styles.updateButton}
+            fullWidth={false}
           />
           
           <Button
@@ -244,6 +246,8 @@ export const EdicaoMoto = ({ route, navigation }: Props) => {
             onPress={() => navigation.goBack()}
             variant="secondary"
             disabled={loading}
+            style={styles.cancelButton}
+            fullWidth={false}
           />
         </View>
         
@@ -319,10 +323,14 @@ const styles = StyleSheet.create({
   },
   statusButtons: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 6,
+    width: '100%',
   },
   statusButton: {
     flex: 1,
+    minWidth: 0,
+    flexShrink: 1,
+    paddingHorizontal: 18,
   },
   preview: {
     padding: 16,
@@ -340,9 +348,17 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     gap: 12,
+    alignItems: 'center',
+    paddingHorizontal: 32,
   },
   updateButton: {
     marginBottom: 8,
+    maxWidth: 300,
+    width: '100%',
+  },
+  cancelButton: {
+    maxWidth: 300,
+    width: '100%',
   },
   loadingContainer: {
     flexDirection: 'row',
