@@ -6,11 +6,13 @@ import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { Text } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 type Props = NativeStackScreenProps<MotosStackParamList, 'DetalhesMoto'>;
 
 export const DetalhesMoto = ({ route, navigation }: Props) => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const { moto } = route.params;
 
   return (
@@ -28,20 +30,22 @@ export const DetalhesMoto = ({ route, navigation }: Props) => {
               {moto.modelo} {moto.ano}
             </Text>
             <Text style={[styles.cor, { color: theme.colors.text.secondary }]}>
-              Cor: {moto.cor}
+              {t('moto.colorLabel')}: {moto.cor}
             </Text>
           </View>
           <View style={[
             styles.statusBadge,
             { backgroundColor: moto.status === 'disponível' ? theme.colors.success : theme.colors.error }
           ]}>
-            <Text style={[styles.statusText, { color: '#FFFFFF' }]}>{moto.status}</Text>
+            <Text style={[styles.statusText, { color: '#FFFFFF' }]}>
+              {t(`moto.${moto.status === 'disponível' ? 'available' : moto.status === 'ocupada' ? 'occupied' : 'maintenance'}`)}
+            </Text>
           </View>
         </View>
 
         <View style={styles.infoSection}>
           <View style={[styles.filialSection, { backgroundColor: theme.colors.secondaryBackground }]}>
-            <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>🏢 Filial</Text>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>🏢 {t('moto.branch')}</Text>
             <View style={styles.filialInfo}>
               <View style={[styles.filialIdBadge, { backgroundColor: theme.colors.secondary }]}>
                 <Text style={[styles.filialIdText, { color: theme.colors.text.light }]}>ID: {moto.filialId}</Text>
@@ -52,19 +56,19 @@ export const DetalhesMoto = ({ route, navigation }: Props) => {
 
           <View style={styles.detailsGrid}>
             <View style={styles.detailItem}>
-              <Text style={[styles.label, { color: theme.colors.text.primary }]}>Condutor</Text>
+              <Text style={[styles.label, { color: theme.colors.text.primary }]}>{t('moto.driver')}</Text>
               <Text style={[styles.value, { color: theme.colors.text.secondary }]}>{moto.condutor}</Text>
             </View>
 
             {moto.vaga && (
               <View style={styles.detailItem}>
-                <Text style={[styles.label, { color: theme.colors.text.primary }]}>Vaga</Text>
+                <Text style={[styles.label, { color: theme.colors.text.primary }]}>{t('moto.spot')}</Text>
                 <Text style={[styles.value, { color: theme.colors.text.secondary }]}>{moto.vaga}</Text>
               </View>
             )}
 
             <View style={styles.detailItem}>
-              <Text style={[styles.label, { color: theme.colors.text.primary }]}>Localização</Text>
+              <Text style={[styles.label, { color: theme.colors.text.primary }]}>{t('moto.location')}</Text>
               <Text style={[styles.value, { color: theme.colors.text.secondary }]}>
                 {moto.localizacao.latitude.toFixed(6)}, {moto.localizacao.longitude.toFixed(6)}
               </Text>
@@ -75,24 +79,24 @@ export const DetalhesMoto = ({ route, navigation }: Props) => {
 
       <View style={styles.buttonContainer}>
         <Button
-          title="✏️ Editar Moto"
+          title={`✏️ ${t('moto.editMotorcycle')}`}
           onPress={() => navigation.navigate('EdicaoMoto', { moto })}
           style={styles.button}
         />
         <Button
-          title="Registrar Manutenção"
+          title={t('moto.registerMaintenance')}
           onPress={() => navigation.navigate('FormularioManutencao', { motoId: moto.id })}
           variant="secondary"
           style={styles.button}
         />
         <Button
-          title="Ver Manutenções"
+          title={t('moto.viewMaintenances')}
           onPress={() => navigation.navigate('ListaManutencoes')}
           variant="tertiary"
           style={styles.button}
         />
         <Button
-          title="Voltar"
+          title={t('common.back')}
           onPress={() => navigation.goBack()}
           variant="secondary"
           style={styles.button}

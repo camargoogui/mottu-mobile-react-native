@@ -7,6 +7,7 @@ import { Card } from '../components/Card';
 import { StorageService } from '../services/storage';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 
 const BANNER_URL = 'https://mottu.com.br/wp-content/uploads/2023/09/Imagem-1-PC.webp';
@@ -14,6 +15,7 @@ type Props = NativeStackScreenProps<HomeStackParamList, 'HomeScreen'>;
 
 export const Home = ({ navigation }: Props) => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const [totalVagas, setTotalVagas] = useState(0);
   const [motosAtivas, setMotosAtivas] = useState(0);
 
@@ -35,14 +37,14 @@ export const Home = ({ navigation }: Props) => {
       >
         <Image source={{ uri: BANNER_URL }} style={bannerStyle} resizeMode="cover" />
         <View style={styles.header}>
-          <Text style={[styles.title, { color: theme.colors.label }]}>Mottu Challenge</Text>
-          <Text style={[styles.subtitle, { color: theme.colors.secondaryLabel }]}>Gestão Inteligente de Pátio</Text>
+          <Text style={[styles.title, { color: theme.colors.label }]}>{t('auth.appTitle')}</Text>
+          <Text style={[styles.subtitle, { color: theme.colors.secondaryLabel }]}>{t('auth.appSubtitle')}</Text>
         </View>
 
         <Card style={styles.card}>
-          <Text style={[styles.cardTitle, { color: theme.colors.label }]}>Bem-vindo!</Text>
+          <Text style={[styles.cardTitle, { color: theme.colors.label }]}>{t('home.welcome')}!</Text>
           <Text style={[styles.cardText, { color: theme.colors.secondaryLabel }]}>
-            Gerencie suas motos e vagas do pátio de forma inteligente. Acompanhe o status do pátio em tempo real, cadastre novas motos e mantenha tudo sob controle com praticidade e segurança.
+            {t('home.welcomeMessage')}
           </Text>
         </Card>
 
@@ -50,30 +52,30 @@ export const Home = ({ navigation }: Props) => {
           <Card style={styles.statCard}>
             <MaterialIcons name="local-parking" size={32} color={theme.colors.primary} style={styles.statIcon} />
             <Text style={[styles.statNumber, { color: theme.colors.primary }]}>{totalVagas}</Text>
-            <Text style={[styles.statLabel, { color: theme.colors.text.secondary }]}>Vagas Totais</Text>
+            <Text style={[styles.statLabel, { color: theme.colors.text.secondary }]}>{t('home.totalParkingSpots')}</Text>
           </Card>
           <Card style={styles.statCard}>
             <MaterialIcons name="two-wheeler" size={32} color={theme.colors.primary} style={styles.statIcon} />
             <Text style={[styles.statNumber, { color: theme.colors.primary }]}>{motosAtivas}</Text>
-            <Text style={[styles.statLabel, { color: theme.colors.text.secondary }]}>Motos Ativas</Text>
+            <Text style={[styles.statLabel, { color: theme.colors.text.secondary }]}>{t('home.activeMotorcycles')}</Text>
           </Card>
         </View>
 
         <View style={styles.buttonContainer}>
           <Button
-            title="Ver Mapa do Pátio"
+            title={t('home.viewMap')}
             onPress={() => navigation.navigate('MapaPatio')}
             variant="primary"
           />
           <View style={styles.buttonRow}>
             <Button
-              title="Lista de Motos"
+              title={t('home.listMotorcycles')}
               onPress={() => navigation.getParent()?.navigate('Motos')}
               variant="secondary"
               style={styles.halfButton}
             />
             <Button
-              title="Gerenciar Filiais"
+              title={t('home.manageBranches')}
               onPress={() => navigation.getParent()?.navigate('Filiais')}
               variant="tertiary"
               style={styles.halfButton}
@@ -82,10 +84,10 @@ export const Home = ({ navigation }: Props) => {
         </View>
 
         <Card style={styles.tipsCard}>
-          <Text style={[styles.tipsTitle, { color: theme.colors.primary }]}>Dicas de Uso</Text>
-          <Text style={[styles.tipsText, { color: theme.colors.text.secondary }]}>• Utilize o mapa para localizar rapidamente vagas e motos.
-• Cadastre novas motos facilmente pelo menu.
-• Mantenha as informações sempre atualizadas para melhor controle do pátio.</Text>
+          <Text style={[styles.tipsTitle, { color: theme.colors.primary }]}>{t('home.usageTips')}</Text>
+          <Text style={[styles.tipsText, { color: theme.colors.text.secondary }]}>
+            {t('home.tip1')}{'\n'}{t('home.tip2')}{'\n'}{t('home.tip3')}
+          </Text>
         </Card>
       </ScrollView>
     </SafeAreaView>

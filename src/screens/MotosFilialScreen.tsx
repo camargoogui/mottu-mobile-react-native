@@ -7,12 +7,14 @@ import { Moto, Filial } from '../types';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { MaterialIcons } from '@expo/vector-icons';
 
 type Props = NativeStackScreenProps<FiliaisStackParamList, 'MotosFilial'>;
 
 export const MotosFilialScreen = ({ route, navigation }: Props) => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const { filial } = route.params;
   const [motos, setMotos] = useState<Moto[]>([]);
   const [loading, setLoading] = useState(false);
@@ -20,7 +22,7 @@ export const MotosFilialScreen = ({ route, navigation }: Props) => {
 
   useEffect(() => {
     navigation.setOptions({
-      title: `Motos - ${filial.nome}`,
+      title: `${t('motosFilial.title')} ${filial.nome}`,
     });
     loadMotosFilial();
   }, [navigation, filial]);
@@ -32,7 +34,7 @@ export const MotosFilialScreen = ({ route, navigation }: Props) => {
       setMotos(motosFilial);
     } catch (error) {
       console.error('Erro ao carregar motos da filial:', error);
-      Alert.alert('Erro', 'Não foi possível carregar as motos desta filial. Verifique sua conexão.');
+      Alert.alert(t('common.error'), t('motosFilial.loadError'));
     } finally {
       setLoading(false);
     }
@@ -44,7 +46,7 @@ export const MotosFilialScreen = ({ route, navigation }: Props) => {
       const motosFilial = await MotoService.getMotosByFilialId(filial.id);
       setMotos(motosFilial);
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível atualizar a lista de motos.');
+      Alert.alert(t('common.error'), t('motosFilial.updateError'));
     } finally {
       setRefreshing(false);
     }
@@ -55,9 +57,9 @@ export const MotosFilialScreen = ({ route, navigation }: Props) => {
       // Navegar para detalhes da moto na stack de motos
       // Como estamos na stack de filiais, vamos só mostrar um alert por enquanto
       Alert.alert(
-        'Detalhes da Moto',
-        `Placa: ${item.placa}\nModelo: ${item.modelo}\nAno: ${item.ano}\nCor: ${item.cor}\nStatus: ${item.status}`,
-        [{ text: 'OK' }]
+        t('motosFilial.motorcycleDetails'),
+        `${t('moto.plate')}: ${item.placa}\n${t('moto.model')}: ${item.modelo}\n${t('moto.year')}: ${item.ano}\n${t('moto.color')}: ${item.cor}\n${t('moto.statusLabel')}: ${t(`moto.${item.status === 'disponível' ? 'available' : item.status === 'ocupada' ? 'occupied' : 'maintenance'}`)}`,
+        [{ text: t('common.ok') }]
       );
     }}>
       <Card>
@@ -70,13 +72,15 @@ export const MotosFilialScreen = ({ route, navigation }: Props) => {
               <Text style={[styles.placa, { color: theme.colors.text.primary }]}>{item.placa}</Text>
             </View>
             <Text style={[styles.modelo, { color: theme.colors.text.secondary }]}>{item.modelo} {item.ano}</Text>
-            <Text style={[styles.cor, { color: theme.colors.text.secondary }]}>Cor: {item.cor}</Text>
+            <Text style={[styles.cor, { color: theme.colors.text.secondary }]}>{t('motosFilial.colorLabel')} {item.cor}</Text>
             <View style={styles.statusContainer}>
               <View style={[
                 styles.statusBadge,
                 { backgroundColor: item.status === 'disponível' ? theme.colors.success : theme.colors.error }
               ]}>
-                <Text style={[styles.statusText, { color: theme.colors.text.light }]}>{item.status}</Text>
+                <Text style={[styles.statusText, { color: theme.colors.text.light }]}>
+                  {t(`moto.${item.status === 'disponível' ? 'available' : item.status === 'ocupada' ? 'occupied' : 'maintenance'}`)}
+                </Text>
               </View>
             </View>
           </View>
@@ -97,7 +101,7 @@ export const MotosFilialScreen = ({ route, navigation }: Props) => {
       <View style={[styles.container, styles.centered, { backgroundColor: theme.colors.background }]}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
         <Text style={[styles.loadingText, { color: theme.colors.text.secondary }]}>
-          Carregando motos da filial...
+          {t('motosFilial.loading')}
         </Text>
       </View>
     );
@@ -119,19 +123,19 @@ export const MotosFilialScreen = ({ route, navigation }: Props) => {
         <View style={styles.estatisticas}>
           <View style={styles.estatisticaItem}>
             <Text style={[styles.estatisticaNumero, { color: theme.colors.primary }]}>{motos.length}</Text>
-            <Text style={[styles.estatisticaLabel, { color: theme.colors.text.secondary }]}>Total</Text>
+            <Text style={[styles.estatisticaLabel, { color: theme.colors.text.secondary }]}>{t('motosFilial.total')}</Text>
           </View>
           <View style={styles.estatisticaItem}>
             <Text style={[styles.estatisticaNumero, { color: theme.colors.success }]}>
               {motos.filter(m => m.status === 'disponível').length}
             </Text>
-            <Text style={[styles.estatisticaLabel, { color: theme.colors.text.secondary }]}>Disponíveis</Text>
+            <Text style={[styles.estatisticaLabel, { color: theme.colors.text.secondary }]}>{t('motosFilial.available')}</Text>
           </View>
           <View style={styles.estatisticaItem}>
             <Text style={[styles.estatisticaNumero, { color: theme.colors.error }]}>
               {motos.filter(m => m.status === 'manutenção').length}
             </Text>
-            <Text style={[styles.estatisticaLabel, { color: theme.colors.text.secondary }]}>Manutenção</Text>
+            <Text style={[styles.estatisticaLabel, { color: theme.colors.text.secondary }]}>{t('motosFilial.maintenance')}</Text>
           </View>
         </View>
       </Card>
@@ -155,13 +159,13 @@ export const MotosFilialScreen = ({ route, navigation }: Props) => {
             <View style={styles.emptyState}>
               <MaterialIcons name="motorcycle" size={60} color={theme.colors.text.secondary} />
               <Text style={[styles.emptyText, { color: theme.colors.text.secondary }]}>
-                Nenhuma moto encontrada
+                {t('motosFilial.emptyList')}
               </Text>
               <Text style={[styles.emptySubtext, { color: theme.colors.text.secondary }]}>
-                Esta filial não possui motos cadastradas
+                {t('motosFilial.emptySubtext')}
               </Text>
               <Text style={[styles.emptyHint, { color: theme.colors.text.secondary }]}>
-                Puxe para baixo para atualizar
+                {t('motosFilial.pullToRefresh')}
               </Text>
             </View>
           ) : null

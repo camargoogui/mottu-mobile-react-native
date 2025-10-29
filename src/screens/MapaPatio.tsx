@@ -6,11 +6,13 @@ import { Card } from '../components/Card';
 import { StorageService } from '../services/storage';
 import { Vaga, Moto } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'MapaPatio'>;
 
 export const MapaPatio = ({ navigation }: Props) => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const [vagas, setVagas] = useState<Vaga[]>([]);
   const [motos, setMotos] = useState<Moto[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -51,17 +53,17 @@ export const MapaPatio = ({ navigation }: Props) => {
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Card>
-        <Text style={[styles.title, { color: theme.colors.text.primary }]}>Mapa do Pátio</Text>
-        <Text style={[styles.subtitle, { color: theme.colors.text.secondary }]}>Status das Vagas em Tempo Real</Text>
+        <Text style={[styles.title, { color: theme.colors.text.primary }]}>{t('mapPatio.title')}</Text>
+        <Text style={[styles.subtitle, { color: theme.colors.text.secondary }]}>{t('mapPatio.subtitle')}</Text>
         
         <View style={styles.legendaContainer}>
           <View style={styles.legendaItem}>
             <View style={[styles.quadrado, { backgroundColor: theme.colors.success }]} />
-            <Text style={[styles.legendaText, { color: theme.colors.text.primary }]}>Livre ({totalLivres})</Text>
+            <Text style={[styles.legendaText, { color: theme.colors.text.primary }]}>{t('mapPatio.free')} ({totalLivres})</Text>
           </View>
           <View style={styles.legendaItem}>
             <View style={[styles.quadrado, { backgroundColor: theme.colors.error }]} />
-            <Text style={[styles.legendaText, { color: theme.colors.text.primary }]}>Ocupada ({totalOcupadas})</Text>
+            <Text style={[styles.legendaText, { color: theme.colors.text.primary }]}>{t('mapPatio.occupied')} ({totalOcupadas})</Text>
           </View>
         </View>
 
@@ -95,14 +97,14 @@ export const MapaPatio = ({ navigation }: Props) => {
       >
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: theme.colors.background }]}>
-            <Text style={[styles.modalTitle, { color: theme.colors.text.primary }]}>Informações da Moto</Text>
+            <Text style={[styles.modalTitle, { color: theme.colors.text.primary }]}>{t('mapPatio.motorcycleInfo')}</Text>
             {motoSelecionada ? (
               <>
-                <Text style={[styles.modalLabel, { color: theme.colors.text.primary }]}>Placa: <Text style={[styles.modalValue, { color: theme.colors.primary }]}>{motoSelecionada.placa}</Text></Text>
-                <Text style={[styles.modalLabel, { color: theme.colors.text.primary }]}>Modelo: <Text style={[styles.modalValue, { color: theme.colors.primary }]}>{motoSelecionada.modelo}</Text></Text>
-                <Text style={[styles.modalLabel, { color: theme.colors.text.primary }]}>Condutor: <Text style={[styles.modalValue, { color: theme.colors.primary }]}>{motoSelecionada.condutor}</Text></Text>
-                <Text style={[styles.modalLabel, { color: theme.colors.text.primary }]}>Status: <Text style={[styles.modalValue, { color: theme.colors.primary }]}>{motoSelecionada.status}</Text></Text>
-                <Text style={[styles.modalLabel, { color: theme.colors.text.primary }]}>Vaga: <Text style={[styles.modalValue, { color: theme.colors.primary }]}>{vagaSelecionada?.numero}</Text></Text>
+                <Text style={[styles.modalLabel, { color: theme.colors.text.primary }]}>{t('moto.plate')}: <Text style={[styles.modalValue, { color: theme.colors.primary }]}>{motoSelecionada.placa}</Text></Text>
+                <Text style={[styles.modalLabel, { color: theme.colors.text.primary }]}>{t('moto.model')}: <Text style={[styles.modalValue, { color: theme.colors.primary }]}>{motoSelecionada.modelo}</Text></Text>
+                <Text style={[styles.modalLabel, { color: theme.colors.text.primary }]}>{t('moto.driver')}: <Text style={[styles.modalValue, { color: theme.colors.primary }]}>{motoSelecionada.condutor}</Text></Text>
+                <Text style={[styles.modalLabel, { color: theme.colors.text.primary }]}>{t('moto.statusLabel')}: <Text style={[styles.modalValue, { color: theme.colors.primary }]}>{t(`moto.${motoSelecionada.status === 'disponível' ? 'available' : motoSelecionada.status === 'ocupada' ? 'occupied' : 'maintenance'}`)}</Text></Text>
+                <Text style={[styles.modalLabel, { color: theme.colors.text.primary }]}>{t('moto.spot')}: <Text style={[styles.modalValue, { color: theme.colors.primary }]}>{vagaSelecionada?.numero}</Text></Text>
                 <Pressable style={[styles.modalButtonSecondary, { backgroundColor: theme.colors.primary }]} onPress={() => {
                   setModalVisible(false);
                   navigation.getParent()?.navigate('Motos', {
@@ -110,14 +112,14 @@ export const MapaPatio = ({ navigation }: Props) => {
                     params: { moto: motoSelecionada }
                   });
                 }}>
-                  <Text style={[styles.modalButtonText, { color: theme.colors.text.light }]}>Ver detalhes</Text>
+                  <Text style={[styles.modalButtonText, { color: theme.colors.text.light }]}>{t('mapPatio.viewDetails')}</Text>
                 </Pressable>
                 <Pressable style={[styles.modalButton, { backgroundColor: theme.colors.primary }]} onPress={() => setModalVisible(false)}>
-                  <Text style={[styles.modalButtonText, { color: theme.colors.text.light }]}>Fechar</Text>
+                  <Text style={[styles.modalButtonText, { color: theme.colors.text.light }]}>{t('mapPatio.close')}</Text>
                 </Pressable>
               </>
             ) : (
-              <Text style={[styles.modalLabel, { color: theme.colors.text.primary }]}>Moto não encontrada.</Text>
+              <Text style={[styles.modalLabel, { color: theme.colors.text.primary }]}>{t('mapPatio.motorcycleNotFound')}</Text>
             )}
           </View>
         </View>

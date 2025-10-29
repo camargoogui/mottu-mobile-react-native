@@ -6,6 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { TouchableOpacity, ActivityIndicator, View } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Home } from '../screens/Home';
 import { MapaPatio } from '../screens/MapaPatio';
 import { ListaMotos } from '../screens/ListaMotos';
@@ -69,6 +70,7 @@ const Tab = createBottomTabNavigator<RootStackParamList>();
 
 const HomeStack = () => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   
   return (
     <HomeStackNavigator.Navigator
@@ -88,12 +90,12 @@ const HomeStack = () => {
       <HomeStackNavigator.Screen
         name="HomeScreen"
         component={Home}
-        options={{ title: 'Home' }}
+        options={{ title: t('navigation.home') }}
       />
       <HomeStackNavigator.Screen
         name="MapaPatio"
         component={MapaPatio}
-        options={{ title: 'Mapa do Pátio' }}
+        options={{ title: t('home.mapView') }}
       />
     </HomeStackNavigator.Navigator>
   );
@@ -101,6 +103,7 @@ const HomeStack = () => {
 
 const MotosStack = () => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   
   return (
     <MotosStackNavigator.Navigator
@@ -121,7 +124,7 @@ const MotosStack = () => {
         name="ListaMotosScreen"
         component={ListaMotos}
         options={({ navigation }) => ({
-          title: 'Lista de Motos',
+          title: t('moto.list'),
           headerRight: () => (
             <TouchableOpacity
               onPress={() => navigation.navigate('CadastroMoto')}
@@ -135,27 +138,27 @@ const MotosStack = () => {
       <MotosStackNavigator.Screen
         name="DetalhesMoto"
         component={DetalhesMoto}
-        options={{ title: 'Detalhes da Moto' }}
+        options={{ title: t('moto.details') }}
       />
       <MotosStackNavigator.Screen
         name="EdicaoMoto"
         component={EdicaoMoto}
-        options={{ title: 'Editar Moto' }}
+        options={{ title: t('moto.edit') }}
       />
       <MotosStackNavigator.Screen
         name="FormularioManutencao"
         component={FormularioManutencao}
-        options={{ title: 'Registrar Manutenção' }}
+        options={{ title: t('maintenance.create') }}
       />
       <MotosStackNavigator.Screen
         name="CadastroMoto"
         component={CadastroMoto}
-        options={{ title: 'Cadastrar Moto' }}
+        options={{ title: t('moto.create') }}
       />
       <MotosStackNavigator.Screen
         name="ListaManutencoes"
         component={ListaManutencoes}
-        options={{ title: 'Manutenções' }}
+        options={{ title: t('maintenance.list') }}
       />
     </MotosStackNavigator.Navigator>
   );
@@ -163,6 +166,7 @@ const MotosStack = () => {
 
 const FiliaisStack = () => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   
   return (
     <FiliaisStackNavigator.Navigator
@@ -183,7 +187,7 @@ const FiliaisStack = () => {
         name="FilialList"
         component={FilialListScreen}
         options={({ navigation }) => ({
-          title: 'Filiais',
+          title: t('filial.plural'),
           headerRight: () => (
             <TouchableOpacity
               onPress={() => navigation.navigate('FilialForm', {})}
@@ -197,12 +201,14 @@ const FiliaisStack = () => {
       <FiliaisStackNavigator.Screen
         name="FilialForm"
         component={FilialFormScreen}
-        options={{ title: 'Filial' }}
+        options={({ route }) => ({
+          title: route.params?.filial ? t('filial.edit') : t('filial.newBranch')
+        })}
       />
       <FiliaisStackNavigator.Screen
         name="MotosFilial"
         component={MotosFilialScreen}
-        options={{ title: 'Motos da Filial' }}
+        options={{ title: t('filial.motosFilial') }}
       />
     </FiliaisStackNavigator.Navigator>
   );
@@ -210,6 +216,7 @@ const FiliaisStack = () => {
 
 const ConfiguracoesStack = () => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   
   return (
     <ConfiguracoesStackNavigator.Navigator
@@ -229,7 +236,7 @@ const ConfiguracoesStack = () => {
       <ConfiguracoesStackNavigator.Screen
         name="ConfiguracoesScreen"
         component={Configuracoes}
-        options={{ title: 'Configurações' }}
+        options={{ title: t('settings.title') }}
       />
       <ConfiguracoesStackNavigator.Screen
         name="PushDebug"
@@ -242,6 +249,7 @@ const ConfiguracoesStack = () => {
 
 const AuthStack = () => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   
   return (
     <AuthStackNavigator.Navigator
@@ -262,7 +270,7 @@ const AuthStack = () => {
         name="Login"
         component={LoginScreen}
         options={{ 
-          title: 'Login',
+          title: t('auth.login'),
           headerShown: false
         }}
       />
@@ -270,7 +278,7 @@ const AuthStack = () => {
         name="Register"
         component={RegisterScreen}
         options={{ 
-          title: 'Cadastro',
+          title: t('auth.register'),
           headerShown: false
         }}
       />
@@ -281,6 +289,7 @@ const AuthStack = () => {
 export const Navigation = () => {
   const { theme } = useTheme();
   const { user, loading } = useAuth();
+  const { t } = useLanguage();
 
   if (loading) {
     return (
@@ -341,7 +350,7 @@ export const Navigation = () => {
           component={HomeStack}
           options={{
             headerShown: false,
-            title: 'Início',
+            title: t('navigation.home'),
             tabBarIcon: ({ color, size }) => (
               <MaterialIcons name="home" size={size} color={color} />
             ),
@@ -352,7 +361,7 @@ export const Navigation = () => {
           component={MotosStack}
           options={{
             headerShown: false,
-            title: 'Motos',
+            title: t('navigation.motos'),
             tabBarIcon: ({ color, size }) => (
               <MaterialIcons name="motorcycle" size={size} color={color} />
             ),
@@ -363,7 +372,7 @@ export const Navigation = () => {
           component={FiliaisStack}
           options={{
             headerShown: false,
-            title: 'Filiais',
+            title: t('navigation.filials'),
             tabBarIcon: ({ color, size }) => (
               <MaterialIcons name="business" size={size} color={color} />
             ),
@@ -374,7 +383,7 @@ export const Navigation = () => {
           component={ConfiguracoesStack}
           options={{
             headerShown: false,
-            title: 'Configurações',
+            title: t('navigation.settings'),
             tabBarIcon: ({ color, size }) => (
               <MaterialIcons name="settings" size={size} color={color} />
             ),

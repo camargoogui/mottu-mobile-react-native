@@ -8,11 +8,13 @@ import { Input } from '../components/Input';
 import { FilialService } from '../services/filialService';
 import { Filial } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 type Props = NativeStackScreenProps<FiliaisStackParamList, 'FilialForm'>;
 
 export const FilialFormScreen = ({ route, navigation }: Props) => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const { filial } = route.params || {};
   const isEditing = !!filial;
 
@@ -31,7 +33,7 @@ export const FilialFormScreen = ({ route, navigation }: Props) => {
 
   useEffect(() => {
     navigation.setOptions({
-      title: isEditing ? 'Editar Filial' : 'Nova Filial',
+      title: isEditing ? t('filial.edit') : t('filial.newBranch'),
     });
   }, [navigation, isEditing]);
 
@@ -40,64 +42,64 @@ export const FilialFormScreen = ({ route, navigation }: Props) => {
 
     // Nome (obrigatório, 3-100 caracteres)
     if (!nome.trim()) {
-      newErrors.nome = '❌ Nome da filial é obrigatório';
+      newErrors.nome = `❌ ${t('filial.nameRequired')}`;
     } else if (nome.trim().length < 3) {
-      newErrors.nome = '❌ Nome deve ter pelo menos 3 caracteres';
+      newErrors.nome = `❌ ${t('filial.nameMin')}`;
     } else if (nome.trim().length > 100) {
-      newErrors.nome = '❌ Nome deve ter no máximo 100 caracteres';
+      newErrors.nome = `❌ ${t('filial.nameMax')}`;
     }
 
     // Logradouro (obrigatório, 3-100 caracteres)
     if (!endereco.trim()) {
-      newErrors.endereco = '❌ Logradouro é obrigatório';
+      newErrors.endereco = `❌ ${t('filial.streetRequired')}`;
     } else if (endereco.trim().length < 3) {
-      newErrors.endereco = '❌ Logradouro deve ter pelo menos 3 caracteres';
+      newErrors.endereco = `❌ ${t('filial.streetMin')}`;
     } else if (endereco.trim().length > 100) {
-      newErrors.endereco = '❌ Logradouro deve ter no máximo 100 caracteres';
+      newErrors.endereco = `❌ ${t('filial.streetMax')}`;
     }
 
     // Número (obrigatório, máximo 10 caracteres)
     if (!numero.trim()) {
-      newErrors.numero = '❌ Número é obrigatório';
+      newErrors.numero = `❌ ${t('filial.numberRequired')}`;
     } else if (numero.trim().length > 10) {
-      newErrors.numero = '❌ Número deve ter no máximo 10 caracteres';
+      newErrors.numero = `❌ ${t('filial.numberMax')}`;
     }
 
     // Bairro (obrigatório)
     if (!bairro.trim()) {
-      newErrors.bairro = '❌ Bairro é obrigatório';
+      newErrors.bairro = `❌ ${t('filial.neighborhoodRequired')}`;
     }
 
     // Cidade (obrigatória)
     if (!cidade.trim()) {
-      newErrors.cidade = '❌ Cidade é obrigatória';
+      newErrors.cidade = `❌ ${t('filial.cityRequired')}`;
     }
 
     // Estado (obrigatório, exatamente 2 caracteres)
     if (!estado.trim()) {
-      newErrors.estado = '❌ Estado é obrigatório';
+      newErrors.estado = `❌ ${t('filial.stateRequired')}`;
     } else if (estado.trim().length !== 2) {
-      newErrors.estado = '❌ Estado deve ter exatamente 2 caracteres (ex: SP)';
+      newErrors.estado = `❌ ${t('filial.stateLength')}`;
     }
 
     // CEP (obrigatório, exatamente 8 dígitos)
     const cepNumeros = cep.replace(/\D/g, '');
     if (!cep.trim()) {
-      newErrors.cep = '❌ CEP é obrigatório';
+      newErrors.cep = `❌ ${t('filial.zipCodeRequired')}`;
     } else if (cepNumeros.length !== 8) {
-      newErrors.cep = '❌ CEP deve ter exatamente 8 dígitos';
+      newErrors.cep = `❌ ${t('filial.zipCodeLength')}`;
     }
 
     // Telefone (obrigatório)
     if (!telefone.trim()) {
-      newErrors.telefone = '❌ Telefone é obrigatório';
+      newErrors.telefone = `❌ ${t('filial.phoneRequired')}`;
     } else if (telefone.replace(/\D/g, '').length < 10) {
-      newErrors.telefone = '❌ Telefone deve ter pelo menos 10 dígitos';
+      newErrors.telefone = `❌ ${t('filial.phoneMin')}`;
     }
 
     // Validações opcionais
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = '❌ Email inválido';
+      newErrors.email = `❌ ${t('auth.emailInvalid')}`;
     }
 
     setErrors(newErrors);
@@ -129,18 +131,18 @@ export const FilialFormScreen = ({ route, navigation }: Props) => {
           ativa: filial.ativa,
         };
         await FilialService.update(filial.id, updateData);
-        Alert.alert('Sucesso', 'Filial atualizada com sucesso!', [
-          { text: 'OK', onPress: () => navigation.goBack() }
+        Alert.alert(t('common.success'), t('filial.updatedSuccess'), [
+          { text: t('common.ok'), onPress: () => navigation.goBack() }
         ]);
       } else {
         await FilialService.create(filialData);
-        Alert.alert('Sucesso', 'Filial cadastrada com sucesso!', [
-          { text: 'OK', onPress: () => navigation.goBack() }
+        Alert.alert(t('common.success'), t('filial.createdSuccess'), [
+          { text: t('common.ok'), onPress: () => navigation.goBack() }
         ]);
       }
     } catch (error) {
       console.error('Erro ao salvar filial:', error);
-      Alert.alert('Erro', 'Não foi possível salvar a filial. Tente novamente.');
+      Alert.alert(t('common.error'), t('errors.tryAgain'));
     } finally {
       setLoading(false);
     }
@@ -150,83 +152,77 @@ export const FilialFormScreen = ({ route, navigation }: Props) => {
     <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Card>
         <Text style={[styles.title, { color: theme.colors.primary }]}>
-          {isEditing ? 'Editar Filial' : 'Cadastrar Nova Filial'}
+          {isEditing ? t('filial.edit') : t('filial.create')}
         </Text>
 
         <View style={[styles.helpSection, { backgroundColor: theme.colors.secondaryBackground }]}>
           <Text style={[styles.helpTitle, { color: theme.colors.text.primary }]}>
-            📋 Campos Obrigatórios
+            📋 {t('filial.requiredFieldsTitle')}
           </Text>
           <Text style={[styles.helpText, { color: theme.colors.text.secondary }]}>
-            • Nome (3-100 caracteres){'\n'}
-            • Logradouro (3-100 caracteres){'\n'}
-            • Número (máximo 10 caracteres){'\n'}
-            • Bairro, Cidade, Estado (2 letras){'\n'}
-            • CEP (8 dígitos){'\n'}
-            • Telefone (mínimo 10 dígitos){'\n'}
-            • Email (opcional)
+            {t('filial.requiredFields')}
           </Text>
         </View>
 
         <View style={styles.form}>
           <Input
-            label="Nome da Filial *"
+            label={`${t('filial.name')} *`}
             value={nome}
             onChangeText={setNome}
-            placeholder="Digite o nome da filial"
+            placeholder={t('filial.namePlaceholder')}
             error={errors.nome}
           />
 
           <Input
-            label="Logradouro *"
+            label={`${t('filial.street')} *`}
             value={endereco}
             onChangeText={setEndereco}
-            placeholder="Rua das Flores"
+            placeholder={t('filial.streetPlaceholder')}
             error={errors.endereco}
           />
 
           <Input
-            label="Número *"
+            label={`${t('filial.number')} *`}
             value={numero}
             onChangeText={setNumero}
-            placeholder="123"
+            placeholder={t('filial.numberPlaceholder')}
             error={errors.numero}
             maxLength={10}
             keyboardType="default"
           />
 
           <Input
-            label="Complemento"
+            label={t('filial.complement')}
             value={complemento}
             onChangeText={setComplemento}
-            placeholder="Apto, Sala, Bloco (opcional)"
+            placeholder={t('filial.complementPlaceholder')}
             error={errors.complemento}
           />
 
           <Input
-            label="Bairro *"
+            label={`${t('filial.neighborhood')} *`}
             value={bairro}
             onChangeText={setBairro}
-            placeholder="Digite o bairro"
+            placeholder={t('filial.neighborhoodPlaceholder')}
             error={errors.bairro}
           />
 
           <View style={styles.row}>
             <View style={styles.flex2}>
               <Input
-                label="Cidade *"
+                label={`${t('filial.city')} *`}
                 value={cidade}
                 onChangeText={setCidade}
-                placeholder="Digite a cidade"
+                placeholder={t('filial.cityPlaceholder')}
                 error={errors.cidade}
               />
             </View>
             <View style={styles.flex1}>
               <Input
-                label="Estado *"
+                label={`${t('filial.state')} *`}
                 value={estado}
                 onChangeText={(text) => setEstado(text.toUpperCase())}
-                placeholder="SP"
+                placeholder={t('filial.statePlaceholder')}
                 error={errors.estado}
                 maxLength={2}
               />
@@ -234,29 +230,29 @@ export const FilialFormScreen = ({ route, navigation }: Props) => {
           </View>
 
           <Input
-            label="CEP *"
+            label={`${t('filial.zipCode')} *`}
             value={cep}
             onChangeText={setCep}
-            placeholder="12345-678"
+            placeholder={t('filial.zipCodePlaceholder')}
             error={errors.cep}
             keyboardType="numeric"
             maxLength={9}
           />
 
           <Input
-            label="Telefone *"
+            label={`${t('filial.phone')} *`}
             value={telefone}
             onChangeText={setTelefone}
-            placeholder="(11) 99999-9999"
+            placeholder={t('filial.phonePlaceholder')}
             error={errors.telefone}
             keyboardType="phone-pad"
           />
 
           <Input
-            label="Email (Opcional)"
+            label={`${t('filial.email')} (${t('common.empty')})`}
             value={email}
             onChangeText={setEmail}
-            placeholder="filial@empresa.com"
+            placeholder={t('filial.emailPlaceholder')}
             error={errors.email}
             keyboardType="email-address"
             autoCapitalize="none"
@@ -265,14 +261,14 @@ export const FilialFormScreen = ({ route, navigation }: Props) => {
 
         {(nome || endereco || cidade || estado || cep) && (
           <View style={[styles.preview, { backgroundColor: theme.colors.background }]}>
-            <Text style={[styles.previewTitle, { color: theme.colors.text.primary }]}>Preview:</Text>
+            <Text style={[styles.previewTitle, { color: theme.colors.text.primary }]}>{t('filial.previewTitle')}</Text>
             <Text style={[styles.previewText, { color: theme.colors.text.secondary }]}>
               {nome && `${nome}\n`}
               {endereco && `${endereco}\n`}
               {(cidade || estado) && `${cidade}${cidade && estado ? ' - ' : ''}${estado}\n`}
-              {cep && `CEP: ${cep}\n`}
-              {telefone && `Tel: ${telefone}\n`}
-              {email && `Email: ${email}`}
+              {cep && `${t('filial.zipCode')}: ${cep}\n`}
+              {telefone && `${t('filial.telLabel')}: ${telefone}\n`}
+              {email && `${t('filial.emailLabel')}: ${email}`}
             </Text>
           </View>
         )}
@@ -280,7 +276,7 @@ export const FilialFormScreen = ({ route, navigation }: Props) => {
         {/* Botão para ver motos da filial (só aparece quando está editando uma filial existente) */}
         {isEditing && filial && (
           <Button
-            title="📍 Ver Motos desta Filial"
+            title={t('filial.viewBranchMotorcycles')}
             onPress={() => navigation.navigate('MotosFilial', { filial })}
             variant="tertiary"
             style={styles.motosButton}
@@ -288,7 +284,7 @@ export const FilialFormScreen = ({ route, navigation }: Props) => {
         )}
 
         <Button
-          title={loading ? (isEditing ? "Atualizando..." : "Salvando...") : (isEditing ? "Atualizar Filial" : "Salvar Filial")}
+          title={loading ? (isEditing ? t('filial.updating') : t('filial.saving')) : (isEditing ? t('filial.updateBranch') : t('filial.saveBranch'))}
           onPress={handleSalvar}
           variant="primary"
           disabled={loading}
@@ -298,7 +294,7 @@ export const FilialFormScreen = ({ route, navigation }: Props) => {
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="small" color={theme.colors.primary} />
             <Text style={[styles.loadingText, { color: theme.colors.text.secondary }]}>
-              {isEditing ? 'Atualizando filial...' : 'Cadastrando filial...'}
+              {isEditing ? t('filial.updatingBranch') : t('filial.creatingBranch')}
             </Text>
           </View>
         )}

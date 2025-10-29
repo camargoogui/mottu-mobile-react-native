@@ -7,12 +7,14 @@ import { Filial } from '../types';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { MaterialIcons } from '@expo/vector-icons';
 
 type Props = NativeStackScreenProps<FiliaisStackParamList, 'FilialList'>;
 
 export const FilialListScreen = ({ navigation }: Props) => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const [filiais, setFiliais] = useState<Filial[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -28,7 +30,7 @@ export const FilialListScreen = ({ navigation }: Props) => {
       setFiliais(apiFiliais);
     } catch (error) {
       console.error('Erro ao carregar filiais:', error);
-      Alert.alert('Erro', 'Não foi possível carregar as filiais. Verifique sua conexão.');
+      Alert.alert(t('common.error'), t('filial.loadError'));
     } finally {
       setLoading(false);
     }
@@ -40,7 +42,7 @@ export const FilialListScreen = ({ navigation }: Props) => {
       const apiFiliais = await FilialService.getAll();
       setFiliais(apiFiliais);
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível atualizar a lista de filiais.');
+      Alert.alert(t('common.error'), t('filial.updateListError'));
     } finally {
       setRefreshing(false);
     }
@@ -48,24 +50,24 @@ export const FilialListScreen = ({ navigation }: Props) => {
 
   const handleDeleteFilial = async (filial: Filial) => {
     Alert.alert(
-      'Confirmar Exclusão',
-      `Tem certeza que deseja excluir a filial "${filial.nome}"?`,
+      t('filial.confirmDelete'),
+      `${t('filial.deleteConfirmMessage')} "${filial.nome}"?`,
       [
         {
-          text: 'Cancelar',
+          text: t('common.cancel'),
           style: 'cancel',
         },
         {
-          text: 'Excluir',
+          text: t('common.delete'),
           style: 'destructive',
           onPress: async () => {
             try {
               setLoading(true);
               await FilialService.delete(filial.id);
-              Alert.alert('Sucesso', 'Filial excluída com sucesso!');
+              Alert.alert(t('common.success'), t('filial.deleteSuccess'));
               loadFiliais(); // Recarrega a lista
             } catch (error) {
-              Alert.alert('Erro', 'Não foi possível excluir a filial. Tente novamente.');
+              Alert.alert(t('common.error'), t('filial.deleteError'));
             } finally {
               setLoading(false);
             }
@@ -80,10 +82,10 @@ export const FilialListScreen = ({ navigation }: Props) => {
     try {
       setLoading(true);
       await FilialService.toggleActive(filial.id);
-      Alert.alert('Sucesso', `Filial ${filial.ativa ? 'desativada' : 'ativada'} com sucesso!`);
+      Alert.alert(t('common.success'), `${t('filial.toggleSuccess')} ${filial.ativa ? t('filial.toggleDeactivated') : t('filial.toggleActivated')} ${t('filial.toggleSuccessSuffix')}`);
       loadFiliais(); // Recarrega a lista
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível alterar o status da filial.');
+      Alert.alert(t('common.error'), t('filial.toggleError'));
     } finally {
       setLoading(false);
     }
@@ -103,10 +105,10 @@ export const FilialListScreen = ({ navigation }: Props) => {
             <Text style={[styles.endereco, { color: theme.colors.text.secondary }]}>
               {item.endereco}, {item.cidade} - {item.estado}
             </Text>
-            <Text style={[styles.cep, { color: theme.colors.text.secondary }]}>CEP: {item.cep}</Text>
+            <Text style={[styles.cep, { color: theme.colors.text.secondary }]}>{t('filial.zipCode')}: {item.cep}</Text>
             {item.telefone && (
               <Text style={[styles.telefone, { color: theme.colors.text.secondary }]}>
-                Tel: {item.telefone}
+                {t('filial.telLabel')}: {item.telefone}
               </Text>
             )}
           </View>
@@ -116,7 +118,7 @@ export const FilialListScreen = ({ navigation }: Props) => {
               { backgroundColor: item.ativa ? theme.colors.success : theme.colors.error }
             ]}>
               <Text style={[styles.statusText, { color: theme.colors.text.light }]}>
-                {item.ativa ? 'Ativa' : 'Inativa'}
+                {item.ativa ? t('filial.active') : t('filial.inactive')}
               </Text>
             </View>
             <TouchableOpacity
@@ -146,7 +148,7 @@ export const FilialListScreen = ({ navigation }: Props) => {
       <View style={[styles.container, styles.centered, { backgroundColor: theme.colors.background }]}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
         <Text style={[styles.loadingText, { color: theme.colors.text.secondary }]}>
-          Carregando filiais...
+          {t('filial.loadingBranches')}
         </Text>
       </View>
     );
@@ -155,11 +157,11 @@ export const FilialListScreen = ({ navigation }: Props) => {
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: theme.colors.text.primary }]}>Lista de Filiais</Text>
+        <Text style={[styles.title, { color: theme.colors.text.primary }]}>{t('filial.list')}</Text>
       </View>
       <View style={styles.buttonContainer}>
         <Button
-          title="Nova Filial"
+          title={t('filial.newBranchButton')}
           onPress={() => navigation.navigate('FilialForm', {})}
           variant="primary"
           style={styles.button}
@@ -184,10 +186,10 @@ export const FilialListScreen = ({ navigation }: Props) => {
             <View style={styles.emptyState}>
               <MaterialIcons name="business" size={60} color={theme.colors.text.secondary} />
               <Text style={[styles.emptyText, { color: theme.colors.text.secondary }]}>
-                Nenhuma filial encontrada
+                {t('filial.emptyList')}
               </Text>
               <Text style={[styles.emptySubtext, { color: theme.colors.text.secondary }]}>
-                Puxe para baixo para atualizar
+                {t('filial.pullToRefresh')}
               </Text>
             </View>
           ) : null

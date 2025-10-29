@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { Card } from '../components/Card';
@@ -22,6 +23,7 @@ interface LoginScreenProps {
 export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const { theme } = useTheme();
   const { login, loading } = useAuth();
+  const { currentLanguage, changeLanguage, t } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -30,15 +32,15 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     const newErrors: { [key: string]: string } = {};
 
     if (!email.trim()) {
-      newErrors.email = 'Email é obrigatório';
+      newErrors.email = t('auth.emailRequired');
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Email inválido';
+      newErrors.email = t('auth.emailInvalid');
     }
 
     if (!password.trim()) {
-      newErrors.password = 'Senha é obrigatória';
+      newErrors.password = t('auth.passwordRequired');
     } else if (password.length < 6) {
-      newErrors.password = 'Senha deve ter pelo menos 6 caracteres';
+      newErrors.password = t('auth.passwordMin');
     }
 
     setErrors(newErrors);
@@ -51,7 +53,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     try {
       await login(email, password);
     } catch (error: any) {
-      Alert.alert('Erro', error.message);
+      Alert.alert(t('common.error'), error.message);
     }
   };
 
@@ -64,6 +66,56 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       contentContainerStyle={styles.scrollContent}
     >
+      {/* Botões de Idioma */}
+      <View style={styles.languageContainer}>
+        <TouchableOpacity
+          style={[
+            styles.languageButton,
+            { 
+              backgroundColor: currentLanguage === 'pt-BR' ? theme.colors.primary : theme.colors.card,
+              borderColor: theme.colors.border,
+              borderWidth: 1,
+            }
+          ]}
+          onPress={() => changeLanguage('pt-BR')}
+        >
+          <MaterialIcons 
+            name="language" 
+            size={18} 
+            color={currentLanguage === 'pt-BR' ? '#FFFFFF' : theme.colors.text.primary} 
+          />
+          <Text style={[
+            styles.languageButtonText,
+            { color: currentLanguage === 'pt-BR' ? '#FFFFFF' : theme.colors.text.primary }
+          ]}>
+            {t('settings.portuguese')}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.languageButton,
+            { 
+              backgroundColor: currentLanguage === 'en' ? theme.colors.primary : theme.colors.card,
+              borderColor: theme.colors.border,
+              borderWidth: 1,
+            }
+          ]}
+          onPress={() => changeLanguage('en')}
+        >
+          <MaterialIcons 
+            name="language" 
+            size={18} 
+            color={currentLanguage === 'en' ? '#FFFFFF' : theme.colors.text.primary} 
+          />
+          <Text style={[
+            styles.languageButtonText,
+            { color: currentLanguage === 'en' ? '#FFFFFF' : theme.colors.text.primary }
+          ]}>
+            {t('settings.english')}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.header}>
         <MaterialIcons 
           name="motorcycle" 
@@ -72,23 +124,23 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
           style={styles.logo}
         />
         <Text style={[styles.title, { color: theme.colors.label }]}>
-          Mottu Challenge
+          {t('auth.appTitle')}
         </Text>
         <Text style={[styles.subtitle, { color: theme.colors.secondaryLabel }]}>
-          Gestão Inteligente de Pátio
+          {t('auth.appSubtitle')}
         </Text>
       </View>
 
       <Card style={styles.formCard}>
         <Text style={[styles.formTitle, { color: theme.colors.label }]}>
-          Entrar
+          {t('auth.login')}
         </Text>
 
         <Input
-          label="Email"
+          label={t('auth.email')}
           value={email}
           onChangeText={setEmail}
-          placeholder="Digite seu email"
+          placeholder={t('auth.email')}
           keyboardType="email-address"
           autoCapitalize="none"
           autoCorrect={false}
@@ -96,16 +148,16 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         />
 
         <Input
-          label="Senha"
+          label={t('auth.password')}
           value={password}
           onChangeText={setPassword}
-          placeholder="Digite sua senha"
+          placeholder={t('auth.password')}
           secureTextEntry
           error={errors.password}
         />
 
         <Button
-          title={loading ? "Entrando..." : "Entrar"}
+          title={loading ? t('common.loading') : t('auth.loginButton')}
           onPress={handleLogin}
           variant="primary"
         />
@@ -126,7 +178,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
         <TouchableOpacity onPress={handleRegister} style={styles.registerButton}>
           <Text style={[styles.registerText, { color: theme.colors.primary }]}>
-            Não tem conta? Cadastre-se
+            {t('auth.noAccount')}
           </Text>
         </TouchableOpacity>
       </Card>
@@ -213,5 +265,24 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 14,
     textAlign: 'center',
+  },
+  languageContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 24,
+    justifyContent: 'center',
+  },
+  languageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    gap: 6,
+  },
+  languageButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

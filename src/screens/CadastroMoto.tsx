@@ -8,12 +8,14 @@ import { Input } from '../components/Input';
 import { StorageService } from '../services/storage';
 import { MotoService } from '../services/motoService';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { notificationService } from '../services/notifications';
 
 type Props = NativeStackScreenProps<MotosStackParamList, 'CadastroMoto'>;
 
 export const CadastroMoto = ({ navigation }: Props) => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const [modelo, setModelo] = useState('');
   const [placa, setPlaca] = useState('');
   const [ano, setAno] = useState('');
@@ -27,43 +29,43 @@ export const CadastroMoto = ({ navigation }: Props) => {
 
     // Placa (obrigatória, exatamente 7 caracteres)
     if (!placa.trim()) {
-      newErrors.placa = '❌ Placa é obrigatória';
+      newErrors.placa = `❌ ${t('moto.plateRequired')}`;
     } else if (placa.trim().length !== 7) {
-      newErrors.placa = '❌ Placa deve ter exatamente 7 caracteres (ex: ABC1234)';
+      newErrors.placa = `❌ ${t('moto.plateLength')}`;
     }
 
     // Modelo (obrigatório, 2-50 caracteres)
     if (!modelo.trim()) {
-      newErrors.modelo = '❌ Modelo da moto é obrigatório';
+      newErrors.modelo = `❌ ${t('moto.modelRequired')}`;
     } else if (modelo.trim().length < 2) {
-      newErrors.modelo = '❌ Modelo deve ter pelo menos 2 caracteres';
+      newErrors.modelo = `❌ ${t('moto.modelMin')}`;
     } else if (modelo.trim().length > 50) {
-      newErrors.modelo = '❌ Modelo deve ter no máximo 50 caracteres';
+      newErrors.modelo = `❌ ${t('moto.modelMax')}`;
     }
 
     // Ano (obrigatório, 1900-2030)
     const anoNum = parseInt(ano);
     if (!ano.trim()) {
-      newErrors.ano = '❌ Ano é obrigatório';
+      newErrors.ano = `❌ ${t('moto.yearRequired')}`;
     } else if (isNaN(anoNum) || anoNum < 1900 || anoNum > 2030) {
-      newErrors.ano = '❌ Ano deve estar entre 1900 e 2030';
+      newErrors.ano = `❌ ${t('moto.yearRange')}`;
     }
 
     // Cor (obrigatória, 3-30 caracteres)
     if (!cor.trim()) {
-      newErrors.cor = '❌ Cor é obrigatória';
+      newErrors.cor = `❌ ${t('moto.colorRequired')}`;
     } else if (cor.trim().length < 3) {
-      newErrors.cor = '❌ Cor deve ter pelo menos 3 caracteres';
+      newErrors.cor = `❌ ${t('moto.colorMin')}`;
     } else if (cor.trim().length > 30) {
-      newErrors.cor = '❌ Cor deve ter no máximo 30 caracteres';
+      newErrors.cor = `❌ ${t('moto.colorMax')}`;
     }
 
     // Filial ID (obrigatório, maior que 0)
     const filialNum = parseInt(filialId);
     if (!filialId.trim()) {
-      newErrors.filialId = '❌ Filial é obrigatória';
+      newErrors.filialId = `❌ ${t('moto.branchRequired')}`;
     } else if (isNaN(filialNum) || filialNum <= 0) {
-      newErrors.filialId = '❌ Selecione uma filial válida';
+      newErrors.filialId = `❌ ${t('moto.branchRequired')}`;
     }
 
     setErrors(newErrors);
@@ -89,14 +91,14 @@ export const CadastroMoto = ({ navigation }: Props) => {
         
         // Envia notificação de sucesso
         await notificationService.sendTestNotification(
-          '🏍️ Nova Moto Cadastrada',
-          `${modelo} - Placa: ${placa.trim().toUpperCase()} foi cadastrada com sucesso!`,
+          `🏍️ ${t('moto.newMotoNotification')}`,
+          `${modelo} - ${t('moto.plate')}: ${placa.trim().toUpperCase()} ${t('moto.createdSuccess')}`,
           { screen: 'ListaMotos' },
           2 // 2 segundos de delay
         );
         
-        Alert.alert('Sucesso', 'Moto cadastrada com sucesso!', [
-          { text: 'OK', onPress: () => navigation.goBack() }
+        Alert.alert(t('common.success'), t('moto.createdSuccess'), [
+          { text: t('common.ok'), onPress: () => navigation.goBack() }
         ]);
       } catch (apiError) {
         console.warn('Erro ao salvar na API, salvando localmente:', apiError);
@@ -118,14 +120,14 @@ export const CadastroMoto = ({ navigation }: Props) => {
 
         await StorageService.saveMoto(motoLocal);
         Alert.alert(
-          'Aviso', 
-          'Não foi possível conectar com o servidor. A moto foi salva localmente.',
-          [{ text: 'OK', onPress: () => navigation.goBack() }]
+          t('common.error'), 
+          t('errors.connectionError'),
+          [{ text: t('common.ok'), onPress: () => navigation.goBack() }]
         );
       }
     } catch (error) {
       console.error('Erro ao salvar moto:', error);
-      Alert.alert('Erro', 'Não foi possível cadastrar a moto. Tente novamente.');
+      Alert.alert(t('common.error'), t('errors.tryAgain'));
     } finally {
       setLoading(false);
     }
@@ -134,24 +136,24 @@ export const CadastroMoto = ({ navigation }: Props) => {
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Card>
-        <Text style={[styles.title, { color: theme.colors.primary }]}>Cadastrar Nova Moto</Text>
+        <Text style={[styles.title, { color: theme.colors.primary }]}>{t('moto.create')}</Text>
 
         <View style={[styles.helpSection, { backgroundColor: theme.colors.secondaryBackground }]}>
           <Text style={[styles.helpTitle, { color: theme.colors.text.primary }]}>
-            📋 Campos Obrigatórios
+            📋 {t('common.empty')}
           </Text>
           <Text style={[styles.helpText, { color: theme.colors.text.secondary }]}>
-            • Placa (exatamente 7 caracteres){'\n'}
-            • Modelo (2-50 caracteres){'\n'}
-            • Ano (1900-2030){'\n'}
-            • Cor (3-30 caracteres){'\n'}
-            • Filial (ID válido)
+            • {t('moto.plate')} (exatamente 7 caracteres){'\n'}
+            • {t('moto.model')} (2-50 caracteres){'\n'}
+            • {t('moto.year')} (1900-2030){'\n'}
+            • {t('moto.color')} (3-30 caracteres){'\n'}
+            • {t('moto.branch')} (ID válido)
           </Text>
         </View>
 
         <View style={styles.form}>
           <Input
-            label="Placa *"
+            label={`${t('moto.plate')} *`}
             value={placa}
             onChangeText={(text) => setPlaca(text.toUpperCase())}
             placeholder="ABC1234"
@@ -160,7 +162,7 @@ export const CadastroMoto = ({ navigation }: Props) => {
           />
 
           <Input
-            label="Modelo da Moto *"
+            label={`${t('moto.model')} *`}
             value={modelo}
             onChangeText={setModelo}
             placeholder="Honda CG 160, Yamaha XJ6, etc."
@@ -171,7 +173,7 @@ export const CadastroMoto = ({ navigation }: Props) => {
           <View style={styles.row}>
             <View style={styles.flex1}>
               <Input
-                label="Ano *"
+                label={`${t('moto.year')} *`}
                 value={ano}
                 onChangeText={setAno}
                 placeholder="2024"
@@ -182,10 +184,10 @@ export const CadastroMoto = ({ navigation }: Props) => {
             </View>
             <View style={styles.flex1}>
               <Input
-                label="Cor *"
+                label={`${t('moto.color')} *`}
                 value={cor}
                 onChangeText={setCor}
-                placeholder="Azul, Vermelha, etc."
+                placeholder={t('moto.colorPlaceholder')}
                 error={errors.cor}
                 maxLength={30}
               />
@@ -193,34 +195,34 @@ export const CadastroMoto = ({ navigation }: Props) => {
           </View>
 
           <Input
-            label="ID da Filial *"
+            label={`ID ${t('moto.branch')} *`}
             value={filialId}
             onChangeText={setFilialId}
             placeholder="3, 4, 5, etc."
             error={errors.filialId}
             keyboardType="numeric"
-            helperText="💡 Veja o ID na lista de filiais"
+            helperText={`💡 ${t('common.noData')}`}
           />
         </View>
 
         {(modelo || placa || ano || cor || filialId) && (
           <View style={[styles.preview, { backgroundColor: theme.colors.background }]}>
-            <Text style={[styles.previewTitle, { color: theme.colors.text.primary }]}>Preview do Cadastro:</Text>
+            <Text style={[styles.previewTitle, { color: theme.colors.text.primary }]}>{t('common.empty')}:</Text>
             <Text style={[styles.previewText, { color: theme.colors.text.secondary }]}>
-              {placa && `🏍️ Placa: ${placa}\n`}
-              {modelo && `📋 Modelo: ${modelo}\n`}
-              {ano && `📅 Ano: ${ano}\n`}
-              {cor && `🎨 Cor: ${cor}\n`}
-              {filialId && `📍 Filial ID: ${filialId}`}
+              {placa && `🏍️ ${t('moto.plate')}: ${placa}\n`}
+              {modelo && `📋 ${t('moto.model')}: ${modelo}\n`}
+              {ano && `📅 ${t('moto.year')}: ${ano}\n`}
+              {cor && `🎨 ${t('moto.color')}: ${cor}\n`}
+              {filialId && `📍 ${t('moto.branch')} ID: ${filialId}`}
             </Text>
           </View>
         )}
 
-        <Button
-          title={loading ? "Salvando..." : "Salvar Moto"}
-          onPress={handleSalvar}
-          variant="primary"
-          disabled={loading}
+          <Button
+            title={loading ? t('common.loading') : t('common.save')}
+            onPress={handleSalvar}
+            variant="primary"
+            disabled={loading}
         />
         
         {loading && (

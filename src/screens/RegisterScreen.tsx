@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { Card } from '../components/Card';
@@ -21,6 +22,7 @@ interface RegisterScreenProps {
 
 export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const { register, loading } = useAuth();
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
@@ -32,27 +34,27 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
     const newErrors: { [key: string]: string } = {};
 
     if (!displayName.trim()) {
-      newErrors.displayName = 'Nome é obrigatório';
+      newErrors.displayName = t('auth.nameRequired');
     } else if (displayName.trim().length < 2) {
-      newErrors.displayName = 'Nome deve ter pelo menos 2 caracteres';
+      newErrors.displayName = t('auth.nameMin');
     }
 
     if (!email.trim()) {
-      newErrors.email = 'Email é obrigatório';
+      newErrors.email = t('auth.emailRequired');
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Email inválido';
+      newErrors.email = t('auth.emailInvalid');
     }
 
     if (!password.trim()) {
-      newErrors.password = 'Senha é obrigatória';
+      newErrors.password = t('auth.passwordRequired');
     } else if (password.length < 6) {
-      newErrors.password = 'Senha deve ter pelo menos 6 caracteres';
+      newErrors.password = t('auth.passwordMin');
     }
 
     if (!confirmPassword.trim()) {
-      newErrors.confirmPassword = 'Confirmação de senha é obrigatória';
+      newErrors.confirmPassword = t('auth.confirmPasswordRequired');
     } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'Senhas não coincidem';
+      newErrors.confirmPassword = t('auth.passwordsNotMatch');
     }
 
     setErrors(newErrors);
@@ -65,17 +67,17 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
     try {
       await register(email, password, displayName);
       Alert.alert(
-        'Conta Criada com Sucesso!', 
-        'Sua conta foi criada com sucesso. Agora você pode fazer login.',
+        t('auth.accountCreatedTitle'), 
+        t('auth.accountCreatedMessage'),
         [
           { 
-            text: 'Fazer Login', 
+            text: t('auth.doLogin'), 
             onPress: () => navigation.navigate('Login')
           }
         ]
       );
     } catch (error: any) {
-      Alert.alert('Erro', error.message);
+      Alert.alert(t('common.error'), error.message);
     }
   };
 
@@ -96,32 +98,32 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
           style={styles.logo}
         />
         <Text style={[styles.title, { color: theme.colors.text.primary }]}>
-          Criar Conta
+          {t('auth.createAccount')}
         </Text>
         <Text style={[styles.subtitle, { color: theme.colors.text.secondary }]}>
-          Cadastre-se para acessar o sistema
+          {t('auth.registerSubtitle')}
         </Text>
       </View>
 
       <Card style={styles.formCard}>
         <Text style={[styles.formTitle, { color: theme.colors.text.primary }]}>
-          Cadastro
+          {t('auth.register')}
         </Text>
 
         <Input
-          label="Nome Completo"
+          label={t('auth.fullName')}
           value={displayName}
           onChangeText={setDisplayName}
-          placeholder="Digite seu nome completo"
+          placeholder={t('auth.fullNamePlaceholder')}
           autoCapitalize="words"
           error={errors.displayName}
         />
 
         <Input
-          label="Email"
+          label={t('auth.email')}
           value={email}
           onChangeText={setEmail}
-          placeholder="Digite seu email"
+          placeholder={t('auth.email')}
           keyboardType="email-address"
           autoCapitalize="none"
           autoCorrect={false}
@@ -129,25 +131,25 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
         />
 
         <Input
-          label="Senha"
+          label={t('auth.password')}
           value={password}
           onChangeText={setPassword}
-          placeholder="Digite sua senha (mín. 6 caracteres)"
+          placeholder={t('auth.passwordPlaceholder')}
           secureTextEntry
           error={errors.password}
         />
 
         <Input
-          label="Confirmar Senha"
+          label={t('auth.confirmPassword')}
           value={confirmPassword}
           onChangeText={setConfirmPassword}
-          placeholder="Digite a senha novamente"
+          placeholder={t('auth.confirmPasswordPlaceholder')}
           secureTextEntry
           error={errors.confirmPassword}
         />
 
         <Button
-          title={loading ? "Criando conta..." : "Criar Conta"}
+          title={loading ? t('auth.creatingAccount') : t('auth.createAccount')}
           onPress={handleRegister}
           variant="primary"
         />

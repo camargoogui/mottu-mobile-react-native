@@ -9,12 +9,14 @@ import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { Text } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { MaterialIcons } from '@expo/vector-icons';
 
 type Props = NativeStackScreenProps<MotosStackParamList, 'ListaMotosScreen'>;
 
 export const ListaMotos = ({ navigation }: Props) => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const [motos, setMotos] = useState<Moto[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -32,9 +34,9 @@ export const ListaMotos = ({ navigation }: Props) => {
     } catch (error) {
       console.warn('Erro ao carregar da API, usando dados locais:', error);
       Alert.alert(
-        'Aviso',
-        'Não foi possível conectar com o servidor. Exibindo dados locais.',
-        [{ text: 'OK' }]
+        t('common.error'),
+        t('moto.connectionWarning'),
+        [{ text: t('common.ok') }]
       );
       // Fallback para dados locais
       const localMotos = await StorageService.getMotos();
@@ -50,7 +52,7 @@ export const ListaMotos = ({ navigation }: Props) => {
       const apiMotos = await MotoService.getAll();
       setMotos(apiMotos);
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível atualizar a lista de motos.');
+      Alert.alert(t('common.error'), t('moto.updateListError'));
     } finally {
       setRefreshing(false);
     }
@@ -58,24 +60,24 @@ export const ListaMotos = ({ navigation }: Props) => {
 
   const handleDeleteMoto = async (moto: Moto) => {
     Alert.alert(
-      'Confirmar Exclusão',
-      `Tem certeza que deseja excluir a moto ${moto.placa}?`,
+      t('moto.confirmDelete'),
+      `${t('moto.deleteConfirmMessage')} ${moto.placa}?`,
       [
         {
-          text: 'Cancelar',
+          text: t('common.cancel'),
           style: 'cancel',
         },
         {
-          text: 'Excluir',
+          text: t('common.delete'),
           style: 'destructive',
           onPress: async () => {
             try {
               setLoading(true);
               await MotoService.delete(moto.id);
-              Alert.alert('Sucesso', 'Moto excluída com sucesso!');
+              Alert.alert(t('common.success'), t('moto.deleteSuccess'));
               loadMotos(); // Recarrega a lista
             } catch (error) {
-              Alert.alert('Erro', 'Não foi possível excluir a moto. Tente novamente.');
+              Alert.alert(t('common.error'), t('moto.deleteError'));
             } finally {
               setLoading(false);
             }
@@ -98,7 +100,7 @@ export const ListaMotos = ({ navigation }: Props) => {
               <Text style={[styles.placa, { color: theme.colors.text.primary }]}>{item.placa}</Text>
             </View>
             <Text style={[styles.modelo, { color: theme.colors.text.secondary }]}>{item.modelo} {item.ano}</Text>
-            <Text style={[styles.cor, { color: theme.colors.text.secondary }]}>Cor: {item.cor}</Text>
+            <Text style={[styles.cor, { color: theme.colors.text.secondary }]}>{t('moto.colorLabel')}: {item.cor}</Text>
             <Text style={[styles.filial, { color: theme.colors.text.secondary }]}>📍 {item.filialNome}</Text>
           </View>
           <View style={styles.motoActions}>
@@ -106,7 +108,9 @@ export const ListaMotos = ({ navigation }: Props) => {
               styles.statusBadge,
               { backgroundColor: item.status === 'disponível' ? theme.colors.success : theme.colors.error }
             ]}>
-              <Text style={[styles.statusText, { color: theme.colors.text.light }]}>{item.status}</Text>
+              <Text style={[styles.statusText, { color: theme.colors.text.light }]}>
+                {t(`moto.${item.status === 'disponível' ? 'available' : item.status === 'ocupada' ? 'occupied' : 'maintenance'}`)}
+              </Text>
             </View>
             <TouchableOpacity
               onPress={() => navigation.navigate('EdicaoMoto', { moto: item })}
@@ -131,7 +135,7 @@ export const ListaMotos = ({ navigation }: Props) => {
       <View style={[styles.container, styles.centered, { backgroundColor: theme.colors.background }]}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
         <Text style={[styles.loadingText, { color: theme.colors.text.secondary }]}>
-          Carregando motos...
+          {t('moto.loadingMotorcycles')}
         </Text>
       </View>
     );
@@ -140,17 +144,17 @@ export const ListaMotos = ({ navigation }: Props) => {
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: theme.colors.text.primary }]}>Lista de Motos</Text>
+        <Text style={[styles.title, { color: theme.colors.text.primary }]}>{t('moto.list')}</Text>
       </View>
       <View style={styles.buttonContainer}>
         <Button
-          title="Cadastrar Moto"
+          title={t('moto.registerMotorcycle')}
           onPress={() => navigation.navigate('CadastroMoto')}
           variant="secondary"
           style={styles.button}
         />
         <Button
-          title="Ver Manutenções"
+          title={t('moto.viewMaintenances')}
           onPress={() => navigation.navigate('ListaManutencoes')}
           variant="tertiary"
           style={styles.button}
@@ -175,10 +179,10 @@ export const ListaMotos = ({ navigation }: Props) => {
             <View style={styles.emptyState}>
               <MaterialIcons name="motorcycle" size={60} color={theme.colors.text.secondary} />
               <Text style={[styles.emptyText, { color: theme.colors.text.secondary }]}>
-                Nenhuma moto encontrada
+                {t('moto.emptyList')}
               </Text>
               <Text style={[styles.emptySubtext, { color: theme.colors.text.secondary }]}>
-                Puxe para baixo para atualizar
+                {t('moto.pullToRefresh')}
               </Text>
             </View>
           ) : null

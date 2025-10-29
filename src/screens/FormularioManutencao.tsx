@@ -8,10 +8,27 @@ import { Input } from '../components/Input';
 import { Picker } from '@react-native-picker/picker';
 import { TipoManutencao } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { StorageService } from '../services/storage';
 
 type Props = NativeStackScreenProps<MotosStackParamList, 'FormularioManutencao'>;
 
+// Mapeia tipos de manutenção para chaves de tradução
+const getMaintenanceTypes = (t: (key: string) => string): TipoManutencao[] => [
+  t('maintenance.oilChange') as TipoManutencao,
+  t('maintenance.brakes') as TipoManutencao,
+  t('maintenance.tires') as TipoManutencao,
+  t('maintenance.chain') as TipoManutencao,
+  t('maintenance.electrical') as TipoManutencao,
+  t('maintenance.suspension') as TipoManutencao,
+  t('maintenance.engine') as TipoManutencao,
+  t('maintenance.clutch') as TipoManutencao,
+  t('maintenance.battery') as TipoManutencao,
+  t('maintenance.carburetor') as TipoManutencao,
+  t('maintenance.other') as TipoManutencao,
+];
+
+// Tipos originais para compatibilidade
 const tiposManutencao: TipoManutencao[] = [
   'Troca de óleo',
   'Freios',
@@ -28,8 +45,10 @@ const tiposManutencao: TipoManutencao[] = [
 
 export const FormularioManutencao = ({ route, navigation }: Props) => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const { motoId } = route.params;
-  const [tipoManutencao, setTipoManutencao] = useState<TipoManutencao>('Troca de óleo');
+  // Inicializa com o primeiro tipo traduzido
+  const [tipoManutencao, setTipoManutencao] = useState<TipoManutencao>(() => getMaintenanceTypes(t)[0]);
   const [motivoCustomizado, setMotivoCustomizado] = useState('');
   const [data, setData] = useState('');
   const [observacoes, setObservacoes] = useState('');
@@ -38,13 +57,14 @@ export const FormularioManutencao = ({ route, navigation }: Props) => {
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
 
-    if (tipoManutencao === 'Outro' && !motivoCustomizado.trim()) {
-      newErrors.motivoCustomizado = 'Especifique o motivo da manutenção';
+    const otherTypes = [t('maintenance.other')];
+    if (otherTypes.includes(tipoManutencao) && !motivoCustomizado.trim()) {
+      newErrors.motivoCustomizado = t('maintenance.specifyReason');
     }
     if (!data.trim()) {
-      newErrors.data = 'Data é obrigatória';
+      newErrors.data = t('maintenance.dateRequired');
     } else if (!/^\d{2}\/\d{2}\/\d{4}$/.test(data)) {
-      newErrors.data = 'Data inválida (formato: DD/MM/AAAA)';
+      newErrors.data = t('maintenance.dateInvalid');
     }
 
     setErrors(newErrors);
@@ -58,18 +78,18 @@ export const FormularioManutencao = ({ route, navigation }: Props) => {
       id: Date.now().toString(),
       motoId,
       tipoManutencao,
-      motivoCustomizado: tipoManutencao === 'Outro' ? motivoCustomizado : undefined,
+      motivoCustomizado: tipoManutencao === t('maintenance.other') ? motivoCustomizado : undefined,
       data,
       observacoes,
     };
 
     try {
       await StorageService.saveManutencao(manutencao);
-      Alert.alert('Sucesso', 'Manutenção registrada com sucesso!');
+      Alert.alert(t('common.success'), t('maintenance.createdSuccess'));
       navigation.goBack();
     } catch (error) {
       console.error('Erro ao salvar manutenção:', error);
-      Alert.alert('Erro', 'Erro ao salvar manutenção. Tente novamente.');
+      Alert.alert(t('common.error'), t('maintenance.saveError'));
     }
   };
 
@@ -77,10 +97,10 @@ export const FormularioManutencao = ({ route, navigation }: Props) => {
     <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Card>
         <View style={styles.form}>
-          <Text style={[styles.title, { color: theme.colors.primary }]}>Registrar Manutenção</Text>
+          <Text style={[styles.title, { color: theme.colors.primary }]}>{t('maintenance.create')}</Text>
 
           <View style={styles.pickerContainer}>
-            <Text style={[styles.label, { color: theme.colors.text.primary }]}>Tipo de Manutenção *</Text>
+            <Text style={[styles.label, { color: theme.colors.text.primary }]}>{t('maintenance.type')} *</Text>
             <View style={[styles.pickerWrapper, { borderColor: theme.colors.border, backgroundColor: theme.colors.card }]}>
               <Picker
                 selectedValue={tipoManutencao}
@@ -88,7 +108,7 @@ export const FormularioManutencao = ({ route, navigation }: Props) => {
                 style={[styles.picker, { color: theme.colors.text.primary }]}
                 itemStyle={{ color: theme.mode === 'dark' ? '#000000' : theme.colors.text.primary }}
               >
-                {tiposManutencao.map((tipo) => (
+                {getMaintenanceTypes(t).map((tipo) => (
                   <Picker.Item 
                     key={tipo} 
                     label={tipo} 
@@ -100,9 +120,9 @@ export const FormularioManutencao = ({ route, navigation }: Props) => {
             </View>
           </View>
 
-          {tipoManutencao === 'Outro' && (
+          {tipoManutencao === t('maintenance.other') && (
             <View style={styles.inputContainer}>
-              <Text style={[styles.label, { color: theme.colors.text.primary }]}>Especifique o Motivo *</Text>
+              <Text style={[styles.label, { color: theme.colors.text.primary }]}>{t('maintenance.specifyReasonLabel')}</Text>
               <TextInput
                 style={[
                   styles.input, 
@@ -114,7 +134,7 @@ export const FormularioManutencao = ({ route, navigation }: Props) => {
                 ]}
                 value={motivoCustomizado}
                 onChangeText={setMotivoCustomizado}
-                placeholder="Digite o motivo da manutenção"
+                placeholder={t('maintenance.specifyReasonPlaceholder')}
                 placeholderTextColor={theme.colors.text.secondary}
                 multiline
               />
@@ -125,7 +145,7 @@ export const FormularioManutencao = ({ route, navigation }: Props) => {
           )}
 
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: theme.colors.text.primary }]}>Data *</Text>
+            <Text style={[styles.label, { color: theme.colors.text.primary }]}>{t('maintenance.date')} *</Text>
             <TextInput
               style={[
                 styles.input, 
@@ -137,7 +157,7 @@ export const FormularioManutencao = ({ route, navigation }: Props) => {
               ]}
               value={data}
               onChangeText={setData}
-              placeholder="DD/MM/AAAA"
+              placeholder={t('maintenance.datePlaceholder')}
               placeholderTextColor={theme.colors.text.secondary}
             />
             {errors.data && (
@@ -146,7 +166,7 @@ export const FormularioManutencao = ({ route, navigation }: Props) => {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: theme.colors.text.primary }]}>Observações</Text>
+            <Text style={[styles.label, { color: theme.colors.text.primary }]}>{t('maintenance.observationsLabel')}</Text>
             <TextInput
               style={[
                 styles.input, 
@@ -158,7 +178,7 @@ export const FormularioManutencao = ({ route, navigation }: Props) => {
               ]}
               value={observacoes}
               onChangeText={setObservacoes}
-              placeholder="Digite as observações"
+              placeholder={t('maintenance.observationsPlaceholder')}
               placeholderTextColor={theme.colors.text.secondary}
               multiline
               numberOfLines={4}
@@ -169,7 +189,7 @@ export const FormularioManutencao = ({ route, navigation }: Props) => {
             style={[styles.botaoSalvar, { backgroundColor: theme.colors.primary }]} 
             onPress={handleSalvar}
           >
-            <Text style={[styles.botaoSalvarTexto, { color: theme.colors.text.light }]}>Salvar</Text>
+            <Text style={[styles.botaoSalvarTexto, { color: theme.colors.text.light }]}>{t('common.save')}</Text>
           </TouchableOpacity>
         </View>
       </Card>

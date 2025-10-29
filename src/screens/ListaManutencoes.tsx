@@ -15,6 +15,7 @@ import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { Text } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { MaterialIcons } from '@expo/vector-icons';
 
 type Props = NativeStackScreenProps<MotosStackParamList, 'ListaManutencoes'>;
@@ -25,6 +26,7 @@ interface ManutencaoComMoto extends Manutencao {
 
 export const ListaManutencoes = ({ navigation }: Props) => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const [manutencoes, setManutencoes] = useState<ManutencaoComMoto[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -48,7 +50,7 @@ export const ListaManutencoes = ({ navigation }: Props) => {
           ...manutencao,
           moto: moto || {
             id: manutencao.motoId,
-            condutor: 'Moto não encontrada',
+            condutor: t('listMaintenances.motorcycleNotFound'),
             modelo: 'N/A',
             placa: 'N/A',
             ano: 0,
@@ -71,7 +73,7 @@ export const ListaManutencoes = ({ navigation }: Props) => {
       setManutencoes(manutencoesComMoto);
     } catch (error) {
       console.error('Erro ao carregar manutenções:', error);
-      Alert.alert('Erro', 'Erro ao carregar manutenções');
+      Alert.alert(t('common.error'), t('listMaintenances.loadError'));
     } finally {
       setLoading(false);
     }
@@ -85,21 +87,21 @@ export const ListaManutencoes = ({ navigation }: Props) => {
 
   const handleDeleteManutencao = (manutencaoId: string) => {
     Alert.alert(
-      'Confirmar Exclusão',
-      'Tem certeza que deseja excluir esta manutenção?',
+      t('listMaintenances.confirmDelete'),
+      t('listMaintenances.deleteConfirmMessage'),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         { 
-          text: 'Excluir', 
+          text: t('common.delete'), 
           style: 'destructive',
           onPress: async () => {
             try {
               await StorageService.deleteManutencao(manutencaoId);
               await loadManutencoes();
-              Alert.alert('Sucesso', 'Manutenção excluída com sucesso!');
+              Alert.alert(t('common.success'), t('listMaintenances.deleteSuccess'));
             } catch (error) {
               console.error('Erro ao excluir manutenção:', error);
-              Alert.alert('Erro', 'Erro ao excluir manutenção');
+              Alert.alert(t('common.error'), t('listMaintenances.deleteError'));
             }
           }
         }
@@ -108,6 +110,18 @@ export const ListaManutencoes = ({ navigation }: Props) => {
   };
 
   const getTipoManutencaoIcon = (tipo: string) => {
+    // Comparar com traduções possíveis
+    if (tipo === t('maintenance.oilChange')) return 'oil-barrel';
+    if (tipo === t('maintenance.brakes')) return 'stop';
+    if (tipo === t('maintenance.tires')) return 'tire-repair';
+    if (tipo === t('maintenance.chain')) return 'link';
+    if (tipo === t('maintenance.electrical')) return 'electrical-services';
+    if (tipo === t('maintenance.suspension')) return 'settings';
+    if (tipo === t('maintenance.engine')) return 'build';
+    if (tipo === t('maintenance.clutch')) return 'settings';
+    if (tipo === t('maintenance.battery')) return 'battery-full';
+    if (tipo === t('maintenance.carburetor')) return 'precision-manufacturing';
+    // Fallback para valores originais (compatibilidade)
     switch (tipo) {
       case 'Troca de óleo': return 'oil-barrel';
       case 'Freios': return 'stop';
@@ -124,6 +138,18 @@ export const ListaManutencoes = ({ navigation }: Props) => {
   };
 
   const getTipoManutencaoColor = (tipo: string) => {
+    // Comparar com traduções possíveis
+    if (tipo === t('maintenance.oilChange')) return theme.colors.systemBlue;
+    if (tipo === t('maintenance.brakes')) return theme.colors.systemRed;
+    if (tipo === t('maintenance.tires')) return theme.colors.systemOrange;
+    if (tipo === t('maintenance.chain')) return theme.colors.systemPurple;
+    if (tipo === t('maintenance.electrical')) return theme.colors.systemYellow;
+    if (tipo === t('maintenance.suspension')) return theme.colors.systemTeal;
+    if (tipo === t('maintenance.engine')) return theme.colors.systemRed;
+    if (tipo === t('maintenance.clutch')) return theme.colors.systemIndigo;
+    if (tipo === t('maintenance.battery')) return theme.colors.systemGreen;
+    if (tipo === t('maintenance.carburetor')) return theme.colors.systemPink;
+    // Fallback para valores originais (compatibilidade)
     switch (tipo) {
       case 'Troca de óleo': return theme.colors.systemBlue;
       case 'Freios': return theme.colors.systemRed;
@@ -157,7 +183,7 @@ export const ListaManutencoes = ({ navigation }: Props) => {
             {item.moto.placa} - {item.moto.modelo}
           </Text>
           <Text style={[styles.condutorInfo, { color: theme.colors.tertiaryLabel }]}>
-            Condutor: {item.moto.condutor}
+            {t('listMaintenances.driverLabel')} {item.moto.condutor}
           </Text>
         </View>
         <TouchableOpacity 
@@ -206,10 +232,10 @@ export const ListaManutencoes = ({ navigation }: Props) => {
         style={styles.emptyIcon}
       />
       <Text style={[styles.emptyTitle, { color: theme.colors.label }]}>
-        Nenhuma manutenção registrada
+        {t('listMaintenances.emptyTitle')}
       </Text>
       <Text style={[styles.emptySubtitle, { color: theme.colors.secondaryLabel }]}>
-        As manutenções registradas aparecerão aqui
+        {t('listMaintenances.emptySubtitle')}
       </Text>
     </View>
   );
@@ -218,7 +244,7 @@ export const ListaManutencoes = ({ navigation }: Props) => {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: theme.colors.background }]}>
         <Text style={[styles.loadingText, { color: theme.colors.label }]}>
-          Carregando manutenções...
+          {t('listMaintenances.loading')}
         </Text>
       </View>
     );
@@ -228,10 +254,10 @@ export const ListaManutencoes = ({ navigation }: Props) => {
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.header}>
         <Text style={[styles.title, { color: theme.colors.label }]}>
-          Manutenções Registradas
+          {t('listMaintenances.title')}
         </Text>
         <Text style={[styles.subtitle, { color: theme.colors.secondaryLabel }]}>
-          {manutencoes.length} manutenção{manutencoes.length !== 1 ? 'ões' : ''}
+          {manutencoes.length} {manutencoes.length !== 1 ? t('listMaintenances.countPlural') : t('listMaintenances.count')}
         </Text>
       </View>
 

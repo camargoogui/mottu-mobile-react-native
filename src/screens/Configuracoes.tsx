@@ -13,9 +13,9 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Button } from '../components/Button';
-import { StorageService } from '../services/storage';
 import type { ConfiguracoesStackParamList } from '../navigation';
 
 type ConfiguracoesScreenNavigationProp = NativeStackNavigationProp<ConfiguracoesStackParamList>;
@@ -31,6 +31,7 @@ const filiais = [
 export const Configuracoes = () => {
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
+  const { currentLanguage, changeLanguage, t } = useLanguage();
   const [filialSelecionada, setFilialSelecionada] = useState<string>('');
   const navigation = useNavigation<ConfiguracoesScreenNavigationProp>();
 
@@ -53,30 +54,30 @@ export const Configuracoes = () => {
     try {
       await AsyncStorage.setItem('filial', filial);
       setFilialSelecionada(filial);
-      Alert.alert('Sucesso', 'Filial atualizada com sucesso!');
+      Alert.alert(t('common.success'), t('settings.selectBranchSuccess'));
     } catch (error) {
       console.error('Erro ao salvar filial:', error);
-      Alert.alert('Erro', 'Não foi possível salvar a filial');
+      Alert.alert(t('common.error'), t('errors.unknownError'));
     }
   };
 
   const handleLogout = () => {
     Alert.alert(
-      'Sair',
-      'Tem certeza que deseja sair da sua conta?',
+      t('auth.logout'),
+      t('auth.logoutConfirm'),
       [
         {
-          text: 'Cancelar',
+          text: t('common.cancel'),
           style: 'cancel',
         },
         {
-          text: 'Sair',
+          text: t('auth.logout'),
           style: 'destructive',
           onPress: async () => {
             try {
               await logout();
             } catch (error) {
-              Alert.alert('Erro', 'Não foi possível fazer logout');
+              Alert.alert(t('common.error'), t('errors.unknownError'));
             }
           },
         },
@@ -84,74 +85,81 @@ export const Configuracoes = () => {
     );
   };
 
-  const handleClearAllData = () => {
-    Alert.alert(
-      '🗑️ Limpar Todos os Dados',
-      'Tem certeza? Isso irá remover:\n\n• Todas as motos\n• Todas as manutenções\n• Todas as vagas\n\nEsta ação não pode ser desfeita!',
-      [
-        {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
-        {
-          text: 'Limpar Tudo',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await StorageService.clearAllData();
-              Alert.alert('✅ Sucesso', 'Todos os dados foram removidos!');
-            } catch (error) {
-              Alert.alert('❌ Erro', 'Não foi possível limpar os dados');
-            }
-          },
-        },
-      ]
-    );
-  };
-
-  const handleResetData = () => {
-    Alert.alert(
-      '🔄 Resetar Dados',
-      'Isso irá:\n\n• Limpar todos os dados atuais\n• Recriar dados de exemplo\n\nDeseja continuar?',
-      [
-        {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
-        {
-          text: 'Resetar',
-          style: 'default',
-          onPress: async () => {
-            try {
-              await StorageService.resetAllData();
-              Alert.alert('✅ Sucesso', 'Dados resetados com dados de exemplo!');
-            } catch (error) {
-              Alert.alert('❌ Erro', 'Não foi possível resetar os dados');
-            }
-          },
-        },
-      ]
-    );
-  };
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <Text style={[styles.titulo, { color: theme.colors.text.primary }]}>Configurações</Text>
+      <Text style={[styles.titulo, { color: theme.colors.text.primary }]}>{t('settings.title')}</Text>
       
       {/* Informações do usuário */}
       <View style={[styles.secao, { backgroundColor: theme.colors.card }]}>
-        <Text style={[styles.subtitulo, { color: theme.colors.text.primary }]}>Usuário</Text>
+        <Text style={[styles.subtitulo, { color: theme.colors.text.primary }]}>{t('settings.user')}</Text>
         <Text style={[styles.userInfo, { color: theme.colors.text.secondary }]}>
-          {user?.displayName || 'Usuário'}
+          {user?.displayName || t('settings.user')}
         </Text>
         <Text style={[styles.userInfo, { color: theme.colors.text.secondary }]}>
           {user?.email}
         </Text>
       </View>
       
+      {/* Seção de Idioma */}
+      <View style={[styles.secao, { backgroundColor: theme.colors.card }]}>
+        <Text style={[styles.subtitulo, { color: theme.colors.text.primary }]}>{t('settings.language')}</Text>
+        <Text style={[styles.dataInfo, { color: theme.colors.text.secondary }]}>
+          {t('settings.languageDesc')}
+        </Text>
+        <View style={styles.languageButtons}>
+          <TouchableOpacity
+            style={[
+              styles.languageButton,
+              { 
+                backgroundColor: currentLanguage === 'pt-BR' ? theme.colors.primary : theme.colors.card,
+                borderColor: theme.colors.border,
+                borderWidth: 1,
+              }
+            ]}
+            onPress={() => changeLanguage('pt-BR')}
+          >
+            <MaterialIcons 
+              name="language" 
+              size={20} 
+              color={currentLanguage === 'pt-BR' ? '#FFFFFF' : theme.colors.text.primary} 
+            />
+            <Text style={[
+              styles.languageButtonText,
+              { color: currentLanguage === 'pt-BR' ? '#FFFFFF' : theme.colors.text.primary }
+            ]}>
+              {t('settings.portuguese')}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.languageButton,
+              { 
+                backgroundColor: currentLanguage === 'en' ? theme.colors.primary : theme.colors.card,
+                borderColor: theme.colors.border,
+                borderWidth: 1,
+              }
+            ]}
+            onPress={() => changeLanguage('en')}
+          >
+            <MaterialIcons 
+              name="language" 
+              size={20} 
+              color={currentLanguage === 'en' ? '#FFFFFF' : theme.colors.text.primary} 
+            />
+            <Text style={[
+              styles.languageButtonText,
+              { color: currentLanguage === 'en' ? '#FFFFFF' : theme.colors.text.primary }
+            ]}>
+              {t('settings.english')}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
       {/* Seção de Tema */}
       <View style={[styles.secao, { backgroundColor: theme.colors.card }]}>
-        <Text style={[styles.subtitulo, { color: theme.colors.text.primary }]}>Aparência</Text>
+        <Text style={[styles.subtitulo, { color: theme.colors.text.primary }]}>{t('settings.appearance')}</Text>
         <View style={styles.toggleContainer}>
           <View style={styles.toggleInfo}>
             <MaterialIcons 
@@ -160,7 +168,7 @@ export const Configuracoes = () => {
               color={theme.colors.primary} 
             />
             <Text style={[styles.toggleLabel, { color: theme.colors.text.primary }]}>
-              Modo {theme.mode === 'dark' ? 'Escuro' : 'Claro'}
+              {theme.mode === 'dark' ? t('settings.darkMode') : t('settings.lightMode')}
             </Text>
           </View>
           <Switch
@@ -174,7 +182,7 @@ export const Configuracoes = () => {
 
       {/* Seção de Filial */}
       <View style={[styles.secao, { backgroundColor: theme.colors.card }]}>
-        <Text style={[styles.subtitulo, { color: theme.colors.text.primary }]}>Selecione sua filial:</Text>
+        <Text style={[styles.subtitulo, { color: theme.colors.text.primary }]}>{t('settings.selectBranch')}</Text>
         <View style={styles.listaFiliais}>
           {filiais.map((filial) => (
             <TouchableOpacity
@@ -203,32 +211,10 @@ export const Configuracoes = () => {
         </View>
       </View>
 
-      {/* Seção de Dados */}
-      <View style={[styles.secao, { backgroundColor: theme.colors.card }]}>
-        <Text style={[styles.subtitulo, { color: theme.colors.text.primary }]}>Gerenciar Dados</Text>
-        <Text style={[styles.dataInfo, { color: theme.colors.text.secondary }]}>
-          Limpe ou resete todos os dados armazenados localmente
-        </Text>
-        <View style={styles.dataButtons}>
-          <Button
-            title="🗑️ Limpar Todos os Dados"
-            onPress={handleClearAllData}
-            variant="secondary"
-            style={styles.dataButton}
-          />
-          <Button
-            title="🔄 Resetar com Dados Exemplo"
-            onPress={handleResetData}
-            variant="tertiary"
-            style={styles.dataButton}
-          />
-        </View>
-      </View>
-
       {/* Botão de Logout */}
       <View style={styles.logoutSection}>
         <Button
-          title="Sair da Conta"
+          title={t('auth.logout')}
           onPress={handleLogout}
           variant="secondary"
         />
@@ -298,17 +284,23 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     marginBottom: 4,
   },
-  dataInfo: {
-    fontSize: 14,
-    fontWeight: '400',
-    marginBottom: 16,
-    lineHeight: 20,
+  languageButtons: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 8,
   },
-  dataButtons: {
+  languageButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 14,
+    borderRadius: 8,
     gap: 8,
   },
-  dataButton: {
-    width: '100%',
+  languageButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
   },
   logoutSection: {
     marginTop: 32,
