@@ -12,19 +12,6 @@ Aplicativo mobile desenvolvido em React Native com Expo para gestão inteligente
 - **RM555166** - Guilherme Camargo - 2TDSPM | https://github.com/camargoogui
 - **RM555131** - Icaro Americo - 2TDSPM | https://github.com/icaroalb1
 
-## 📚 Documentação Adicional
-
-### Push Notifications
-Para documentação completa sobre notificações push, veja:
-- [PUSH_NOTIFICATIONS_README.md](./PUSH_NOTIFICATIONS_README.md)
-
-Inclui:
-- Setup e configuração
-- Exemplos de código
-- Integração com backend
-- Scripts de teste
-- Solução de problemas
-
 ## 🚀 Tecnologias
 
 ### Core
@@ -37,7 +24,11 @@ Inclui:
 - **Firebase Authentication** 12.2.1
 - **Axios** 1.12.2 (Integração API .NET)
 - **AsyncStorage** 2.1.2
-- **Expo Notifications** 0.x (Push notifications)
+- **Expo Notifications** 0.32.12 (Notificações locais)
+
+### Internacionalização
+- **react-i18next** 16.2.1
+- **i18next** 25.6.0
 
 ### UI/UX
 - **Material Icons** (@expo/vector-icons)
@@ -52,12 +43,19 @@ Inclui:
 - **Persistência de sessão** com AsyncStorage
 - **Logout seguro** com limpeza de dados
 
-### 🔔 Push Notifications
-- **Notificações push** com Expo Notifications
+### 🔔 Notificações Locais
+- **Notificações locais** com Expo Notifications
 - **Solicitação de permissões** iOS/Android
-- **Deep linking** baseado em dados da notificação
-- **Tela de debug** integrada para testes
+- **Notificações automáticas** ao cadastrar nova moto
 - **Handlers customizáveis** para foreground/background
+- **Deep linking** preparado para futuras implementações
+
+### 🌐 Internacionalização (i18n)
+- **Suporte a múltiplos idiomas**: Português (Brasil) e English
+- **Persistência de preferência** do usuário
+- **Seleção de idioma** na tela de Login e Configurações
+- **Tradução completa** de todas as telas e componentes
+- **Tradução de validações**, mensagens de erro e alertas
 
 ### 🏍️ CRUD Completo de Motos
 - **Listar Motos** com integração à API .NET
@@ -79,6 +77,13 @@ Inclui:
 - **Tipografia SF Pro** (12 estilos)
 - **Componentes adaptativos** que respondem ao tema
 - **Toggle na tela de configurações**
+
+### 🌐 Sistema de Idiomas
+- **Idiomas suportados**: Português (Brasil) e English
+- **Detecção automática** baseada no idioma do dispositivo
+- **Seleção de idioma** disponível em Login e Configurações
+- **Persistência** da preferência do usuário no AsyncStorage
+- **Tradução completa** de todas as strings do aplicativo
 
 ### 🔧 Funcionalidades Técnicas
 - **Integração API .NET** com endpoints completos
@@ -174,18 +179,31 @@ src/
 │   └── Input.tsx       # Input com validações e ícones
 ├── contexts/            # Contextos globais
 │   ├── AuthContext.tsx  # Gerenciamento de autenticação
-│   └── ThemeContext.tsx # Sistema de temas
+│   ├── ThemeContext.tsx # Sistema de temas
+│   └── LanguageContext.tsx # Gerenciamento de idiomas
+├── i18n/                # Configuração de internacionalização
+│   ├── index.ts         # Configuração i18next
+│   ├── locales/         # Arquivos de tradução
+│   │   ├── pt-BR.json   # Traduções em português
+│   │   └── en.json       # Traduções em inglês
+│   └── utils.ts         # Utilitários de tradução
 ├── navigation/          # Configuração de navegação
 │   └── index.tsx       # Stack e Tab navigators tipados
 ├── screens/             # Telas da aplicação
-│   ├── LoginScreen.tsx     # Tela de login
+│   ├── LoginScreen.tsx     # Tela de login (com seleção de idioma)
 │   ├── RegisterScreen.tsx  # Tela de cadastro
 │   ├── Home.tsx           # Tela inicial
 │   ├── ListaMotos.tsx     # Lista de motos
-│   ├── CadastroMoto.tsx   # Cadastro de moto
+│   ├── CadastroMoto.tsx   # Cadastro de moto (com notificação)
+│   ├── EdicaoMoto.tsx     # Edição de moto
+│   ├── DetalhesMoto.tsx   # Detalhes da moto
 │   ├── FilialListScreen.tsx    # Lista de filiais
 │   ├── FilialFormScreen.tsx    # Formulário de filial
-│   └── Configuracoes.tsx  # Configurações e logout
+│   ├── MotosFilialScreen.tsx   # Motos por filial
+│   ├── FormularioManutencao.tsx # Formulário de manutenção
+│   ├── ListaManutencoes.tsx     # Lista de manutenções
+│   ├── MapaPatio.tsx           # Mapa do pátio
+│   └── Configuracoes.tsx  # Configurações (tema, idioma, logout)
 ├── services/            # Serviços e integrações
 │   ├── api.ts          # Configuração Axios
 │   ├── authService.ts  # Serviço de autenticação Firebase
@@ -225,9 +243,14 @@ src/
 **Link da API**: [https://github.com/camargoogui/mottu-api-dotnet.git](https://github.com/camargoogui/mottu-api-dotnet.git)
 
 ### Endpoints Implementados
-- **Motos**: GET, POST, PUT, DELETE `/api/Moto`
-- **Filiais**: GET, POST, PUT, DELETE `/api/Filial`
-- **Toggle Status**: PATCH `/api/Filial/{id}/toggle-active`
+- **Motos**: GET, POST, PUT, DELETE `/api/v1/moto`
+  - GET `/api/v1/moto/por-placa?placa=ABC1234` (buscar por placa)
+  - GET `/api/v1/moto/por-filial/{filialId}` (listar por filial)
+  - PATCH `/api/v1/moto/{id}/disponivel` (marcar como disponível)
+  - PATCH `/api/v1/moto/{id}/indisponivel` (marcar como indisponível)
+- **Filiais**: GET, POST, PUT, DELETE `/api/v1/filial`
+  - PATCH `/api/v1/filial/{id}/ativar` (ativar filial)
+  - PATCH `/api/v1/filial/{id}/desativar` (desativar filial)
 
 ### Características
 - **Timeout**: 10 segundos por requisição
@@ -256,10 +279,6 @@ src/
    ```
 
 4. **Teste os endpoints** através do app ou pelo Swagger em `http://localhost:5001`
-
-## 📚 Documentação Adicional
-
-- **[API_INTEGRATION_README.md](./API_INTEGRATION_README.md)** - Guia completo de integração
 
 ## 🏗️ Arquitetura
 
@@ -293,8 +312,15 @@ src/
 ### Validações
 - **Tempo Real**: Validação durante digitação
 - **Específicas**: Regras por tipo de campo
-- **Mensagens Claras**: Feedback em português
+- **Mensagens Claras**: Feedback traduzido no idioma selecionado
 - **Prevenção**: Bloqueio de envio com dados inválidos
+
+### Internacionalização
+- **Idiomas Disponíveis**: Português (Brasil) e English
+- **Detecção Automática**: Usa o idioma do sistema
+- **Persistência**: Salva preferência do usuário
+- **Cobertura Completa**: Todas as telas, labels, placeholders e mensagens traduzidas
+- **Troca Dinâmica**: Mudança de idioma sem reiniciar o app
 
 ## 📱 Compatibilidade
 
