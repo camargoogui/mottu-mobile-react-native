@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, RefreshControl } from 'react-native';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, RefreshControl, Animated } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MotosStackParamList } from '../navigation';
 import { StorageService } from '../services/storage';
@@ -13,6 +13,149 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { MaterialIcons } from '@expo/vector-icons';
 
 type Props = NativeStackScreenProps<MotosStackParamList, 'ListaMotosScreen'>;
+
+// Componente de botão animado com ícone
+const AnimatedIconButton = ({ 
+  onPress, 
+  icon, 
+  color, 
+  iconColor, 
+  style 
+}: { 
+  onPress: () => void; 
+  icon: string; 
+  color: string; 
+  iconColor: string; 
+  style: any;
+}) => {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.85,
+      useNativeDriver: true,
+      friction: 4,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      friction: 4,
+    }).start();
+  };
+
+  return (
+    <TouchableOpacity
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      onPress={onPress}
+      activeOpacity={1}
+    >
+      <Animated.View
+        style={[
+          style,
+          { backgroundColor: color },
+          {
+            transform: [{ scale: scaleAnim }],
+          },
+        ]}
+      >
+        <MaterialIcons name={icon as any} size={20} color={iconColor} />
+      </Animated.View>
+    </TouchableOpacity>
+  );
+};
+
+// Componente para item da lista com animação
+const MotoListItem = ({ 
+  item, 
+  index, 
+  onPress, 
+  onEdit, 
+  onDelete 
+}: { 
+  item: Moto; 
+  index: number; 
+  onPress: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) => {
+  const { theme } = useTheme();
+  const { t } = useLanguage();
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(50)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 300,
+        delay: index * 50,
+        useNativeDriver: true,
+      }),
+      Animated.spring(translateY, {
+        toValue: 0,
+        tension: 50,
+        friction: 7,
+        delay: index * 50,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [index]);
+
+  return (
+    <Animated.View
+      style={{
+        opacity,
+        transform: [{ translateY }],
+      }}
+    >
+      <TouchableOpacity onPress={onPress}>
+        <Card>
+          <View style={styles.motoInfo}>
+            <View style={styles.motoDetails}>
+              <View style={styles.placaContainer}>
+                <View style={[styles.idBadge, { backgroundColor: theme.colors.primary }]}>
+                  <Text style={[styles.idText, { color: theme.colors.text.light }]}>ID: {item.id}</Text>
+                </View>
+                <Text style={[styles.placa, { color: theme.colors.text.primary }]}>{item.placa}</Text>
+              </View>
+              <Text style={[styles.modelo, { color: theme.colors.text.secondary }]}>{item.modelo} {item.ano}</Text>
+              <Text style={[styles.cor, { color: theme.colors.text.secondary }]}>{t('moto.colorLabel')}: {item.cor}</Text>
+              <Text style={[styles.filial, { color: theme.colors.text.secondary }]}>📍 {item.filialNome}</Text>
+            </View>
+            <View style={styles.motoActions}>
+              <View style={[
+                styles.statusBadge,
+                { backgroundColor: item.status === 'disponível' ? theme.colors.success : theme.colors.error }
+              ]}>
+                <Text style={[styles.statusText, { color: theme.colors.text.light }]}>
+                  {t(`moto.${item.status === 'disponível' ? 'available' : item.status === 'ocupada' ? 'occupied' : 'maintenance'}`)}
+                </Text>
+              </View>
+              <AnimatedIconButton
+                onPress={onEdit}
+                icon="edit"
+                color={theme.colors.primary}
+                iconColor={theme.colors.text.light}
+                style={styles.editButton}
+              />
+              <AnimatedIconButton
+                onPress={onDelete}
+                icon="delete"
+                color={theme.colors.error}
+                iconColor={theme.colors.text.light}
+                style={styles.deleteButton}
+              />
+            </View>
+          </View>
+        </Card>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+};
 
 export const ListaMotos = ({ navigation }: Props) => {
   const { theme } = useTheme();
@@ -88,46 +231,14 @@ export const ListaMotos = ({ navigation }: Props) => {
     );
   };
 
-  const renderMotoItem = ({ item }: { item: Moto }) => (
-    <TouchableOpacity onPress={() => navigation.navigate('DetalhesMoto', { moto: item })}>
-      <Card>
-        <View style={styles.motoInfo}>
-          <View style={styles.motoDetails}>
-            <View style={styles.placaContainer}>
-              <View style={[styles.idBadge, { backgroundColor: theme.colors.primary }]}>
-                <Text style={[styles.idText, { color: theme.colors.text.light }]}>ID: {item.id}</Text>
-              </View>
-              <Text style={[styles.placa, { color: theme.colors.text.primary }]}>{item.placa}</Text>
-            </View>
-            <Text style={[styles.modelo, { color: theme.colors.text.secondary }]}>{item.modelo} {item.ano}</Text>
-            <Text style={[styles.cor, { color: theme.colors.text.secondary }]}>{t('moto.colorLabel')}: {item.cor}</Text>
-            <Text style={[styles.filial, { color: theme.colors.text.secondary }]}>📍 {item.filialNome}</Text>
-          </View>
-          <View style={styles.motoActions}>
-            <View style={[
-              styles.statusBadge,
-              { backgroundColor: item.status === 'disponível' ? theme.colors.success : theme.colors.error }
-            ]}>
-              <Text style={[styles.statusText, { color: theme.colors.text.light }]}>
-                {t(`moto.${item.status === 'disponível' ? 'available' : item.status === 'ocupada' ? 'occupied' : 'maintenance'}`)}
-              </Text>
-            </View>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('EdicaoMoto', { moto: item })}
-              style={[styles.editButton, { backgroundColor: theme.colors.primary }]}
-            >
-              <MaterialIcons name="edit" size={20} color={theme.colors.text.light} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => handleDeleteMoto(item)}
-              style={[styles.deleteButton, { backgroundColor: theme.colors.error }]}
-            >
-              <MaterialIcons name="delete" size={20} color={theme.colors.text.light} />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Card>
-    </TouchableOpacity>
+  const renderMotoItem = ({ item, index }: { item: Moto; index: number }) => (
+    <MotoListItem
+      item={item}
+      index={index}
+      onPress={() => navigation.navigate('DetalhesMoto', { moto: item })}
+      onEdit={() => navigation.navigate('EdicaoMoto', { moto: item })}
+      onDelete={() => handleDeleteMoto(item)}
+    />
   );
 
   if (loading && motos.length === 0) {
@@ -147,18 +258,22 @@ export const ListaMotos = ({ navigation }: Props) => {
         <Text style={[styles.title, { color: theme.colors.text.primary }]}>{t('moto.list')}</Text>
       </View>
       <View style={styles.buttonContainer}>
-        <Button
-          title={t('moto.registerMotorcycle')}
-          onPress={() => navigation.navigate('CadastroMoto')}
-          variant="secondary"
-          style={styles.button}
-        />
-        <Button
-          title={t('moto.viewMaintenances')}
-          onPress={() => navigation.navigate('ListaManutencoes')}
-          variant="tertiary"
-          style={styles.button}
-        />
+        <View style={styles.buttonWrapper}>
+          <Button
+            title={t('moto.registerMotorcycle')}
+            onPress={() => navigation.navigate('CadastroMoto')}
+            variant="secondary"
+            fullWidth={false}
+          />
+        </View>
+        <View style={styles.buttonWrapper}>
+          <Button
+            title={t('moto.viewMaintenances')}
+            onPress={() => navigation.navigate('ListaManutencoes')}
+            variant="secondary"
+            fullWidth={false}
+          />
+        </View>
       </View>
       <FlatList
         data={motos}
@@ -211,11 +326,10 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     marginBottom: 16,
     gap: 12,
   },
-  button: {
+  buttonWrapper: {
     flex: 1,
   },
   list: {

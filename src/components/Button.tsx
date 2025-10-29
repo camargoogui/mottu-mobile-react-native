@@ -1,5 +1,5 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import React, { useRef } from 'react';
+import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle, Animated } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface ButtonProps {
@@ -22,6 +22,7 @@ export const Button = ({
   style 
 }: ButtonProps) => {
   const { theme } = useTheme();
+  const scaleAnim = useRef(new Animated.Value(1)).current;
   
   const getButtonStyle = (): ViewStyle => {
     const baseStyle: ViewStyle = {
@@ -70,6 +71,9 @@ export const Button = ({
 
     if (fullWidth) {
       baseStyle.width = '100%';
+    } else {
+      // Remove width when not fullWidth to allow flex to work properly
+      baseStyle.width = undefined;
     }
 
     return baseStyle;
@@ -116,16 +120,59 @@ export const Button = ({
     return baseStyle;
   };
 
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.95,
+      useNativeDriver: true,
+      friction: 3,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      friction: 3,
+    }).start();
+  };
+
+  const handlePress = () => {
+    Animated.sequence([
+      Animated.spring(scaleAnim, {
+        toValue: 0.95,
+        useNativeDriver: true,
+        friction: 3,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+        friction: 3,
+      }),
+    ]).start();
+    onPress();
+  };
+
   return (
     <TouchableOpacity
-      style={[getButtonStyle(), style]}
-      onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      onPress={handlePress}
       disabled={disabled}
-      activeOpacity={0.6} // Apple HIG standard
+      activeOpacity={1}
     >
-      <Text style={getTextStyle()}>
-        {title}
-      </Text>
+      <Animated.View
+        style={[
+          getButtonStyle(),
+          style,
+          {
+            transform: [{ scale: scaleAnim }],
+          },
+        ]}
+      >
+        <Text style={getTextStyle()}>
+          {title}
+        </Text>
+      </Animated.View>
     </TouchableOpacity>
   );
 };
