@@ -85,6 +85,9 @@ const HomeStack = () => {
           fontWeight: theme.typography.headline.fontWeight as any,
           color: theme.colors.label,
         },
+        // Animações suaves
+        animation: 'slide_from_right' as any,
+        animationDuration: 300,
       }}
     >
       <HomeStackNavigator.Screen
@@ -95,7 +98,10 @@ const HomeStack = () => {
       <HomeStackNavigator.Screen
         name="MapaPatio"
         component={MapaPatio}
-        options={{ title: t('home.mapView') }}
+        options={{ 
+          title: t('home.mapView'),
+          animation: 'slide_from_bottom' as any,
+        }}
       />
     </HomeStackNavigator.Navigator>
   );
@@ -118,6 +124,9 @@ const MotosStack = () => {
           fontWeight: theme.typography.headline.fontWeight as any,
           color: theme.colors.label,
         },
+        // Animações suaves
+        animation: 'slide_from_right' as any,
+        animationDuration: 300,
       }}
     >
       <MotosStackNavigator.Screen
@@ -138,27 +147,42 @@ const MotosStack = () => {
       <MotosStackNavigator.Screen
         name="DetalhesMoto"
         component={DetalhesMoto}
-        options={{ title: t('moto.details') }}
+        options={{ 
+          title: t('moto.details'),
+          animation: 'fade' as any,
+        }}
       />
       <MotosStackNavigator.Screen
         name="EdicaoMoto"
         component={EdicaoMoto}
-        options={{ title: t('moto.edit') }}
+        options={{ 
+          title: t('moto.edit'),
+          animation: 'slide_from_bottom' as any,
+        }}
       />
       <MotosStackNavigator.Screen
         name="FormularioManutencao"
         component={FormularioManutencao}
-        options={{ title: t('maintenance.create') }}
+        options={{ 
+          title: t('maintenance.create'),
+          animation: 'slide_from_bottom' as any,
+        }}
       />
       <MotosStackNavigator.Screen
         name="CadastroMoto"
         component={CadastroMoto}
-        options={{ title: t('moto.create') }}
+        options={{ 
+          title: t('moto.create'),
+          animation: 'slide_from_bottom' as any,
+        }}
       />
       <MotosStackNavigator.Screen
         name="ListaManutencoes"
         component={ListaManutencoes}
-        options={{ title: t('maintenance.list') }}
+        options={{ 
+          title: t('maintenance.list'),
+          animation: 'slide_from_right' as any,
+        }}
       />
     </MotosStackNavigator.Navigator>
   );
@@ -181,6 +205,9 @@ const FiliaisStack = () => {
           fontWeight: theme.typography.headline.fontWeight as any,
           color: theme.colors.label,
         },
+        // Animações suaves
+        animation: 'slide_from_right' as any,
+        animationDuration: 300,
       }}
     >
       <FiliaisStackNavigator.Screen
@@ -202,13 +229,17 @@ const FiliaisStack = () => {
         name="FilialForm"
         component={FilialFormScreen}
         options={({ route }) => ({
-          title: route.params?.filial ? t('filial.edit') : t('filial.newBranch')
+          title: route.params?.filial ? t('filial.edit') : t('filial.newBranch'),
+          animation: 'slide_from_bottom' as any,
         })}
       />
       <FiliaisStackNavigator.Screen
         name="MotosFilial"
         component={MotosFilialScreen}
-        options={{ title: t('filial.motosFilial') }}
+        options={{ 
+          title: t('filial.motosFilial'),
+          animation: 'slide_from_right' as any,
+        }}
       />
     </FiliaisStackNavigator.Navigator>
   );
@@ -231,6 +262,9 @@ const ConfiguracoesStack = () => {
           fontWeight: theme.typography.headline.fontWeight as any,
           color: theme.colors.label,
         },
+        // Animações suaves
+        animation: 'slide_from_right' as any,
+        animationDuration: 300,
       }}
     >
       <ConfiguracoesStackNavigator.Screen
@@ -264,6 +298,9 @@ const AuthStack = () => {
           fontWeight: theme.typography.headline.fontWeight as any,
           color: theme.colors.label,
         },
+        // Animações suaves
+        animation: 'fade' as any,
+        animationDuration: 250,
       }}
     >
       <AuthStackNavigator.Screen
