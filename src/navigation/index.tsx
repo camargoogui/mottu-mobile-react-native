@@ -22,6 +22,7 @@ import { FilialListScreen } from '../screens/FilialListScreen';
 import { FilialFormScreen } from '../screens/FilialFormScreen';
 import { MotosFilialScreen } from '../screens/MotosFilialScreen';
 import { PushDebugScreen } from '../screens/PushDebugScreen';
+import { SobreApp } from '../screens/SobreApp';
 import { Moto, Filial } from '../types';
 
 export type RootStackParamList = {
@@ -59,6 +60,7 @@ export type FiliaisStackParamList = {
 export type ConfiguracoesStackParamList = {
   ConfiguracoesScreen: undefined;
   PushDebug: undefined;
+  SobreApp: undefined;
 };
 
 const HomeStackNavigator = createNativeStackNavigator<HomeStackParamList>();
@@ -276,6 +278,11 @@ const ConfiguracoesStack = () => {
         name="PushDebug"
         component={PushDebugScreen}
         options={{ title: 'Push Notifications Debug' }}
+      />
+      <ConfiguracoesStackNavigator.Screen
+        name="SobreApp"
+        component={SobreApp}
+        options={{ title: t('aboutApp.title') }}
       />
     </ConfiguracoesStackNavigator.Navigator>
   );

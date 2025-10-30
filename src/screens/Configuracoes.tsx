@@ -211,6 +211,30 @@ export const Configuracoes = () => {
         </View>
       </View>
 
+      {/* Seção Sobre o App */}
+      <View style={[styles.secao, { backgroundColor: theme.colors.card }]}>
+        <TouchableOpacity
+          style={[styles.aboutAppButton, { borderColor: theme.colors.border }]}
+          onPress={() => navigation.navigate('SobreApp')}
+        >
+          <View style={styles.aboutAppButtonLeft}>
+            <MaterialIcons 
+              name="info-outline" 
+              size={24} 
+              color={theme.colors.primary} 
+            />
+            <Text style={[styles.aboutAppButtonText, { color: theme.colors.text.primary }]}>
+              {t('settings.aboutApp')}
+            </Text>
+          </View>
+          <MaterialIcons 
+            name="chevron-right" 
+            size={24} 
+            color={theme.colors.text.secondary} 
+          />
+        </TouchableOpacity>
+      </View>
+
       {/* Botão de Logout */}
       <View style={styles.logoutSection}>
         <Button
@@ -307,5 +331,22 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     alignItems: 'center',
     paddingHorizontal: 16,
+  },
+  aboutAppButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderWidth: 1,
+    borderRadius: 8,
+  },
+  aboutAppButtonLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  aboutAppButtonText: {
+    fontSize: 16,
+    fontWeight: '500',
   },
 }); 

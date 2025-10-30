@@ -324,7 +324,25 @@
     "clearSuccess": "All data has been removed!",
     "resetSuccess": "Data reset with example data!",
     "selectBranch": "Select your branch:",
-    "selectBranchSuccess": "Branch updated successfully!"
+    "selectBranchSuccess": "Branch updated successfully!",
+    "aboutApp": "About App"
+  },
+  "aboutApp": {
+    "title": "About App",
+    "subtitle": "Information about the app version and build",
+    "appName": "App Name",
+    "version": "Version",
+    "commitHash": "Commit Hash",
+    "branch": "Branch",
+    "buildType": "Build Type",
+    "buildType.development": "Development",
+    "buildType.preview": "Preview",
+    "buildType.production": "Production",
+    "buildDate": "Build Date",
+    "commitDate": "Commit Date",
+    "platform": "Platform",
+    "notAvailable": "Not available",
+    "footer": "This information is useful for tracking bugs and identifying the exact version of the app in use."
   },
   "notifications": {
     "enabled": "Notifications enabled",

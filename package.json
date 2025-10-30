@@ -12,6 +12,8 @@
     "dev": "npm run update-api && npm start",
     "send-push": "node scripts/send-test-push.js",
     "get-commit-hash": "node scripts/get-commit-hash.js",
+    "inject-build-info": "node scripts/inject-build-info.js",
+    "prebuild": "npm run inject-build-info",
     "build:android:dev": "eas build --platform android --profile development",
     "build:android:preview": "eas build --platform android --profile preview",
     "build:android:prod": "eas build --platform android --profile production",

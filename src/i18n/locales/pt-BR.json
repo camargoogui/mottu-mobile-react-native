@@ -308,7 +308,25 @@
     "clearSuccess": "Todos os dados foram removidos!",
     "resetSuccess": "Dados resetados com dados de exemplo!",
     "selectBranch": "Selecione sua filial:",
-    "selectBranchSuccess": "Filial atualizada com sucesso!"
+    "selectBranchSuccess": "Filial atualizada com sucesso!",
+    "aboutApp": "Sobre o App"
+  },
+  "aboutApp": {
+    "title": "Sobre o App",
+    "subtitle": "Informações sobre a versão e build do aplicativo",
+    "appName": "Nome do App",
+    "version": "Versão",
+    "commitHash": "Hash do Commit",
+    "branch": "Branch",
+    "buildType": "Tipo de Build",
+    "buildType.development": "Desenvolvimento",
+    "buildType.preview": "Preview",
+    "buildType.production": "Produção",
+    "buildDate": "Data do Build",
+    "commitDate": "Data do Commit",
+    "platform": "Plataforma",
+    "notAvailable": "Não disponível",
+    "footer": "Estas informações são úteis para rastrear bugs e identificar a versão exata do app em uso."
   },
   "notifications": {
     "enabled": "Notificações ativadas",
