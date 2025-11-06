@@ -35,6 +35,10 @@ export const API_CONFIG = {
   // Timeout para requisições
   TIMEOUT: 10000,
   
+  // API Key para autenticação
+  // IMPORTANTE: Configure sua API Key aqui ou via variável de ambiente
+  API_KEY: process.env.EXPO_PUBLIC_API_KEY || 'local-dev-key',
+  
   // Headers padrão
   DEFAULT_HEADERS: {
     'Content-Type': 'application/json',

@@ -9,6 +9,7 @@ import { Button } from '../components/Button';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MaterialIcons } from '@expo/vector-icons';
+import { notificationService } from '../services/notifications';
 
 type Props = NativeStackScreenProps<FiliaisStackParamList, 'FilialList'>;
 
@@ -64,6 +65,28 @@ export const FilialListScreen = ({ navigation }: Props) => {
             try {
               setLoading(true);
               await FilialService.delete(filial.id);
+              
+              // Envia notificação de exclusão
+              try {
+                const permissionStatus = await notificationService.getPermissionStatus();
+                if (permissionStatus !== 'granted') {
+                  await notificationService.requestPermissions();
+                }
+                
+                const notificationId = await notificationService.sendTestNotification(
+                  `🗑️ ${t('filial.filialDeletedNotification')}`,
+                  `${filial.nome} ${t('filial.deleteSuccess')}`,
+                  { screen: 'Filiais' },
+                  2
+                );
+                
+                if (notificationId) {
+                  console.log('✅ Notificação de exclusão agendada:', notificationId);
+                }
+              } catch (notificationError) {
+                console.error('❌ Erro ao enviar notificação de exclusão:', notificationError);
+              }
+              
               Alert.alert(t('common.success'), t('filial.deleteSuccess'));
               loadFiliais(); // Recarrega a lista
             } catch (error) {
@@ -82,6 +105,29 @@ export const FilialListScreen = ({ navigation }: Props) => {
     try {
       setLoading(true);
       await FilialService.toggleActive(filial.id);
+      
+      // Envia notificação de toggle
+      try {
+        const permissionStatus = await notificationService.getPermissionStatus();
+        if (permissionStatus !== 'granted') {
+          await notificationService.requestPermissions();
+        }
+        
+        const isActivating = !filial.ativa;
+        const notificationId = await notificationService.sendTestNotification(
+          `🔄 ${t('filial.filialStatusChangedNotification')}`,
+          `${filial.nome} ${isActivating ? t('filial.toggleActivated') : t('filial.toggleDeactivated')}`,
+          { screen: 'Filiais' },
+          2
+        );
+        
+        if (notificationId) {
+          console.log('✅ Notificação de toggle agendada:', notificationId);
+        }
+      } catch (notificationError) {
+        console.error('❌ Erro ao enviar notificação de toggle:', notificationError);
+      }
+      
       Alert.alert(t('common.success'), `${t('filial.toggleSuccess')} ${filial.ativa ? t('filial.toggleDeactivated') : t('filial.toggleActivated')} ${t('filial.toggleSuccessSuffix')}`);
       loadFiliais(); // Recarrega a lista
     } catch (error) {

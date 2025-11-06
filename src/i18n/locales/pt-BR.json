@@ -97,6 +97,8 @@
     "updatedSuccess": "Moto atualizada com sucesso!",
     "deleteConfirm": "Tem certeza que deseja excluir esta moto?",
     "deleteSuccess": "Moto excluída com sucesso!",
+    "motoDeletedNotification": "Moto Excluída",
+    "motoUpdatedNotification": "Moto Atualizada",
     "notFound": "Moto não encontrada",
     "loadError": "Não foi possível carregar as motos. Verifique sua conexão.",
     "newMotoNotification": "Nova Moto Cadastrada",
@@ -198,7 +200,11 @@
     "emailLabel": "Email",
     "previewLabel": "Preview:",
     "createdSuccess": "Filial cadastrada com sucesso!",
-    "updatedSuccess": "Filial atualizada com sucesso!"
+    "updatedSuccess": "Filial atualizada com sucesso!",
+    "newFilialNotification": "Nova Filial Cadastrada",
+    "filialUpdatedNotification": "Filial Atualizada",
+    "filialDeletedNotification": "Filial Excluída",
+    "filialStatusChangedNotification": "Status da Filial Alterado"
   },
   "mapPatio": {
     "title": "Mapa do Pátio",

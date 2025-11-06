@@ -46,9 +46,12 @@ Aplicativo mobile desenvolvido em React Native com Expo para gestão inteligente
 ### 🔔 Notificações Locais
 - **Notificações locais** com Expo Notifications
 - **Solicitação de permissões** iOS/Android
-- **Notificações automáticas** ao cadastrar nova moto
+- **Notificações automáticas** em todas as operações CRUD:
+  - 🏍️ **Motos**: Criar, Atualizar, Excluir
+  - 🏢 **Filiais**: Criar, Atualizar, Excluir, Ativar/Desativar
 - **Handlers customizáveis** para foreground/background
 - **Deep linking** preparado para futuras implementações
+- **Delay configurável** (2 segundos por padrão)
 
 ### 🌐 Internacionalização (i18n)
 - **Suporte a múltiplos idiomas**: Português (Brasil) e English
@@ -114,14 +117,31 @@ npm install
 ```
 
 ### 3. Configuração da API
+
+#### 3.1. Configuração do IP
 ```bash
-# Configure o IP da API em src/services/api.ts
-const baseURL = 'http://SEU_IP_LOCAL:5001/api';
+# Configure o IP da API em src/config/api.ts
+# O IP é detectado automaticamente por plataforma:
+# - Emulador Android: 10.0.2.2 (automático)
+# - iOS Simulator: localhost (automático)
+# - Dispositivo físico: IP configurado manualmente
 
 # Para descobrir seu IP:
 # macOS/Linux: ifconfig | grep "inet "
 # Windows: ipconfig
 ```
+
+#### 3.2. Configuração da API Key
+```bash
+# A API Key padrão é 'local-dev-key'
+# Configure via variável de ambiente ou edite src/config/api.ts:
+# EXPO_PUBLIC_API_KEY=sua-api-key-aqui
+
+# Ou edite diretamente em src/config/api.ts:
+# API_KEY: process.env.EXPO_PUBLIC_API_KEY || 'local-dev-key',
+```
+
+**⚠️ IMPORTANTE**: A API Key é enviada automaticamente em todas as requisições via headers `X-API-Key` e `ApiKey`.
 
 ### 4. Execução
 ```bash
@@ -205,12 +225,16 @@ src/
 │   ├── MapaPatio.tsx           # Mapa do pátio
 │   └── Configuracoes.tsx  # Configurações (tema, idioma, logout)
 ├── services/            # Serviços e integrações
-│   ├── api.ts          # Configuração Axios
+│   ├── api.ts          # Configuração Axios (com API Key)
 │   ├── authService.ts  # Serviço de autenticação Firebase
 │   ├── motoService.ts  # CRUD de motos
 │   ├── filialService.ts # CRUD de filiais
 │   ├── firebase.ts     # Configuração Firebase
-│   └── storage.ts      # AsyncStorage
+│   ├── storage.ts      # AsyncStorage
+│   └── notifications/  # Serviço de notificações push
+│       ├── index.ts    # Interface principal
+│       ├── expoNotifications.client.ts # Cliente Expo
+│       └── types.ts    # Tipos TypeScript
 ├── theme/              # Sistema de temas
 │   └── index.ts        # Cores, tipografia e espaçamentos
 └── types/              # Definições TypeScript
@@ -254,6 +278,7 @@ src/
 
 ### Características
 - **Timeout**: 10 segundos por requisição
+- **API Key**: Autenticação via header (X-API-Key/ApiKey)
 - **Interceptors**: Logging de requisições/respostas
 - **Tratamento de Erros**: Mensagens específicas por status
 - **Fallback Local**: Dados salvos localmente quando API falha
@@ -332,9 +357,11 @@ src/
 ## 🔒 Segurança
 
 - **Firebase Auth**: Autenticação segura
+- **API Key**: Autenticação via header em todas as requisições
 - **Token Management**: Renovação automática
 - **Data Validation**: Validação client-side e server-side
 - **Secure Storage**: AsyncStorage para dados sensíveis
+- **Headers Seguros**: API Key enviada automaticamente via interceptors
 
 ---
 

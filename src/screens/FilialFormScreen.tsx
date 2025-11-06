@@ -9,6 +9,7 @@ import { FilialService } from '../services/filialService';
 import { Filial } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { notificationService } from '../services/notifications';
 
 type Props = NativeStackScreenProps<FiliaisStackParamList, 'FilialForm'>;
 
@@ -131,11 +132,55 @@ export const FilialFormScreen = ({ route, navigation }: Props) => {
           ativa: filial.ativa,
         };
         await FilialService.update(filial.id, updateData);
+        
+        // Envia notificação de atualização
+        try {
+          const permissionStatus = await notificationService.getPermissionStatus();
+          if (permissionStatus !== 'granted') {
+            await notificationService.requestPermissions();
+          }
+          
+          const notificationId = await notificationService.sendTestNotification(
+            `✏️ ${t('filial.filialUpdatedNotification')}`,
+            `${nome} ${t('filial.updatedSuccess')}`,
+            { screen: 'Filiais' },
+            2
+          );
+          
+          if (notificationId) {
+            console.log('✅ Notificação de atualização agendada:', notificationId);
+          }
+        } catch (notificationError) {
+          console.error('❌ Erro ao enviar notificação de atualização:', notificationError);
+        }
+        
         Alert.alert(t('common.success'), t('filial.updatedSuccess'), [
           { text: t('common.ok'), onPress: () => navigation.goBack() }
         ]);
       } else {
         await FilialService.create(filialData);
+        
+        // Envia notificação de criação
+        try {
+          const permissionStatus = await notificationService.getPermissionStatus();
+          if (permissionStatus !== 'granted') {
+            await notificationService.requestPermissions();
+          }
+          
+          const notificationId = await notificationService.sendTestNotification(
+            `🏢 ${t('filial.newFilialNotification')}`,
+            `${nome} ${t('filial.createdSuccess')}`,
+            { screen: 'Filiais' },
+            2
+          );
+          
+          if (notificationId) {
+            console.log('✅ Notificação de criação agendada:', notificationId);
+          }
+        } catch (notificationError) {
+          console.error('❌ Erro ao enviar notificação de criação:', notificationError);
+        }
+        
         Alert.alert(t('common.success'), t('filial.createdSuccess'), [
           { text: t('common.ok'), onPress: () => navigation.goBack() }
         ]);

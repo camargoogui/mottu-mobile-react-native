@@ -89,13 +89,34 @@ export const CadastroMoto = ({ navigation }: Props) => {
       try {
         await MotoService.create(novaMoto);
         
-        // Envia notificação de sucesso
-        await notificationService.sendTestNotification(
-          `🏍️ ${t('moto.newMotoNotification')}`,
-          `${modelo} - ${t('moto.plate')}: ${placa.trim().toUpperCase()} ${t('moto.createdSuccess')}`,
-          { screen: 'ListaMotos' },
-          2 // 2 segundos de delay
-        );
+        // Verifica e solicita permissões antes de enviar notificação
+        try {
+          const permissionStatus = await notificationService.getPermissionStatus();
+          console.log('🔔 Status de permissão:', permissionStatus);
+          
+          if (permissionStatus !== 'granted') {
+            console.log('📱 Solicitando permissões de notificação...');
+            const newStatus = await notificationService.requestPermissions();
+            console.log('📱 Novo status de permissão:', newStatus);
+          }
+          
+          // Envia notificação de sucesso (mesmo se permissão não foi concedida, tenta enviar)
+          const notificationId = await notificationService.sendTestNotification(
+            `🏍️ ${t('moto.newMotoNotification')}`,
+            `${modelo} - ${t('moto.plate')}: ${placa.trim().toUpperCase()} ${t('moto.createdSuccess')}`,
+            { screen: 'ListaMotos' },
+            2 // 2 segundos de delay
+          );
+          
+          if (notificationId) {
+            console.log('✅ Notificação agendada com sucesso:', notificationId);
+          } else {
+            console.warn('⚠️ Não foi possível agendar a notificação');
+          }
+        } catch (notificationError) {
+          console.error('❌ Erro ao enviar notificação:', notificationError);
+          // Não bloqueia o fluxo se a notificação falhar
+        }
         
         Alert.alert(t('common.success'), t('moto.createdSuccess'), [
           { text: t('common.ok'), onPress: () => navigation.goBack() }

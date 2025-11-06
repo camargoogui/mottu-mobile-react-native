@@ -16,13 +16,32 @@ const api = axios.create({
   headers: API_CONFIG.DEFAULT_HEADERS,
 });
 
-// Interceptor para logging de requisições (desenvolvimento)
+// Interceptor para adicionar API Key e logging de requisições
 api.interceptors.request.use(
   (config) => {
+    // Adiciona a API Key no header
+    if (API_CONFIG.API_KEY) {
+      config.headers = config.headers || {};
+      // Tenta diferentes formatos de header que a API .NET pode esperar
+      // Ajuste conforme o formato que sua API .NET espera
+      config.headers['X-API-Key'] = API_CONFIG.API_KEY;
+      config.headers['ApiKey'] = API_CONFIG.API_KEY;
+    }
+    
+    // Logging de requisições (desenvolvimento)
     console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
+    console.log(`🔑 API Key: ${API_CONFIG.API_KEY ? `✅ ${API_CONFIG.API_KEY}` : '❌ Ausente'}`);
     if (config.data) {
       console.log('📤 Request Data:', config.data);
     }
+    if (config.headers) {
+      console.log('📋 Headers enviados:', {
+        'X-API-Key': config.headers['X-API-Key'] || 'não enviado',
+        'ApiKey': config.headers['ApiKey'] || 'não enviado',
+        'Content-Type': config.headers['Content-Type'] || 'não enviado',
+      });
+    }
+    
     return config;
   },
   (error) => {

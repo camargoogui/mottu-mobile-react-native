@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1047199101518",
+    "project_id": "mottu-challenge-mobile",
+    "storage_bucket": "mottu-challenge-mobile.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1047199101518:android:e7c15cce69d435ee1b891f",
+        "android_client_info": {
+          "package_name": "com.anonymous.mottu_mobile_react_native"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1047199101518-8182h2i9to7l9tofj3sr5ords1rhvrt7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcJdrFxj2IPvxmFwhjK6Mbb4_Mh1WXDH0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1047199101518-8182h2i9to7l9tofj3sr5ords1rhvrt7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

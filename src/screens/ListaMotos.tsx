@@ -11,6 +11,7 @@ import { Text } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MaterialIcons } from '@expo/vector-icons';
+import { notificationService } from '../services/notifications';
 
 type Props = NativeStackScreenProps<MotosStackParamList, 'ListaMotosScreen'>;
 
@@ -217,6 +218,35 @@ export const ListaMotos = ({ navigation }: Props) => {
             try {
               setLoading(true);
               await MotoService.delete(moto.id);
+              
+              // Envia notificação de exclusão bem-sucedida
+              try {
+                const permissionStatus = await notificationService.getPermissionStatus();
+                console.log('🔔 Status de permissão (exclusão):', permissionStatus);
+                
+                if (permissionStatus !== 'granted') {
+                  console.log('📱 Solicitando permissões de notificação...');
+                  await notificationService.requestPermissions();
+                }
+                
+                // Envia notificação de exclusão
+                const notificationId = await notificationService.sendTestNotification(
+                  `🗑️ ${t('moto.motoDeletedNotification')}`,
+                  `${t('moto.plate')}: ${moto.placa} - ${moto.modelo} ${t('moto.deleteSuccess')}`,
+                  { screen: 'ListaMotos' },
+                  2 // 2 segundos de delay
+                );
+                
+                if (notificationId) {
+                  console.log('✅ Notificação de exclusão agendada:', notificationId);
+                } else {
+                  console.warn('⚠️ Não foi possível agendar a notificação de exclusão');
+                }
+              } catch (notificationError) {
+                console.error('❌ Erro ao enviar notificação de exclusão:', notificationError);
+                // Não bloqueia o fluxo se a notificação falhar
+              }
+              
               Alert.alert(t('common.success'), t('moto.deleteSuccess'));
               loadMotos(); // Recarrega a lista
             } catch (error) {

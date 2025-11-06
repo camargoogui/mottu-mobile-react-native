@@ -15,14 +15,18 @@ import {
 
 /**
  * Configura o comportamento padrão das notificações
+ * IMPORTANTE: shouldShowBanner e shouldShowList substituem shouldShowAlert (deprecated)
  */
 Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
+  handleNotification: async () => {
+    console.log('📬 Handler de notificação chamado');
+    return {
+      shouldShowBanner: true,  // Mostra banner em foreground (Android/iOS)
+      shouldShowList: true,    // Adiciona à lista de notificações
+      shouldPlaySound: true,   // Toca som
+      shouldSetBadge: true,    // Atualiza badge
+    };
+  },
 });
 
 /**
@@ -115,19 +119,37 @@ export class ExpoNotificationsClient {
     seconds: number = 1
   ): Promise<string | null> {
     try {
+      // Verifica permissões antes de agendar
+      const permissionStatus = await this.getPermissionStatus();
+      console.log('🔔 Verificando permissões antes de agendar notificação:', permissionStatus);
+      
+      if (permissionStatus !== 'granted') {
+        console.warn('⚠️ Permissões de notificação não concedidas. Status:', permissionStatus);
+        // Tenta solicitar permissões
+        const result = await this.requestPermissions();
+        if (result.status !== 'granted') {
+          console.error('❌ Permissões não concedidas. Não é possível enviar notificação.');
+          return null;
+        }
+      }
+      
+      console.log('📅 Agendando notificação:', { title, body, seconds, data });
+      
       const notificationId = await Notifications.scheduleNotificationAsync({
         content: {
           title,
           body,
           data,
           sound: true,
+          badge: 1,
         },
         trigger: { seconds } as any,
       });
 
+      console.log('✅ Notificação agendada com sucesso. ID:', notificationId);
       return notificationId;
     } catch (error) {
-      console.error('Erro ao agendar notificação local:', error);
+      console.error('❌ Erro ao agendar notificação local:', error);
       return null;
     }
   }

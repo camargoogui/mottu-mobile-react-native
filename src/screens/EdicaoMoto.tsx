@@ -8,6 +8,7 @@ import { Input } from '../components/Input';
 import { MotoService } from '../services/motoService';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { notificationService } from '../services/notifications';
 
 // Função para converter status da UI para número da API
 const statusToApiNumber = (status: 'disponível' | 'ocupada' | 'manutenção'): number => {
@@ -26,14 +27,33 @@ export const EdicaoMoto = ({ route, navigation }: Props) => {
   const { t } = useLanguage();
   const { moto } = route.params;
   
-  const [modelo, setModelo] = useState(moto.modelo);
-  const [placa, setPlaca] = useState(moto.placa);
-  const [ano, setAno] = useState(moto.ano.toString());
-  const [cor, setCor] = useState(moto.cor);
-  const [filialId, setFilialId] = useState(moto.filialId.toString());
-  const [status, setStatus] = useState(moto.status);
+  // Verificação de segurança: se moto não existe, volta para a tela anterior
+  useEffect(() => {
+    if (!moto) {
+      Alert.alert(t('common.error'), t('moto.notFound'), [
+        { text: t('common.ok'), onPress: () => navigation.goBack() }
+      ]);
+    }
+  }, [moto, navigation, t]);
+  
+  // Validação defensiva para evitar erros quando valores são undefined
+  const [modelo, setModelo] = useState(moto?.modelo || '');
+  const [placa, setPlaca] = useState(moto?.placa || '');
+  const [ano, setAno] = useState(moto?.ano ? moto.ano.toString() : '');
+  const [cor, setCor] = useState(moto?.cor || '');
+  const [filialId, setFilialId] = useState(moto?.filialId ? moto.filialId.toString() : '');
+  const [status, setStatus] = useState(moto?.status || 'disponível');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  
+  // Se moto não existe, não renderiza o formulário
+  if (!moto) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.colors.background, justifyContent: 'center', alignItems: 'center' }]}>
+        <Text style={{ color: theme.colors.text.primary }}>{t('moto.notFound')}</Text>
+      </View>
+    );
+  }
 
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
@@ -86,6 +106,12 @@ export const EdicaoMoto = ({ route, navigation }: Props) => {
   const handleAtualizar = async () => {
     if (!validate()) return;
 
+    // Verificação de segurança
+    if (!moto?.id) {
+      Alert.alert(t('common.error'), t('moto.updateError'));
+      return;
+    }
+
     setLoading(true);
     try {
       const motoAtualizada = {
@@ -98,12 +124,41 @@ export const EdicaoMoto = ({ route, navigation }: Props) => {
         status: statusToApiNumber(status), // Converter status para número da API
       };
 
-      console.log('🔍 Placa original:', moto.placa);
+      console.log('🔍 Placa original:', moto?.placa || '');
       console.log('🔍 Placa nova:', placa.trim().toUpperCase());
-      console.log('🔍 Placa mudou?', moto.placa !== placa.trim().toUpperCase());
+      console.log('🔍 Placa mudou?', moto?.placa !== placa.trim().toUpperCase());
       console.log('🔄 Status enviado para API:', `${status} -> ${statusToApiNumber(status)}`);
 
       await MotoService.update(moto.id, motoAtualizada);
+      
+      // Envia notificação de atualização
+      try {
+        const permissionStatus = await notificationService.getPermissionStatus();
+        console.log('🔔 Status de permissão (atualização):', permissionStatus);
+        
+        if (permissionStatus !== 'granted') {
+          console.log('📱 Solicitando permissões de notificação...');
+          await notificationService.requestPermissions();
+        }
+        
+        // Envia notificação de atualização
+        const notificationId = await notificationService.sendTestNotification(
+          `✏️ ${t('moto.motoUpdatedNotification')}`,
+          `${modelo} - ${t('moto.plate')}: ${placa.trim().toUpperCase()} ${t('moto.updatedSuccess')}`,
+          { screen: 'ListaMotos' },
+          2 // 2 segundos de delay
+        );
+        
+        if (notificationId) {
+          console.log('✅ Notificação de atualização agendada:', notificationId);
+        } else {
+          console.warn('⚠️ Não foi possível agendar a notificação de atualização');
+        }
+      } catch (notificationError) {
+        console.error('❌ Erro ao enviar notificação de atualização:', notificationError);
+        // Não bloqueia o fluxo se a notificação falhar
+      }
+      
       Alert.alert(t('common.success'), t('moto.updatedSuccess'), [
         { text: t('common.ok'), onPress: () => navigation.goBack() }
       ]);
@@ -140,10 +195,10 @@ export const EdicaoMoto = ({ route, navigation }: Props) => {
 
         <View style={[styles.currentMoto, { backgroundColor: theme.colors.secondaryBackground }]}>
           <Text style={[styles.currentTitle, { color: theme.colors.text.primary }]}>
-            📝 {t('moto.edit')}: {moto.placa}
+            📝 {t('moto.edit')}: {moto?.placa || ''}
           </Text>
           <Text style={[styles.currentText, { color: theme.colors.text.secondary }]}>
-            {moto.modelo} {moto.ano} - {moto.cor}
+            {moto?.modelo || ''} {moto?.ano || ''} - {moto?.cor || ''}
           </Text>
         </View>
 
