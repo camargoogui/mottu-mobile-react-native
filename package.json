@@ -4,7 +4,7 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
-    "android": "expo run:android",
+    "android": "npm run inject-build-info && expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
     "update-api": "node scripts/update-api-config.js",
