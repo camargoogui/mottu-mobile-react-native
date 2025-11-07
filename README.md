@@ -54,11 +54,11 @@ Aplicativo mobile desenvolvido em React Native com Expo para gestão inteligente
 - **Delay configurável** (2 segundos por padrão)
 
 ### 🌐 Internacionalização (i18n)
-- **Suporte a múltiplos idiomas**: Português (Brasil) e English
+- **Suporte a múltiplos idiomas**: Português (Brasil), English e Español
 - **Persistência de preferência** do usuário
 - **Seleção de idioma** na tela de Login e Configurações
 - **Tradução completa** de todas as telas e componentes
-- **Tradução de validações**, mensagens de erro e alertas
+- **Tradução de validações**, mensagens de erro, alertas e notificações
 
 ### 🏍️ CRUD Completo de Motos
 - **Listar Motos** com integração à API .NET
@@ -205,7 +205,8 @@ src/
 │   ├── index.ts         # Configuração i18next
 │   ├── locales/         # Arquivos de tradução
 │   │   ├── pt-BR.json   # Traduções em português
-│   │   └── en.json       # Traduções em inglês
+│   │   ├── en.json       # Traduções em inglês
+│   │   └── es.json       # Traduções em espanhol
 │   └── utils.ts         # Utilitários de tradução
 ├── navigation/          # Configuração de navegação
 │   └── index.tsx       # Stack e Tab navigators tipados
@@ -341,10 +342,10 @@ src/
 - **Prevenção**: Bloqueio de envio com dados inválidos
 
 ### Internacionalização
-- **Idiomas Disponíveis**: Português (Brasil) e English
+- **Idiomas Disponíveis**: Português (Brasil), English e Español
 - **Detecção Automática**: Usa o idioma do sistema
 - **Persistência**: Salva preferência do usuário
-- **Cobertura Completa**: Todas as telas, labels, placeholders e mensagens traduzidas
+- **Cobertura Completa**: Todas as telas, labels, placeholders, mensagens e notificações traduzidas
 - **Troca Dinâmica**: Mudança de idioma sem reiniciar o app
 
 ## 📱 Compatibilidade

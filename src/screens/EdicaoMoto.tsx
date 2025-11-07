@@ -310,7 +310,7 @@ export const EdicaoMoto = ({ route, navigation }: Props) => {
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="small" color={theme.colors.primary} />
             <Text style={[styles.loadingText, { color: theme.colors.text.secondary }]}>
-              Atualizando moto...
+              {t('moto.updating')}
             </Text>
           </View>
         )}

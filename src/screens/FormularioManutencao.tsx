@@ -28,21 +28,6 @@ const getMaintenanceTypes = (t: (key: string) => string): TipoManutencao[] => [
   t('maintenance.other') as TipoManutencao,
 ];
 
-// Tipos originais para compatibilidade
-const tiposManutencao: TipoManutencao[] = [
-  'Troca de óleo',
-  'Freios',
-  'Pneus',
-  'Corrente',
-  'Sistema elétrico',
-  'Suspensão',
-  'Motor',
-  'Embreagem',
-  'Bateria',
-  'Carburador/Injeção',
-  'Outro',
-];
-
 export const FormularioManutencao = ({ route, navigation }: Props) => {
   const { theme } = useTheme();
   const { t } = useLanguage();

@@ -34,57 +34,39 @@ export const getBuildInfo = (): BuildInfo => {
   // Tenta obter do app.json extras (configurado durante o build)
   const buildInfoFromExtras = appJson.expo?.extra?.buildInfo as any;
 
-  // Fallback: tenta obter do arquivo build-info.json gerado pelo script
-  let buildInfoFromFile: any = null;
-  try {
-    // @ts-ignore - arquivo gerado dinamicamente
-    const buildInfoModule = require('../../build-info.json');
-    buildInfoFromFile = buildInfoModule.default || buildInfoModule;
-  } catch (e) {
-    // Arquivo não existe ou não pode ser carregado, tenta alternativas
-    try {
-      // Tenta ler via fetch se estiver disponível (apenas para debug/web)
-      if (typeof fetch !== 'undefined') {
-        // Ignorar em runtime mobile
-      }
-    } catch (e2) {
-      // Ignorar
-    }
-  }
+  // NOTA: As informações de build são injetadas no app.json via script inject-build-info.js
+  // Não tentamos carregar build-info.json para evitar erros do Metro bundler
+  // O Metro tenta resolver todos os requires em build time, mesmo dentro de condições
 
   // Tenta obter do expo-constants (se disponível)
   const expoConfig = Constants?.expoConfig;
   const expoExtras = expoConfig?.extra as any;
   const buildInfoFromConstants = expoExtras?.buildInfo;
 
-  // Prioridade: Constants > app.json > build-info.json > defaults
-  const source = buildInfoFromConstants || buildInfoFromExtras || buildInfoFromFile || {};
+  // Prioridade: Constants > app.json > defaults
+  // As informações são injetadas no app.json via script, não precisamos do arquivo build-info.json
+  const source = buildInfoFromConstants || buildInfoFromExtras || {};
 
   // Tenta obter commitHash de várias fontes
   const commitHash = 
     source.commitHash || 
-    buildInfoFromFile?.commitHash || 
     buildInfoFromExtras?.commitHash ||
     (buildInfoFromConstants as any)?.commitHash ||
     'development';
 
   const commitFullHash = 
     source.commitFullHash || 
-    buildInfoFromFile?.commitFullHash ||
     commitHash;
 
   const commitDate = 
-    source.commitDate || 
-    buildInfoFromFile?.commitDate;
+    source.commitDate;
 
   const branchName = 
     source.branchName || 
-    buildInfoFromFile?.branchName ||
     'unknown';
 
   const buildDate = 
     source.buildDate || 
-    buildInfoFromFile?.buildDate ||
     new Date().toISOString();
 
   // Determina o tipo de build baseado no ambiente

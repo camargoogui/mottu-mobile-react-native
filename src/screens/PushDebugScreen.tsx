@@ -10,11 +10,13 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { notificationService } from '../services/notifications';
 import { NotificationPermissionStatus } from '../services/notifications/types';
 
 export const PushDebugScreen = () => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const [pushToken, setPushToken] = useState<string | null>(null);
   const [permissionStatus, setPermissionStatus] = useState<NotificationPermissionStatus>('undetermined');
   const [deviceInfo, setDeviceInfo] = useState<any>(null);
@@ -41,13 +43,13 @@ export const PushDebugScreen = () => {
       setPermissionStatus(status);
 
       if (status === 'granted') {
-        Alert.alert('✅ Permissão Concedida', 'Notificações push ativadas!');
+        Alert.alert(t('pushDebug.permissionGrantedAlert'), t('pushDebug.permissionGrantedMessage'));
       } else if (status === 'denied') {
-        Alert.alert('❌ Permissão Negada', 'Notificações push foram negadas.');
+        Alert.alert(t('pushDebug.permissionDeniedAlert'), t('pushDebug.permissionDeniedMessage'));
       }
     } catch (error) {
       console.error('Erro ao solicitar permissões:', error);
-      Alert.alert('Erro', 'Não foi possível solicitar permissões');
+      Alert.alert(t('common.error'), t('pushDebug.errorRequestPermissions'));
     } finally {
       setIsLoading(false);
     }
@@ -55,9 +57,9 @@ export const PushDebugScreen = () => {
 
   const handleGetPushToken = async () => {
     Alert.alert(
-      '📴 Push Tokens Remotos Desabilitados',
-      'Push notifications remotas estão desabilitadas para evitar conflito com Firebase.\n\n✅ Notificações locais estão funcionando perfeitamente!\n\nTeste com o botão "Enviar Notificação de Teste" abaixo.',
-      [{ text: 'OK' }]
+      t('pushDebug.pushTokensDisabled'),
+      t('pushDebug.pushTokensDisabledMessage'),
+      [{ text: t('common.ok') }]
     );
   };
 
@@ -65,8 +67,8 @@ export const PushDebugScreen = () => {
     setIsLoading(true);
     try {
       const notificationId = await notificationService.sendTestNotification(
-        '🧪 Notificação de Teste',
-        'Esta é uma notificação de teste enviada localmente.',
+        t('pushDebug.testNotificationTitle'),
+        t('pushDebug.testNotificationBody'),
         { 
           screen: 'Home', 
           testData: 'test123',
@@ -77,11 +79,11 @@ export const PushDebugScreen = () => {
 
       if (notificationId) {
         setLastNotification(notificationId);
-        Alert.alert('✅ Teste Enviado', 'Notificação será exibida em 1 segundo');
+        Alert.alert(t('pushDebug.testSent'), t('pushDebug.testSentMessage'));
       }
     } catch (error) {
       console.error('Erro ao enviar teste:', error);
-      Alert.alert('Erro', 'Erro ao enviar notificação de teste');
+      Alert.alert(t('common.error'), t('pushDebug.errorSendTest'));
     } finally {
       setIsLoading(false);
     }
@@ -94,13 +96,13 @@ export const PushDebugScreen = () => {
       setDeviceInfo(info);
       
       Alert.alert(
-        '📱 Informações do Dispositivo',
-        `Status: ${info?.status}\nPlataforma: ${info?.platform}\nÉ Simulador: ${info?.isDevice ? 'Não' : 'Sim'}`,
-        [{ text: 'OK' }]
+        t('pushDebug.deviceInfo'),
+        `${t('pushDebug.deviceInfoStatus')}: ${info?.status}\n${t('pushDebug.deviceInfoPlatform')}: ${info?.platform}\n${t('pushDebug.deviceInfoIsDevice')}: ${info?.isDevice ? t('pushDebug.deviceInfoIsDeviceNo') : t('pushDebug.deviceInfoIsDeviceYes')}`,
+        [{ text: t('common.ok') }]
       );
     } catch (error) {
       console.error('Erro ao obter informações:', error);
-      Alert.alert('Erro', 'Erro ao obter informações do dispositivo');
+      Alert.alert(t('common.error'), t('pushDebug.errorGetDeviceInfo'));
     } finally {
       setIsLoading(false);
     }
@@ -120,11 +122,11 @@ export const PushDebugScreen = () => {
   const getStatusText = () => {
     switch (permissionStatus) {
       case 'granted':
-        return '✅ Concedida';
+        return t('pushDebug.permissionGranted');
       case 'denied':
-        return '❌ Negada';
+        return t('pushDebug.permissionDenied');
       default:
-        return '⏳ Pendente';
+        return t('pushDebug.permissionPending');
     }
   };
 
@@ -162,15 +164,15 @@ export const PushDebugScreen = () => {
       contentContainerStyle={styles.contentContainer}
     >
       <Text style={[styles.title, { color: theme.colors.label }]}>
-        🔔 Push Notifications Debug
+        🔔 {t('pushDebug.title')}
       </Text>
       <Text style={[styles.subtitle, { color: theme.colors.secondaryLabel }]}>
-        Teste e configure notificações push
+        {t('pushDebug.subtitle')}
       </Text>
 
       {/* Status Card */}
       <View style={[styles.statusCard, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
-        <Text style={[styles.statusTitle, { color: theme.colors.label }]}>Status da Permissão</Text>
+        <Text style={[styles.statusTitle, { color: theme.colors.label }]}>{t('pushDebug.permissionStatus')}</Text>
         <View style={styles.statusRow}>
           <View style={[styles.statusDot, { backgroundColor: getStatusColor() }]} />
           <Text style={[styles.statusText, { color: theme.colors.label }]}>
@@ -183,7 +185,7 @@ export const PushDebugScreen = () => {
       {pushToken && (
         <View style={[styles.tokenCard, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
           <Text style={[styles.tokenLabel, { color: theme.colors.secondaryLabel }]}>
-            Token de Push:
+            {t('pushDebug.pushToken')}:
           </Text>
           <Text style={[styles.tokenValue, { color: theme.colors.label }]} numberOfLines={2}>
             {pushToken}
@@ -195,36 +197,36 @@ export const PushDebugScreen = () => {
       {renderButton(
         handleRequestPermissions,
         'notifications',
-        'Solicitar Permissões',
-        'Pedir acesso para enviar notificações'
+        t('pushDebug.requestPermissions'),
+        t('pushDebug.requestPermissionsSubtitle')
       )}
 
       {renderButton(
         handleGetPushToken,
         'smartphone',
-        'Obter Token de Push',
-        'Buscar token do dispositivo'
+        t('pushDebug.getPushToken'),
+        t('pushDebug.getPushTokenSubtitle')
       )}
 
       {renderButton(
         handleSendTestNotification,
         'send',
-        'Enviar Notificação de Teste',
-        'Simular notificação local'
+        t('pushDebug.sendTestNotification'),
+        t('pushDebug.sendTestNotificationSubtitle')
       )}
 
       {renderButton(
         handleGetDeviceInfo,
         'info',
-        'Informações do Dispositivo',
-        'Ver detalhes do dispositivo'
+        t('pushDebug.getDeviceInfo'),
+        t('pushDebug.getDeviceInfoSubtitle')
       )}
 
       {/* Last Notification ID */}
       {lastNotification && (
         <View style={[styles.infoCard, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
           <Text style={[styles.infoLabel, { color: theme.colors.secondaryLabel }]}>
-            Última Notificação:
+            {t('pushDebug.lastNotification')}:
           </Text>
           <Text style={[styles.infoValue, { color: theme.colors.label }]}>
             {lastNotification}
@@ -235,13 +237,13 @@ export const PushDebugScreen = () => {
       {/* Instructions */}
       <View style={[styles.instructionsCard, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
         <Text style={[styles.instructionsTitle, { color: theme.colors.label }]}>
-          📋 Instruções
+          {t('pushDebug.instructions')}
         </Text>
         <Text style={[styles.instructionsText, { color: theme.colors.secondaryLabel }]}>
-          1. Solicite permissões primeiro{'\n'}
-          2. Obtenha o token de push{'\n'}
-          3. Use o token para enviar notificações do backend{'\n'}
-          4. Teste com notificação local
+          {t('pushDebug.instruction1')}{'\n'}
+          {t('pushDebug.instruction2')}{'\n'}
+          {t('pushDebug.instruction3')}{'\n'}
+          {t('pushDebug.instruction4')}
         </Text>
       </View>
     </ScrollView>

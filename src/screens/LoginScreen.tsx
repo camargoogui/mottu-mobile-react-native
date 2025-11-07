@@ -114,6 +114,29 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
             {t('settings.english')}
           </Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.languageButton,
+            { 
+              backgroundColor: currentLanguage === 'es' ? theme.colors.primary : theme.colors.card,
+              borderColor: theme.colors.border,
+              borderWidth: 1,
+            }
+          ]}
+          onPress={() => changeLanguage('es')}
+        >
+          <MaterialIcons 
+            name="language" 
+            size={18} 
+            color={currentLanguage === 'es' ? '#FFFFFF' : theme.colors.text.primary} 
+          />
+          <Text style={[
+            styles.languageButtonText,
+            { color: currentLanguage === 'es' ? '#FFFFFF' : theme.colors.text.primary }
+          ]}>
+            {t('settings.spanish')}
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.header}>
